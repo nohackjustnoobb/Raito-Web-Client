@@ -17,6 +17,25 @@
   box-shadow: 0 -5px 10px #00000044;
 }
 
+.details .content .closeBar {
+  padding-top: 0.75rem;
+  padding-bottom: 5rem;
+  z-index: 2;
+  left: 50%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+.details .content .closeBar div {
+  background-color: #00000044;
+  width: 4rem;
+  height: 0.25rem;
+}
+
 .details .close {
   background-color: #00000088;
   position: absolute;
@@ -31,13 +50,13 @@
 }
 
 .details .background {
-  opacity: 0;
   transition: all 0.2s;
   position: relative;
 }
 
 .details .background img {
   width: 100%;
+  pointer-events: none;
 }
 
 .details .categories {
@@ -189,7 +208,7 @@
 .details .options div {
   display: flex;
   justify-content: center;
-  border: 0.125rem solid black;
+  border: 0.125rem solid #575757;
   border-radius: 0.75rem;
   height: 2.5rem;
   align-items: center;
@@ -198,6 +217,13 @@
 
 .details .options .collect {
   width: 20vw;
+  color: #575757;
+}
+
+.details .options .notCollect {
+  width: 20vw;
+  color: white;
+  background-color: #575757;
 }
 
 .details .options .read {
@@ -211,6 +237,10 @@
 }
 
 .details .desktopOptions .collect {
+  width: 6vw;
+}
+
+.details .desktopOptions .notCollect {
   width: 6vw;
 }
 
@@ -231,6 +261,10 @@
   margin-top: 1rem;
   margin-left: 1rem;
   border-radius: 0.75rem;
+}
+
+.details .desktopContent .categories {
+  margin-top: 0;
 }
 
 .details .desktopTitle {

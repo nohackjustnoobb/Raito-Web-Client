@@ -33,26 +33,27 @@ const slideRenderer = ({ key, index }) => {
   );
 };
 
-const Home = () => {
-  const [index, setIndex] = useState(0);
-  const styles = {
-    selected: {
-      fontSize: "2rem",
-      transform: ["translateY(.25rem)"],
-    },
-    notSelected: {
-      fontSize: "1rem",
-      color: "#BEBEBE",
-      cursor: "pointer",
-    },
-  };
+const TabButtons = ({ index }) => {
+  const forceUpdate = useForceUpdate();
+  useEffect(() => {
+    var interval = setInterval(() => forceUpdate(), 60000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const tabButtons = [
     <div id="update">
-      <div>
+      <div onClick={() => window.betterMangaApp.updateCollections()}>
         <Icon path={mdiRefresh} size={0.75} />
         <p>更新</p>
       </div>
-      <p>{}</p>
+      <p>
+        {window.betterMangaApp.isUpdating
+          ? `更新中 ${window.betterMangaApp.updateState}`
+          : `更新於 ${Math.round(
+              (Date.now() - window.betterMangaApp.updateTime) / 60000
+            )} 分鐘前`}
+      </p>
     </div>,
     <div id="update">
       <div>
@@ -68,7 +69,7 @@ const Home = () => {
         style={{ transform: ["translateX(2rem)"] }}
       />
       <select
-        defaultValue={window.betterMangaApp.defaultDriver}
+        defaultValue={window.betterMangaApp.selectedDriver}
         onChange={(event) => {
           window.betterMangaApp.selectedDriver = event.target.value;
           window.init[2](true);
@@ -82,10 +83,27 @@ const Home = () => {
     </div>,
   ];
 
+  return tabButtons[index];
+};
+
+const Home = () => {
+  const [index, setIndex] = useState(0);
+  const styles = {
+    selected: {
+      fontSize: "2rem",
+      transform: ["translateY(.25rem)"],
+    },
+    notSelected: {
+      fontSize: "1rem",
+      color: "#BEBEBE",
+      cursor: "pointer",
+    },
+  };
+
   const forceUpdate = useForceUpdate();
   window.forceUpdate = () => forceUpdate();
   useEffect(() => {
-    window.betterMangaApp.readStorage();
+    window.betterMangaApp.init();
     window.init = {};
   }, []);
 
@@ -110,7 +128,7 @@ const Home = () => {
             </li>
           ))}
         </div>
-        {tabButtons[index]}
+        <TabButtons index={index} />
       </ul>
       <VirtualizeSwipeableViews
         slideRenderer={slideRenderer}

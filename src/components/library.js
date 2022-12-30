@@ -45,6 +45,8 @@ class Library extends React.Component {
 
   componentDidMount() {
     window.addEventListener("resize", () => this.forceUpdate());
+    window.addEventListener("orientationchange", () => this.forceUpdate());
+
     window.init[2] = (force = false) => {
       if (this.state.init && !force) return;
       this.setState(
@@ -165,7 +167,7 @@ class Library extends React.Component {
     };
 
     const isPhone = window.innerWidth < window.innerHeight;
-    const targetWidth = 200;
+    const targetWidth = 150;
     const [width, columnCount, listWidth] = getWidth();
 
     const search = (

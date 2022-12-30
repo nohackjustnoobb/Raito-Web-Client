@@ -17,18 +17,21 @@ class PageNumber extends React.Component {
   }
 
   updatePage() {
-    const page =
-      Number.parseInt(
-        document
-          .elementFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.5)
-          ?.firstChild?.getAttribute("page")
-      ) + 1;
+    try {
+      const page =
+        Number.parseInt(
+          document
+            .elementFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.5)
+            ?.firstChild?.getAttribute("page")
+            .split("_")[1]
+        ) + 1;
 
-    if (page !== this.state.page) this.setState({ page: page });
+      if (page && page !== this.state.page) this.setState({ page: page });
+    } catch (e) {}
   }
 
   componentDidMount() {
-    this.interval = setInterval(() => this.updatePage(), 1000);
+    this.interval = setInterval(() => this.updatePage(), 500);
   }
 
   componentWillUnmount() {
@@ -36,13 +39,13 @@ class PageNumber extends React.Component {
   }
 
   scrollTo(page) {
-    const elem = document.elementFromPoint(
-      window.innerWidth * 0.5,
-      window.innerHeight * 0.5
-    ).parentElement;
+    const elem = document.querySelector(
+      `[page="${this.props.episode}_${page - 1}"]`
+    );
 
+    console.log(elem);
     if (elem) {
-      elem.scrollTo({ top: elem?.scrollHeight * (page / this.props.total) });
+      elem.scrollIntoView();
       this.updatePage();
     }
   }
@@ -72,6 +75,7 @@ class Manga extends React.Component {
   constructor(props) {
     super(props);
 
+    this.mangaImgRef = React.createRef();
     this.urls = {};
     this.state = {
       episode: null,
@@ -92,12 +96,36 @@ class Manga extends React.Component {
     setTimeout(() => this.setState({ display: "none" }), 300);
   }
 
-  loadMore(elem) {
+  async loadMore(e) {
+    const elem = this.mangaImgRef.current;
+    if (!elem) return;
+
     const convertRemToPixels = (rem) =>
       rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
     if (elem?.scrollTop < convertRemToPixels(4)) {
-      elem.scrollTo({ top: convertRemToPixels(4) });
+      elem.scrollTo({
+        top: convertRemToPixels(4),
+        behavior: "instant",
+      });
+      if (this.loading || e.type === "load") return;
+
+      if (
+        this.isExtra
+          ? this.state.episode + 1 < this.manga.episodes.extra.length
+          : this.state.episode + 1 < this.manga.episodes.serial.length
+      ) {
+        const episode = this.isExtra
+          ? this.state.episode + 1
+          : this.state.episode + 1;
+        this.loading = true;
+        this.urls[episode] = await this.manga.get(episode, this.isExtra);
+        const bottom = elem?.scrollHeight - elem?.scrollTop;
+        this.forceUpdate(() => {
+          elem.scrollTo({ top: elem.scrollHeight - bottom });
+          this.loading = false;
+        });
+      }
     }
 
     if (
@@ -106,11 +134,36 @@ class Manga extends React.Component {
     ) {
       elem.scrollTo({
         top: elem.scrollHeight - elem.clientHeight - convertRemToPixels(4),
+        behavior: "instant",
       });
+      if (this.loading || e.type === "load") return;
+
+      if (this.state.episode - 1 >= 0) {
+        const episode = this.state.episode - 1;
+        this.loading = true;
+        this.urls[episode] = await this.manga.get(episode, this.isExtra);
+        this.forceUpdate(() => (this.loading = false));
+      }
     }
   }
 
+  updateEpisode() {
+    try {
+      const episode = Number.parseInt(
+        document
+          .elementFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.5)
+          ?.firstChild?.getAttribute("page")
+          .split("_")[0]
+      );
+
+      if (episode !== this.state.episode) {
+        this.setState({ episode: episode });
+      }
+    } catch (e) {}
+  }
+
   componentDidMount() {
+    setInterval(() => this.updateEpisode(), 1000);
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
@@ -120,7 +173,6 @@ class Manga extends React.Component {
 
       this.setState({ episode: episode, loading: true });
 
-      this.start = episode;
       this.manga = manga;
       this.isExtra = isExtra;
       this.urls[episode] = await manga.get(episode, isExtra);
@@ -148,63 +200,73 @@ class Manga extends React.Component {
     }
 
     var mangaElement = [];
-    if (
-      !window.betterMangaApp.forceTwoPage &&
-      (window.betterMangaApp.forceOnePage || isPhone)
-    ) {
-      mangaElement = this.urls[this.state.episode]?.map((v, i) => (
-        <li key={i}>
-          <img src={v} alt={v} style={{ width: "100vw" }} key={i} page={i} />
-        </li>
-      ));
-    } else {
-      function changeLayout(e) {
-        if (e.target.width > e.target.height) {
-          e.target.style.width = "100vw";
-          e.target.parentElement.style.flexDirection = "column-reverse";
-        }
-      }
-
-      if (this.urls[this.state.episode] && this.state.pageOffset) {
-        mangaElement.push(
-          <li className="desktopManga" key={0}>
-            <img
-              key={0}
-              page={0}
-              src={this.urls[this.state.episode][0]}
-              alt={this.urls[this.state.episode][0]}
-              onLoad={changeLayout}
-              style={{ width: "50vw" }}
-            />
-          </li>
-        );
-      }
-
-      for (
-        var i = this.state.pageOffset ? 1 : 0;
-        i < this.urls[this.state.episode]?.length;
-        i = i + 2
+    for (const [key, value] of Object.entries(this.urls).sort().reverse()) {
+      if (
+        !window.betterMangaApp.forceTwoPage &&
+        (window.betterMangaApp.forceOnePage || isPhone)
       ) {
         mangaElement.push(
-          <li className="desktopManga" key={i}>
-            <img
-              src={this.urls[this.state.episode][i + 1]}
-              alt={this.urls[this.state.episode][i + 1]}
-              onLoad={changeLayout}
-              style={{ width: "50vw" }}
-              key={i + 1}
-              page={i + 1}
-            />
-            <img
-              src={this.urls[this.state.episode][i]}
-              alt={this.urls[this.state.episode][i]}
-              style={{ width: "50vw" }}
-              onLoad={changeLayout}
-              key={i}
-              page={i}
-            />
-          </li>
+          ...value?.map((v, i) => (
+            <li key={`${key}_${i}`}>
+              <img
+                src={v}
+                alt={v}
+                style={{ width: "100vw" }}
+                key={`${key}_${i}`}
+                page={`${key}_${i}`}
+              />
+            </li>
+          ))
         );
+      } else {
+        function changeLayout(e) {
+          if (e.target.width > e.target.height) {
+            e.target.style.width = "100vw";
+            e.target.parentElement.style.flexDirection = "column-reverse";
+          }
+        }
+
+        if (value && this.state.pageOffset) {
+          mangaElement.push(
+            <li className="desktopManga" key={`${key}_0`}>
+              <img
+                key={`${key}_0`}
+                page={`${key}_0`}
+                src={value[0]}
+                alt={value[0]}
+                onLoad={changeLayout}
+                style={{ width: "50vw" }}
+              />
+            </li>
+          );
+        }
+
+        for (
+          var i = this.state.pageOffset ? 1 : 0;
+          i < value?.length;
+          i = i + 2
+        ) {
+          mangaElement.push(
+            <li className="desktopManga" key={`${key}_${i}`}>
+              <img
+                src={value[i + 1]}
+                alt={value[i + 1]}
+                onLoad={changeLayout}
+                style={{ width: "50vw" }}
+                key={`${key}_${i + 1}`}
+                page={`${key}_${i + 1}`}
+              />
+              <img
+                src={value[i]}
+                alt={value[i]}
+                style={{ width: "50vw" }}
+                onLoad={changeLayout}
+                key={`${key}_${i}`}
+                page={`${key}_${i}`}
+              />
+            </li>
+          );
+        }
       }
     }
 
@@ -255,13 +317,17 @@ class Manga extends React.Component {
               transform: [`translateY(${this.state.menu ? 0 : 100}%)`],
             }}
           >
-            <PageNumber total={this.urls[this.state.episode]?.length} />
+            <PageNumber
+              total={this.urls[this.state.episode]?.length}
+              episode={this.state.episode}
+            />
           </div>
 
           <ul
             className="mangaImg"
-            ref={(ref) => this.loadMore(ref)}
-            onScroll={() => this.forceUpdate()}
+            ref={this.mangaImgRef}
+            onLoad={(e) => this.loadMore(e)}
+            onScroll={(e) => this.loadMore(e)}
             onClick={() => this.setState({ menu: !this.state.menu })}
           >
             {mangaElement}

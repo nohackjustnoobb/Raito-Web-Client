@@ -193,7 +193,6 @@ class Details extends React.Component {
                 }}
                 onTouchMove={(e) => {
                   if (this.contentRef.current) {
-                    console.log(this.contentRef.current.style);
                     this.contentRef.current.style.transform = `translateY(${
                       (e.touches[0].pageY - this.startY) * 2
                     }px)`;

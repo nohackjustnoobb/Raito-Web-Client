@@ -43,7 +43,6 @@ class PageNumber extends React.Component {
       `[page="${this.props.episode}_${page - 1}"]`
     );
 
-    console.log(elem);
     if (elem) {
       elem.scrollIntoView();
       this.updatePage();
@@ -71,11 +70,22 @@ class PageNumber extends React.Component {
   }
 }
 
+function Dialog({ message }) {
+  return message ? (
+    <div className="dialog">
+      <div className="message">{message}</div>
+    </div>
+  ) : (
+    <></>
+  );
+}
+
 class Manga extends React.Component {
   constructor(props) {
     super(props);
 
     this.mangaImgRef = React.createRef();
+    this.mangaRef = React.createRef();
     this.urls = {};
     this.state = {
       episode: null,
@@ -84,6 +94,7 @@ class Manga extends React.Component {
       pageOffset: false,
       loading: false,
       display: "none",
+      message: null,
     };
   }
 
@@ -96,6 +107,11 @@ class Manga extends React.Component {
     setTimeout(() => this.setState({ display: "none" }), 300);
   }
 
+  showMessage(message) {
+    this.setState({ message: message });
+    setTimeout(() => this.setState({ message: null }), 1000);
+  }
+
   async loadMore(e) {
     const elem = this.mangaImgRef.current;
     if (!elem) return;
@@ -103,11 +119,16 @@ class Manga extends React.Component {
     const convertRemToPixels = (rem) =>
       rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
+    if (e.type === "load" && this.bottom) {
+      elem.scrollTo({ top: elem.scrollHeight - this.bottom });
+    }
+
     if (elem?.scrollTop < convertRemToPixels(4)) {
       elem.scrollTo({
         top: convertRemToPixels(4),
         behavior: "instant",
       });
+
       if (this.loading || e.type === "load") return;
 
       if (
@@ -120,11 +141,10 @@ class Manga extends React.Component {
           : this.state.episode + 1;
         this.loading = true;
         this.urls[episode] = await this.manga.get(episode, this.isExtra);
-        const bottom = elem?.scrollHeight - elem?.scrollTop;
-        this.forceUpdate(() => {
-          elem.scrollTo({ top: elem.scrollHeight - bottom });
-          this.loading = false;
-        });
+        this.bottom = elem?.scrollHeight - elem?.scrollTop;
+        this.forceUpdate(() => (this.loading = false));
+      } else {
+        this.showMessage("沒有上一話了");
       }
     }
 
@@ -142,7 +162,10 @@ class Manga extends React.Component {
         const episode = this.state.episode - 1;
         this.loading = true;
         this.urls[episode] = await this.manga.get(episode, this.isExtra);
+        this.bottom = undefined;
         this.forceUpdate(() => (this.loading = false));
+      } else {
+        this.showMessage("沒有下一話了");
       }
     }
   }
@@ -280,8 +303,35 @@ class Manga extends React.Component {
             <div className="loader" />
           </div>
         </div>
+        <Dialog message={this.state.message} />
         <div
           className="manga"
+          ref={this.mangaRef}
+          onTouchStart={(e) => {
+            this.startX = undefined;
+            const startX = e.touches[0].pageX;
+            if (startX < 50 && e.touches[0].pageY < 850) {
+              this.startX = startX;
+              if (this.mangaRef.current) {
+                this.mangaRef.current.style.transitionDuration = "0s";
+              }
+            }
+          }}
+          onTouchMove={(e) => {
+            if (this.startX && this.mangaRef.current) {
+              this.mangaRef.current.style.transform = `translateX(${
+                e.touches[0].pageX - this.startX
+              }px)`;
+            }
+          }}
+          onTouchEnd={(e) => {
+            this.mangaRef.current.style.transitionDuration = "0.3s";
+            if (e.nativeEvent.pageX - this.startX > 100) {
+              this.close();
+            } else {
+              this.mangaRef.current.style.transform = "translateX(0)";
+            }
+          }}
           style={{
             display: this.state.display,
             ...(this.state.show ? { transform: [`translateX(0px)`] } : {}),

@@ -1,7 +1,9 @@
 import React from "react";
 import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
+import { InfinitySpin } from "react-loader-spinner";
 
+import { convertRemToPixels } from "../../util";
 import "./library.css";
 
 const categories = {
@@ -127,9 +129,6 @@ class Library extends React.Component {
   }
 
   render() {
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-
     const getWidth = () => {
       const width =
         window.innerWidth -
@@ -172,17 +171,8 @@ class Library extends React.Component {
 
     const search = (
       <div id="search">
-        <input style={{ width: `calc(100% - ${isPhone ? 3 : 1}rem)` }} />
-        <Icon
-          path={mdiMagnify}
-          size={1}
-          color={"#999999"}
-          style={{
-            position: "absolute",
-            right: isPhone ? "3.5rem" : "1.5rem",
-            top: ".25rem",
-          }}
-        />
+        <input />
+        <Icon path={mdiMagnify} size={1} color={"#999999"} className="icon" />
       </div>
     );
 
@@ -190,11 +180,11 @@ class Library extends React.Component {
       <div id="library">
         {this.state.loading ? (
           <div className="center">
-            <div className="loader" />
+            <InfinitySpin width="200" color="#000" />
           </div>
         ) : (
           <>
-            {isPhone ? search : <></>}
+            {isPhone ? <div className="searchContainer">{search}</div> : <></>}
             <div
               id="content"
               style={{ height: `calc(100% - ${isPhone ? 3.25 : 0}rem)` }}
@@ -211,6 +201,7 @@ class Library extends React.Component {
                   window.betterMangaApp.selectedDriver
                 ].map((v) => (
                   <li
+                    key={v}
                     onClick={() => this.select(v)}
                     className={this.state.selected === v ? "selected" : ""}
                   >
@@ -223,7 +214,7 @@ class Library extends React.Component {
                   className="center"
                   style={{ width: `calc(100vw - ${isPhone ? 7 : 12}rem)` }}
                 >
-                  <div className="loader" />
+                  <InfinitySpin width="150" color="#000" />
                 </div>
               ) : (
                 <div id="list" onScroll={(e) => this.onScroll(e)}>
@@ -256,7 +247,7 @@ class Library extends React.Component {
                   </ul>
                   {this.state.pageLoading ? (
                     <div className="pageLoader">
-                      <div className="loader" />
+                      <InfinitySpin width="150" color="#000" />
                     </div>
                   ) : (
                     <></>

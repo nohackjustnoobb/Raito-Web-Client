@@ -50,6 +50,24 @@ class Manga {
     if (!window.betterMangaApp) return;
     return await window.betterMangaApp.getEpisodes(this, episode, isExtra);
   }
+
+  async save(episode, page, isExtra) {
+    if (!window.betterMangaApp) return;
+
+    const latest =
+      this.episodes.serial.length === 0
+        ? this.episodes.extra[0]
+        : this.episodes.serial[0];
+
+    return await window.betterMangaApp.addHistory(
+      this.driver,
+      this.id,
+      episode,
+      latest,
+      page,
+      isExtra
+    );
+  }
 }
 
 class BetterMangaApp {
@@ -132,7 +150,7 @@ class BetterMangaApp {
           window.forceUpdate();
 
           response.forEach(async (v) => {
-            manga[`${v.driver}${v.id}`] = v;
+            manga[`${v.driver}${v.id}`] = SimpleManga.fromJSON(v);
             await db.collections.put({
               driver: v.driver,
               id: v.id,

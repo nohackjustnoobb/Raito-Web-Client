@@ -1,7 +1,8 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "../db";
-import { SimpleManga } from "../BetterMangaApp";
+import { db } from "../../db";
+import { SimpleManga } from "../../BetterMangaApp";
 
+import { convertRemToPixels } from "../../util";
 import "./collections.css";
 
 function Collections() {
@@ -9,8 +10,6 @@ function Collections() {
   const history = useLiveQuery(() => db.history.toArray());
 
   const getWidth = () => {
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     const targetWidth = 250;
 
     const width = window.innerWidth - convertRemToPixels(2);
@@ -19,7 +18,6 @@ function Collections() {
     return [
       (width - convertRemToPixels(1) * (columnCount - 1)) / columnCount,
       columnCount,
-      width,
     ];
   };
 

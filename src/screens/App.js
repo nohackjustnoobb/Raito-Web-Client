@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import Icon from "@mdi/react";
 import { mdiRefresh, mdiCloudSync, mdiChevronDown, mdiDatabase } from "@mdi/js";
 
-import "./Home.css";
+import "./App.css";
 
-import Collections from "./collections";
-import History from "./history";
-import Library from "./library";
-import Settings from "./settings";
+import Collections from "./collections/collections";
+import History from "./history/history";
+import Library from "./library/library";
+import Settings from "./settings/settings";
 
 function useForceUpdate() {
   const [, setValue] = useState(0);
@@ -76,7 +76,7 @@ const TabButtons = ({ index }) => {
         }}
       >
         {window.betterMangaApp.availableDrivers?.map((v) => (
-          <option>{v}</option>
+          <option key={v}>{v}</option>
         ))}
       </select>
       <Icon path={mdiChevronDown} size={0.75} />

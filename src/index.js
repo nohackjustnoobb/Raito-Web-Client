@@ -3,9 +3,9 @@ import ReactDOM from "react-dom/client";
 
 import "./index.css";
 
-import Home from "./components/Home";
-import Details from "./components/details";
-import Manga from "./components/manga";
+import Home from "./screens/App";
+import Details from "./screens/details/details";
+import Manga from "./screens/manga/manga";
 import BetterMangaApp from "./BetterMangaApp";
 
 window.betterMangaApp = new BetterMangaApp();

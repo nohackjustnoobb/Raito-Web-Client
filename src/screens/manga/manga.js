@@ -6,14 +6,20 @@ import { mdiChevronLeft } from "@mdi/js";
 
 import "react-range-slider-input/dist/style.css";
 import "./manga.css";
+import { Loader, convertRemToPixels } from "../../util";
 
-class PageNumber extends React.Component {
+class Menu extends React.Component {
   constructor(props) {
     super(props);
 
+    this.title = "";
     this.state = {
       page: 1,
     };
+  }
+
+  componentDidMount() {
+    setInterval(() => this.updatePage(), 500);
   }
 
   updatePage() {
@@ -26,16 +32,12 @@ class PageNumber extends React.Component {
             .split("_")[1]
         ) + 1;
 
-      if (page && page !== this.state.page) this.setState({ page: page });
+      if (page && page !== this.state.page && this.title) {
+        this.setState({ page: page }, () =>
+          this.props.manga.save(this.title, this.state.page, this.props.isExtra)
+        );
+      }
     } catch (e) {}
-  }
-
-  componentDidMount() {
-    this.interval = setInterval(() => this.updatePage(), 500);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
   }
 
   scrollTo(page) {
@@ -50,21 +52,62 @@ class PageNumber extends React.Component {
   }
 
   render() {
+    const isPhone = window.innerWidth < window.innerHeight;
+
+    if (this.props.manga) {
+      this.title = this.props.isExtra
+        ? this.props.manga.episodes.extra[this.props.episode]
+        : this.props.manga.episodes.serial[this.props.episode];
+    }
+
     return (
       <>
-        <span>
-          <b>{this.state.page}</b>/{this.props.total}
-        </span>
-        <RangeSlider
-          className="single-thumb"
-          defaultValue={[1]}
-          min={1}
-          onInput={(e) => this.scrollTo(e[1])}
-          max={this.props.total}
-          value={[0, this.state.page]}
-          rangeSlideDisabled={true}
-          thumbsDisabled={[true, false]}
-        />
+        <ul
+          className="menu"
+          style={{
+            transform: [`translateY(${this.props.show ? 0 : -100}%)`],
+          }}
+        >
+          <li onClick={() => this.props.close()}>
+            <Icon path={mdiChevronLeft} size={1.5} />
+          </li>
+          <li className="title">
+            {window.betterMangaApp.translate(this.title)}
+          </li>
+          <li style={{ opacity: isPhone ? 0 : 1 }}>
+            <span style={{ marginRight: "0.25rem" }}>封面頁</span>
+            <Switch
+              onChange={(v) => this.props.setState({ pageOffset: v })}
+              checked={this.props.pageOffset}
+              uncheckedIcon={false}
+              checkedIcon={false}
+              activeBoxShadow={null}
+              onColor={"#000"}
+              height={convertRemToPixels(1.5)}
+              width={convertRemToPixels(3)}
+            />
+          </li>
+        </ul>
+        <div
+          className="pageNumber"
+          style={{
+            transform: [`translateY(${this.props.show ? 0 : 100}%)`],
+          }}
+        >
+          <span>
+            <b>{this.state.page}</b>/{this.props.total}
+          </span>
+          <RangeSlider
+            className="single-thumb"
+            defaultValue={[1]}
+            min={1}
+            onInput={(e) => this.scrollTo(e[1])}
+            max={this.props.total}
+            value={[0, this.state.page]}
+            rangeSlideDisabled={true}
+            thumbsDisabled={[true, false]}
+          />
+        </div>
       </>
     );
   }
@@ -116,9 +159,6 @@ class Manga extends React.Component {
     const elem = this.mangaImgRef.current;
     if (!elem) return;
 
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-
     if (e.type === "load" && this.bottom) {
       elem.scrollTo({ top: elem.scrollHeight - this.bottom });
     }
@@ -129,7 +169,7 @@ class Manga extends React.Component {
         behavior: "instant",
       });
 
-      if (this.loading || e.type === "load") return;
+      if (this.loading || e.type === "load" || !this.manga) return;
 
       if (
         this.isExtra
@@ -198,29 +238,23 @@ class Manga extends React.Component {
 
       this.manga = manga;
       this.isExtra = isExtra;
-      this.urls[episode] = await manga.get(episode, isExtra);
 
-      this.setState(
-        { display: "block", loading: false },
-        () => (this.loading = false)
-      );
-      setTimeout(() => this.setState({ show: true }), 50);
+      try {
+        this.urls[episode] = await manga.get(episode, isExtra);
+
+        this.setState(
+          { display: "block", loading: false },
+          () => (this.loading = false)
+        );
+        setTimeout(() => this.setState({ show: true }), 50);
+      } catch (e) {
+        this.setState({ loading: false }, () => (this.loading = false));
+      }
     };
   }
 
   render() {
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     const isPhone = window.innerWidth < window.innerHeight;
-
-    var title = "";
-    if (this.manga) {
-      title = window.betterMangaApp.translate(
-        this.isExtra
-          ? this.manga.episodes.extra[this.state.episode]
-          : this.manga.episodes.serial[this.state.episode]
-      );
-    }
 
     var mangaElement = [];
     for (const [key, value] of Object.entries(this.urls).sort().reverse()) {
@@ -295,14 +329,7 @@ class Manga extends React.Component {
 
     return (
       <>
-        <div
-          style={{ display: this.state.loading ? "flex" : "none" }}
-          className={"loading"}
-        >
-          <div>
-            <div className="loader" />
-          </div>
-        </div>
+        <Loader show={this.state.loading} />
         <Dialog message={this.state.message} />
         <div
           className="manga"
@@ -337,42 +364,16 @@ class Manga extends React.Component {
             ...(this.state.show ? { transform: [`translateX(0px)`] } : {}),
           }}
         >
-          <ul
-            className="menu"
-            style={{
-              transform: [`translateY(${this.state.menu ? 0 : -100}%)`],
-            }}
-          >
-            <li onClick={() => this.close()}>
-              <Icon path={mdiChevronLeft} size={1.5} />
-            </li>
-            <li className="title">{title}</li>
-            <li style={{ opacity: isPhone ? 0 : 1 }}>
-              <span style={{ marginRight: "0.25rem" }}>封面頁</span>
-              <Switch
-                onChange={(v) => this.setState({ pageOffset: v })}
-                checked={this.state.pageOffset}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                activeBoxShadow={null}
-                onColor={"#000"}
-                height={convertRemToPixels(1.5)}
-                width={convertRemToPixels(3)}
-              />
-            </li>
-          </ul>
-          <div
-            className="pageNumber"
-            style={{
-              transform: [`translateY(${this.state.menu ? 0 : 100}%)`],
-            }}
-          >
-            <PageNumber
-              total={this.urls[this.state.episode]?.length}
-              episode={this.state.episode}
-            />
-          </div>
-
+          <Menu
+            total={this.urls[this.state.episode]?.length}
+            episode={this.state.episode}
+            manga={this.manga}
+            show={this.state.menu}
+            isExtra={this.isExtra}
+            close={() => this.close()}
+            pageOffset={this.state.pageOffset}
+            setState={this.setState.bind(this)}
+          />
           <ul
             className="mangaImg"
             ref={this.mangaImgRef}

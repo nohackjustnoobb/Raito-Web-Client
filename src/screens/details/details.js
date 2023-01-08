@@ -4,8 +4,9 @@ import { mdiClose, mdiStar, mdiStarOffOutline } from "@mdi/js";
 import { liveQuery } from "dexie";
 
 import "./details.css";
-import { categories } from "./library";
-import { db } from "../db";
+import { categories } from "../library/library";
+import { Loader, convertRemToPixels } from "../../util";
+import { db } from "../../db";
 
 class Background extends React.Component {
   constructor(props) {
@@ -101,40 +102,41 @@ class Details extends React.Component {
       this.loading = true;
       this.setState({ loading: true });
 
-      this.details = await manga.toDetails();
+      try {
+        this.details = await manga.toDetails();
 
-      liveQuery(() =>
-        db.collections.get({
-          driver: this.details?.driver,
-          id: this.details?.id,
-        })
-      ).subscribe((result) => this.setState({ collected: Boolean(result) }));
+        liveQuery(() =>
+          db.collections.get({
+            driver: this.details?.driver,
+            id: this.details?.id,
+          })
+        ).subscribe((result) => this.setState({ collected: Boolean(result) }));
 
-      liveQuery(() =>
-        db.history.get({
-          driver: this.details?.driver,
-          id: this.details?.id,
-        })
-      ).subscribe((result) => this.setState({ history: result }));
+        liveQuery(() =>
+          db.history.get({
+            driver: this.details?.driver,
+            id: this.details?.id,
+          })
+        ).subscribe((result) => this.setState({ history: result }));
 
-      this.setState(
-        {
-          display: "block",
-          loading: false,
-          extra: this.details.episodes.serial.length === 0,
-        },
-        () => {
-          this.loading = false;
-          setTimeout(() => this.setState({ show: true, pageY: 0 }), 50);
-        }
-      );
+        this.setState(
+          {
+            display: "block",
+            loading: false,
+            extra: this.details.episodes.serial.length === 0,
+          },
+          () => {
+            this.loading = false;
+            setTimeout(() => this.setState({ show: true, pageY: 0 }), 50);
+          }
+        );
+      } catch (e) {
+        this.setState({ loading: false }, () => (this.loading = false));
+      }
     };
   }
 
   render() {
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-
     const isPhone = window.innerWidth < window.innerHeight;
     const targetWidth = 100;
 
@@ -159,14 +161,7 @@ class Details extends React.Component {
 
     return (
       <>
-        <div
-          style={{ display: this.state.loading ? "flex" : "none" }}
-          className={"loading"}
-        >
-          <div>
-            <div className="loader" />
-          </div>
-        </div>
+        <Loader show={this.state.loading} />
         {isPhone ? (
           <div className={"details"} style={{ display: this.state.display }}>
             <Background
@@ -211,13 +206,13 @@ class Details extends React.Component {
               </div>
               <ul className="categories">
                 {this.details?.categories?.map((v) => (
-                  <li>{categories[v]}</li>
+                  <li key={v}>{categories[v]}</li>
                 ))}
               </ul>
               <h1 className="title">{this.details?.title}</h1>
               <ul className="author">
                 {this.details?.author?.map((v) => (
-                  <li>{window.betterMangaApp.translate(v)}</li>
+                  <li key={v}>{window.betterMangaApp.translate(v)}</li>
                 ))}
               </ul>
               <p className="description">
@@ -259,7 +254,7 @@ class Details extends React.Component {
                     ? this.details.episodes.extra
                     : this.details.episodes.serial
                   )?.map((v, i) => (
-                    <li onClick={() => this.read(i)}>
+                    <li onClick={() => this.read(i)} key={i}>
                       <p>{window.betterMangaApp.translate(v)}</p>
                     </li>
                   ))
@@ -297,7 +292,7 @@ class Details extends React.Component {
                 />
                 <ul className="categories">
                   {this.details?.categories?.map((v) => (
-                    <li>{categories[v]}</li>
+                    <li key={v}>{categories[v]}</li>
                   ))}
                 </ul>
                 <h1 className="title desktopTitle">
@@ -305,7 +300,7 @@ class Details extends React.Component {
                 </h1>
                 <ul className="author">
                   {this.details?.author?.map((v) => (
-                    <li>{window.betterMangaApp.translate(v)}</li>
+                    <li key={v}>{window.betterMangaApp.translate(v)}</li>
                   ))}
                 </ul>
                 <p className="description desktopDescription">
@@ -366,7 +361,7 @@ class Details extends React.Component {
                       ? this.details.episodes.extra
                       : this.details.episodes.serial
                     )?.map((v, i) => (
-                      <li onClick={() => this.read(i)}>
+                      <li onClick={() => this.read(i)} key={i}>
                         <p>{window.betterMangaApp.translate(v)}</p>
                       </li>
                     ))

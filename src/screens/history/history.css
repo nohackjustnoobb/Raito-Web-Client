@@ -1,0 +1,82 @@
+.history {
+  height: 100%;
+  margin-top: 0.5rem;
+  overflow-y: scroll;
+}
+
+.history ul {
+  padding: 0;
+  margin: 0;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  list-style-type: none;
+  display: grid;
+  gap: 1rem 1rem;
+}
+
+.history li {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.history li div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.history .info {
+  flex-direction: row;
+}
+
+.history .continue {
+  align-items: center;
+}
+
+.history img {
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+  width: 125px;
+  aspect-ratio: 9/12;
+  object-fit: cover;
+}
+
+.history h2 {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.3rem;
+}
+
+.history h3 {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  color: #949494;
+  font-size: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history h4 {
+  margin: 0;
+  color: #c3c3c3;
+  font-size: 0.9rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

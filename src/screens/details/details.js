@@ -5,7 +5,7 @@ import { liveQuery } from "dexie";
 
 import "./details.css";
 import { categories } from "../library/library";
-import { Loader, convertRemToPixels } from "../../util";
+import { convertRemToPixels } from "../../util";
 import { db } from "../../db";
 
 class Background extends React.Component {
@@ -69,7 +69,6 @@ class Details extends React.Component {
       show: false,
       display: "none",
       extra: false,
-      loading: false,
       collected: null,
       history: null,
     };
@@ -88,8 +87,26 @@ class Details extends React.Component {
     }
   }
 
-  read(episode) {
-    window.read(this.details, episode, this.state.extra);
+  read(episode, extra = null, page = null) {
+    window.read(this.details, episode, extra ? extra : this.state.extra, page);
+  }
+
+  startReading() {
+    if (this.state.history?.episode) {
+      const index = (
+        this.state.history?.isExtra
+          ? this.details.episodes.extra
+          : this.details.episodes.serial
+      )?.indexOf(this.state.history.episode);
+
+      if (index !== -1) {
+        this.read(index, this.state.history.isExtra, this.state.history.page);
+      }
+    } else if (this.details.episodes.serial.length) {
+      this.read(this.details.episodes.serial.length - 1, false);
+    } else {
+      this.read(this.details.episodes.extra.length - 1, true);
+    }
   }
 
   componentDidMount() {
@@ -100,7 +117,7 @@ class Details extends React.Component {
       if (this.loading) return;
 
       this.loading = true;
-      this.setState({ loading: true });
+      window.showLoader();
 
       try {
         this.details = await manga.toDetails();
@@ -119,10 +136,10 @@ class Details extends React.Component {
           })
         ).subscribe((result) => this.setState({ history: result }));
 
+        window.hideLoader();
         this.setState(
           {
             display: "block",
-            loading: false,
             extra: this.details.episodes.serial.length === 0,
           },
           () => {
@@ -131,7 +148,8 @@ class Details extends React.Component {
           }
         );
       } catch (e) {
-        this.setState({ loading: false }, () => (this.loading = false));
+        window.hideLoader();
+        this.loading = false;
       }
     };
   }
@@ -161,7 +179,6 @@ class Details extends React.Component {
 
     return (
       <>
-        <Loader show={this.state.loading} />
         {isPhone ? (
           <div className={"details"} style={{ display: this.state.display }}>
             <Background
@@ -272,7 +289,9 @@ class Details extends React.Component {
                     size={1.5}
                   />
                 </div>
-                <div className="read">開始閱讀</div>
+                <div className="read" onClick={() => this.startReading()}>
+                  {this.state.history?.episode ? "繼續" : "開始"}閱讀
+                </div>
               </div>
             </div>
           </div>
@@ -317,7 +336,7 @@ class Details extends React.Component {
                       size={1.5}
                     />
                   </div>
-                  <div className="read">
+                  <div className="read" onClick={() => this.startReading()}>
                     {this.state.history?.episode ? "繼續" : "開始"}閱讀
                   </div>
                 </div>

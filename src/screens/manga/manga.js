@@ -6,7 +6,7 @@ import { mdiChevronLeft } from "@mdi/js";
 
 import "react-range-slider-input/dist/style.css";
 import "./manga.css";
-import { Loader, convertRemToPixels } from "../../util";
+import { convertRemToPixels } from "../../util";
 
 class Menu extends React.Component {
   constructor(props) {
@@ -20,6 +20,7 @@ class Menu extends React.Component {
 
   componentDidMount() {
     setInterval(() => this.updatePage(), 500);
+    window.scrollToPage = (page) => this.scrollTo(page);
   }
 
   updatePage() {
@@ -44,6 +45,8 @@ class Menu extends React.Component {
     const elem = document.querySelector(
       `[page="${this.props.episode}_${page - 1}"]`
     );
+
+    console.log(elem);
 
     if (elem) {
       elem.scrollIntoView();
@@ -135,7 +138,6 @@ class Manga extends React.Component {
       show: false,
       menu: true,
       pageOffset: false,
-      loading: false,
       display: "none",
       message: null,
     };
@@ -159,6 +161,10 @@ class Manga extends React.Component {
     const elem = this.mangaImgRef.current;
     if (!elem) return;
 
+    if (e.type === "load" && this.page) {
+      window.scrollToPage(this.page);
+    }
+
     if (e.type === "load" && this.bottom) {
       elem.scrollTo({ top: elem.scrollHeight - this.bottom });
     }
@@ -180,6 +186,7 @@ class Manga extends React.Component {
           ? this.state.episode + 1
           : this.state.episode + 1;
         this.loading = true;
+        this.page = null;
         this.urls[episode] = await this.manga.get(episode, this.isExtra);
         this.bottom = elem?.scrollHeight - elem?.scrollTop;
         this.forceUpdate(() => (this.loading = false));
@@ -201,6 +208,7 @@ class Manga extends React.Component {
       if (this.state.episode - 1 >= 0) {
         const episode = this.state.episode - 1;
         this.loading = true;
+        this.page = null;
         this.urls[episode] = await this.manga.get(episode, this.isExtra);
         this.bottom = undefined;
         this.forceUpdate(() => (this.loading = false));
@@ -230,25 +238,28 @@ class Manga extends React.Component {
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
-    window.read = async (manga, episode, isExtra) => {
+    window.read = async (manga, episode, isExtra, page = null) => {
       if (this.loading) return;
       this.loading = true;
 
-      this.setState({ episode: episode, loading: true });
+      window.showLoader();
+      this.setState({ episode: episode });
 
       this.manga = manga;
       this.isExtra = isExtra;
+      this.page = page;
+      this.bottom = undefined;
 
       try {
         this.urls[episode] = await manga.get(episode, isExtra);
 
-        this.setState(
-          { display: "block", loading: false },
-          () => (this.loading = false)
-        );
+        window.hideLoader();
+        this.loading = false;
+        this.setState({ display: "block" });
         setTimeout(() => this.setState({ show: true }), 50);
       } catch (e) {
-        this.setState({ loading: false }, () => (this.loading = false));
+        window.hideLoader();
+        this.loading = false;
       }
     };
   }
@@ -329,7 +340,6 @@ class Manga extends React.Component {
 
     return (
       <>
-        <Loader show={this.state.loading} />
         <Dialog message={this.state.message} />
         <div
           className="manga"

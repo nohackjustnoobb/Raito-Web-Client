@@ -54,6 +54,33 @@ class History extends React.Component {
     this.forceUpdate();
   }
 
+  async startReading(history, manga) {
+    if (this.loading) return;
+    this.loading = true;
+
+    window.showLoader();
+    const details = await manga.toDetails();
+    this.loading = false;
+
+    try {
+      if (history?.episode) {
+        const index = (
+          history?.isExtra ? details.episodes.extra : details.episodes.serial
+        )?.indexOf(history.episode);
+
+        if (index !== -1) {
+          window.read(details, index, history.isExtra, history.page);
+        }
+      } else if (details.episodes.serial.length) {
+        window.read(details, details.episodes.serial.length - 1, false);
+      } else {
+        window.read(details, details.episodes.extra.length - 1, true);
+      }
+    } catch (e) {
+      window.hideLoader();
+    }
+  }
+
   render() {
     const targetWidth = 500;
     const getWidth = () => {
@@ -96,7 +123,10 @@ class History extends React.Component {
               <h4>更新到 {window.betterMangaApp.translate(manga?.latest)}</h4>
             </div>
           </div>
-          <div className="continue">
+          <div
+            className="continue"
+            onClick={() => this.startReading(history, manga)}
+          >
             <Icon path={mdiBookArrowRight} size={1.5} />
             續看
           </div>

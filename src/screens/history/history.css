@@ -2,6 +2,11 @@
   height: 100%;
   margin-top: 0.5rem;
   overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.history::-webkit-scrollbar {
+  display: none;
 }
 
 .history ul {

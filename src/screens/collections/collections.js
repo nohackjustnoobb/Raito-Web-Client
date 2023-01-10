@@ -1,13 +1,21 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../db";
 import { SimpleManga } from "../../BetterMangaApp";
+import { useEffect } from "react";
 
-import { convertRemToPixels } from "../../util";
+import { convertRemToPixels, useForceUpdate } from "../../util";
 import "./collections.css";
 
 function Collections() {
   const collections = useLiveQuery(() => db.collections.toArray());
   const history = useLiveQuery(() => db.history.toArray());
+  const forceUpdate = useForceUpdate();
+
+  useEffect(() => {
+    window.addEventListener("resize", () => forceUpdate());
+    window.addEventListener("orientationchange", () => forceUpdate());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getWidth = () => {
     const targetWidth = 250;
@@ -43,44 +51,46 @@ function Collections() {
       {collections?.length === 0 ? (
         <p className="noCollections">沒有收藏</p>
       ) : (
-        <ul
-          style={{
-            gridTemplateColumns: Array(columnCount)
-              .fill(`${width}px`)
-              .join(" "),
-          }}
-        >
-          {sortedCollections.map((v) => {
-            if (!history?.length) return <></>;
-            const vHistory = history.find(
-              (w) => w.driver === v.driver && w.id === v.id
-            );
+        <div className="container">
+          <ul
+            style={{
+              gridTemplateColumns: Array(columnCount)
+                .fill(`${width}px`)
+                .join(" "),
+            }}
+          >
+            {sortedCollections.map((v) => {
+              if (!history?.length) return <></>;
+              const vHistory = history.find(
+                (w) => w.driver === v.driver && w.id === v.id
+              );
 
-            return (
-              <li
-                key={`${v.driver}${v.id}`}
-                style={{ width: width }}
-                onClick={() => window.showDetails(SimpleManga.fromJSON(v))}
-              >
-                {v.isEnd ? (
-                  <div className="end">完結</div>
-                ) : vHistory?.latest && v.latest === vHistory.latest ? (
-                  <></>
-                ) : (
-                  <div className="new">更新</div>
-                )}
-                <img src={v.thumbnail} alt={v.thumbnail} width={width} />
-                <p>{window.betterMangaApp.translate(v.title)}</p>
-                <p className="history">
-                  {vHistory?.episode
-                    ? window.betterMangaApp.translate(vHistory.episode)
-                    : "未看"}{" "}
-                  / {window.betterMangaApp.translate(v.latest)}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
+              return (
+                <li
+                  key={`${v.driver}${v.id}`}
+                  style={{ width: width }}
+                  onClick={() => window.showDetails(SimpleManga.fromJSON(v))}
+                >
+                  {v.isEnd ? (
+                    <div className="end">完結</div>
+                  ) : vHistory?.latest && v.latest === vHistory.latest ? (
+                    <></>
+                  ) : (
+                    <div className="new">更新</div>
+                  )}
+                  <img src={v.thumbnail} alt={v.thumbnail} width={width} />
+                  <p>{window.betterMangaApp.translate(v.title)}</p>
+                  <p className="simpleHistory">
+                    {vHistory?.episode
+                      ? window.betterMangaApp.translate(vHistory.episode)
+                      : "未看"}{" "}
+                    / {window.betterMangaApp.translate(v.latest)}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );

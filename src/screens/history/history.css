@@ -9,6 +9,11 @@
   display: none;
 }
 
+.history .pageLoader {
+  display: flex;
+  justify-content: center;
+}
+
 .history ul {
   padding: 0;
   margin: 0;

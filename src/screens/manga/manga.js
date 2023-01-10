@@ -2,7 +2,7 @@ import React from "react";
 import Icon from "@mdi/react";
 import Switch from "react-switch";
 import RangeSlider from "react-range-slider-input";
-import { mdiChevronLeft } from "@mdi/js";
+import { mdiChevronLeft, mdiWindowClose } from "@mdi/js";
 
 import "react-range-slider-input/dist/style.css";
 import "./manga.css";
@@ -119,7 +119,10 @@ class Menu extends React.Component {
 function Dialog({ message }) {
   return message ? (
     <div className="dialog">
-      <div className="message">{message}</div>
+      <div className="container">
+        <Icon path={mdiWindowClose} size={3} />
+        <div className="message">{message}</div>
+      </div>
     </div>
   ) : (
     <></>

@@ -26,4 +26,9 @@ function Loader() {
 const convertRemToPixels = (rem) =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-export { Loader, convertRemToPixels };
+function useForceUpdate() {
+  const [, setValue] = useState(0);
+  return () => setValue((value) => value + 1);
+}
+
+export { Loader, convertRemToPixels, useForceUpdate };

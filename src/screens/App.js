@@ -10,11 +10,7 @@ import Collections from "./collections/collections";
 import History from "./history/history";
 import Library from "./library/library";
 import Settings from "./settings/settings";
-
-function useForceUpdate() {
-  const [, setValue] = useState(0);
-  return () => setValue((value) => value + 1);
-}
+import { useForceUpdate } from "../util";
 
 const tabs = {
   收藏庫: <Collections />,

@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "@mdi/react";
 import { mdiBookArrowRight } from "@mdi/js";
 import { liveQuery } from "dexie";
+import { InfinitySpin } from "react-loader-spinner";
 
 import { convertRemToPixels } from "../../util";
 import { db } from "../../db";
@@ -15,10 +16,14 @@ class History extends React.Component {
     this.page = 0;
     this.state = {
       history: [],
+      pageLoading: false,
     };
   }
 
   componentDidMount() {
+    window.addEventListener("resize", () => this.forceUpdate());
+    window.addEventListener("orientationchange", () => this.forceUpdate());
+
     window.init[1] = async () => {
       if (this.init) return;
       this.init = true;
@@ -31,6 +36,7 @@ class History extends React.Component {
           () => {
             (async () => {
               await this.load();
+              await this.ensureScrollable();
               this.forceUpdate();
             })();
           }
@@ -46,12 +52,12 @@ class History extends React.Component {
         .map((v) => SimpleManga.fromJSON(v))
     );
 
-  // TODO
-  async loadMore() {
+  async loadMore(showSkeleton = false) {
     if (this.loading) return;
     this.loading = true;
 
     this.page += 1;
+    if (showSkeleton) this.forceUpdate();
     await this.load();
 
     this.loading = false;
@@ -82,6 +88,33 @@ class History extends React.Component {
       }
     } catch (e) {
       window.hideLoader();
+    }
+  }
+
+  async ensureScrollable() {
+    const container = document.getElementsByClassName("history")[0];
+    const list = container.children[0];
+    if (
+      list.scrollHeight < container.clientHeight &&
+      this.state.history.length > this.page * 10 + 10
+    ) {
+      await this.loadMore(true);
+      await this.ensureScrollable();
+    }
+  }
+
+  async onScroll(e, force = false) {
+    const bottom =
+      Math.abs(
+        e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight
+      ) < 50;
+
+    if ((bottom && !this.pageLoading) || force) {
+      this.pageLoading = true;
+      this.setState({ pageLoading: true }, async () => {
+        await this.loadMore();
+        this.setState({ pageLoading: false }, () => (this.pageLoading = false));
+      });
     }
   }
 
@@ -139,7 +172,7 @@ class History extends React.Component {
     }
 
     return (
-      <div className="history">
+      <div className="history" onScroll={(e) => this.onScroll(e)}>
         <ul
           style={{
             gridTemplateColumns: Array(columnCount)
@@ -148,6 +181,13 @@ class History extends React.Component {
           }}
         >
           {historyElem}
+          {this.state.pageLoading ? (
+            <div className="pageLoader">
+              <InfinitySpin width="150" color="#000" />
+            </div>
+          ) : (
+            <></>
+          )}
         </ul>
       </div>
     );

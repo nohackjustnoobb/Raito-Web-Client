@@ -69,14 +69,15 @@ const TabButtons = ({ index }) => {
         style={{ transform: ["translateX(2rem)"] }}
       />
       <select
-        defaultValue={window.betterMangaApp.selectedDriver}
+        defaultValue={window.betterMangaApp.selectedDriver?.identifier}
         onChange={(event) => {
-          window.betterMangaApp.selectedDriver = event.target.value;
+          window.betterMangaApp.selectedDriver =
+            window.betterMangaApp.getDriver(event.target.value);
           window.init[2](true);
         }}
       >
         {window.betterMangaApp.availableDrivers?.map((v) => (
-          <option key={v}>{v}</option>
+          <option key={v.identifier}>{v.identifier}</option>
         ))}
       </select>
       <Icon path={mdiChevronDown} size={0.75} />

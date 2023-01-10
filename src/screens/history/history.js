@@ -6,6 +6,7 @@ import { liveQuery } from "dexie";
 import { convertRemToPixels } from "../../util";
 import { db } from "../../db";
 import "./history.css";
+import { SimpleManga } from "../../BetterMangaApp";
 
 class History extends React.Component {
   constructor(props) {
@@ -40,9 +41,12 @@ class History extends React.Component {
 
   load = async () =>
     await window.betterMangaApp.getManga(
-      this.state.history.slice(10 * this.page, 10 * (this.page + 1))
+      this.state.history
+        .slice(10 * this.page, 10 * (this.page + 1))
+        .map((v) => SimpleManga.fromJSON(v))
     );
 
+  // TODO
   async loadMore() {
     if (this.loading) return;
     this.loading = true;
@@ -98,8 +102,8 @@ class History extends React.Component {
       if (!this.state.history[i]) break;
 
       const history = this.state.history[i];
-      const manga =
-        window.betterMangaApp.simpleManga[`${history.driver}${history.id}`];
+      const driver = window.betterMangaApp.getDriver(history.driver);
+      const manga = driver.getCachedManga(history.id);
 
       historyElem.push(
         <li key={`${history.driver}${history.id}`}>

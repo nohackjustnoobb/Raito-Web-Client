@@ -124,14 +124,14 @@ class Details extends React.Component {
 
         liveQuery(() =>
           db.collections.get({
-            driver: this.details?.driver,
+            driver: this.details?.driver.identifier,
             id: this.details?.id,
           })
         ).subscribe((result) => this.setState({ collected: Boolean(result) }));
 
         liveQuery(() =>
           db.history.get({
-            driver: this.details?.driver,
+            driver: this.details?.driver.identifier,
             id: this.details?.id,
           })
         ).subscribe((result) => this.setState({ history: result }));

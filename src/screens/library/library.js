@@ -32,6 +32,46 @@ const categories = {
   "Cross-Dressing": "偽娘",
 };
 
+class Search extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { suggestion: [], focus: false };
+  }
+
+  searchChange(e) {
+    this.search = e.target.value;
+    setTimeout(() => {
+      if (this.search && this.search === e.target.value) {
+        // TODO
+      }
+    }, 1000);
+  }
+
+  render() {
+    return (
+      <div id="search">
+        <input
+          type="text"
+          onChange={(e) => this.searchChange(e)}
+          onFocus={() => this.setState({ focus: true })}
+          onBlur={() => this.setState({ focus: false })}
+        />
+        <Icon path={mdiMagnify} size={1} color={"#999999"} className="icon" />
+        {this.state.focus ? (
+          <ul>
+            {this.state.suggestion.map((v, i) => (
+              <li key={i}>{v}</li>
+            ))}
+          </ul>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
+}
+
 class Library extends React.Component {
   constructor(props) {
     super(props);
@@ -61,15 +101,12 @@ class Library extends React.Component {
         },
         () => {
           (async () => {
-            await window.betterMangaApp.getCategories(
-              window.betterMangaApp.selectedDriver
-            );
+            await window.betterMangaApp.selectedDriver.getCategories();
             this.setState({ loading: false });
           })();
 
           (async () => {
-            await window.betterMangaApp.getList(
-              window.betterMangaApp.selectedDriver,
+            await window.betterMangaApp.selectedDriver.getList(
               this.state.selected,
               1
             );
@@ -89,11 +126,7 @@ class Library extends React.Component {
         selected: v,
       },
       async () => {
-        await window.betterMangaApp.getList(
-          window.betterMangaApp.selectedDriver,
-          v,
-          this.state.page
-        );
+        await window.betterMangaApp.selectedDriver.getList(v, this.state.page);
 
         this.setState({ listLoading: false });
       }
@@ -114,8 +147,7 @@ class Library extends React.Component {
           page: this.state.page + 1,
         },
         async () => {
-          await window.betterMangaApp.getList(
-            window.betterMangaApp.selectedDriver,
+          await window.betterMangaApp.selectedDriver.getList(
             this.state.selected,
             this.state.page
           );
@@ -147,17 +179,14 @@ class Library extends React.Component {
       var result = [];
       for (var i = 1; i <= this.state.page; i++) {
         const list =
-          window.betterMangaApp.list[
-            `${window.betterMangaApp.selectedDriver}${this.state.selected}${i}`
+          window.betterMangaApp.selectedDriver.list[
+            `${this.state.selected}${i}`
           ];
 
         if (list) {
           result.push(
-            ...list.map(
-              (v) =>
-                window.betterMangaApp.simpleManga[
-                  `${window.betterMangaApp.selectedDriver}${v}`
-                ]
+            ...list.map((v) =>
+              window.betterMangaApp.selectedDriver.getCachedManga(v, false)
             )
           );
         }
@@ -169,13 +198,6 @@ class Library extends React.Component {
     const targetWidth = 150;
     const [width, columnCount, listWidth] = getWidth();
 
-    const search = (
-      <div id="search">
-        <input />
-        <Icon path={mdiMagnify} size={1} color={"#999999"} className="icon" />
-      </div>
-    );
-
     return (
       <div id="library">
         {this.state.loading ? (
@@ -184,22 +206,24 @@ class Library extends React.Component {
           </div>
         ) : (
           <>
-            {isPhone ? <div className="searchContainer">{search}</div> : <></>}
+            {isPhone ? (
+              <div className="searchContainer">{<Search />}</div>
+            ) : (
+              <></>
+            )}
             <div
               id="content"
               style={{ height: `calc(100% - ${isPhone ? 3.25 : 0}rem)` }}
             >
               <ul id="categories" style={{ width: `${isPhone ? 5 : 10}rem` }}>
-                {isPhone ? <></> : search}
+                {isPhone ? <></> : <Search />}
                 <li
                   onClick={() => this.select(undefined)}
                   className={this.state.selected ? "" : "selected"}
                 >
                   全部
                 </li>
-                {window.betterMangaApp.categories[
-                  window.betterMangaApp.selectedDriver
-                ].map((v) => (
+                {window.betterMangaApp.selectedDriver.categories.map((v) => (
                   <li
                     key={v}
                     onClick={() => this.select(v)}
@@ -228,7 +252,7 @@ class Library extends React.Component {
                   >
                     {getList().map((v) => (
                       <li
-                        key={`${v.driver}${v.id}`}
+                        key={`${v.driver.identifier}${v.id}`}
                         style={{ width: width }}
                         onClick={() => window.showDetails(v)}
                       >

@@ -46,8 +46,6 @@ class Menu extends React.Component {
       `[page="${this.props.episode}_${page - 1}"]`
     );
 
-    console.log(elem);
-
     if (elem) {
       elem.scrollIntoView();
       this.updatePage();

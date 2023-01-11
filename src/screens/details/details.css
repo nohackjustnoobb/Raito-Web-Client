@@ -75,7 +75,6 @@
   margin-right: 0.25rem;
   font-size: 1rem;
   color: #888888;
-  cursor: pointer;
 }
 
 .details .title {
@@ -96,8 +95,8 @@
   padding: 0;
   margin-left: 1rem;
   display: flex;
-  transform: translateY(-0.25rem);
   font-weight: bold;
+  z-index: 3;
 }
 
 .details .author li {

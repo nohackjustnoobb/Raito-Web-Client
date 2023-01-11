@@ -229,7 +229,15 @@ class Details extends React.Component {
               <h1 className="title">{this.details?.title}</h1>
               <ul className="author">
                 {this.details?.author?.map((v) => (
-                  <li key={v}>{window.betterMangaApp.translate(v)}</li>
+                  <li
+                    key={v}
+                    onClick={() => {
+                      this.close();
+                      window.search(v);
+                    }}
+                  >
+                    {window.betterMangaApp.translate(v)}
+                  </li>
                 ))}
               </ul>
               <p className="description">
@@ -319,7 +327,15 @@ class Details extends React.Component {
                 </h1>
                 <ul className="author">
                   {this.details?.author?.map((v) => (
-                    <li key={v}>{window.betterMangaApp.translate(v)}</li>
+                    <li
+                      key={v}
+                      onClick={() => {
+                        this.close();
+                        window.search(v);
+                      }}
+                    >
+                      {window.betterMangaApp.translate(v)}
+                    </li>
                   ))}
                 </ul>
                 <p className="description desktopDescription">

@@ -36,6 +36,7 @@ class Search extends React.Component {
   constructor(props) {
     super(props);
 
+    this.input = React.createRef();
     this.state = { suggestion: [], focus: false };
   }
 
@@ -61,11 +62,18 @@ class Search extends React.Component {
     }, 1000);
   }
 
+  componentDidMount() {
+    window.syncInput = () =>
+      (this.input.current.value = this.input.current?.defaultValue);
+  }
+
   render() {
     return (
       <div id="search">
         <input
-          enterkeyhint="search"
+          defaultValue={this.props.text}
+          ref={this.input}
+          enterKeyHint="search"
           onChange={(e) => this.searchChange(e)}
           onFocus={() => this.setState({ focus: true })}
           onBlur={() => setTimeout(() => this.setState({ focus: false }), 100)}
@@ -117,7 +125,7 @@ class Library extends React.Component {
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
-    window.init[2] = (force = false) => {
+    window.init[2] = (force = false, search = null) => {
       if (this.state.init && !force) return;
       this.setState(
         {
@@ -141,20 +149,26 @@ class Library extends React.Component {
             );
             this.setState({ listLoading: false });
           })();
+
+          if (search) window.search(search);
         }
       );
     };
     window.search = async (text) => {
       if (!text || this.loading) return;
+      if (!this.state.init) return window.init[2](false, text);
       window.setPage(2);
 
-      this.loading = true;
-      this.setState({ listLoading: true });
-
       this.searchText = text;
+      this.loading = true;
+      this.setState({ listLoading: true }, () => {
+        if (window.syncInput) window.syncInput();
+      });
+
       const result = await window.betterMangaApp.selectedDriver.search(text);
       this.setState({ search: result, listLoading: false }, () => {
         this.loading = false;
+        window.syncInput();
         this.ensureScrollable();
       });
     };
@@ -277,7 +291,9 @@ class Library extends React.Component {
         ) : (
           <>
             {isPhone ? (
-              <div className="searchContainer">{<Search />}</div>
+              <div className="searchContainer">
+                {<Search text={this.searchText} />}
+              </div>
             ) : (
               <></>
             )}
@@ -285,8 +301,8 @@ class Library extends React.Component {
               id="content"
               style={{ height: `calc(100% - ${isPhone ? 3.25 : 0}rem)` }}
             >
-              <div>
-                {isPhone ? <></> : <Search />}
+              <div className="categoriesContainer">
+                {isPhone ? <></> : <Search text={this.searchText} />}
                 <ul
                   id="categories"
                   style={{

@@ -16,6 +16,12 @@
   width: 100%;
 }
 
+.categoriesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 #categories {
   list-style-type: none;
   margin: 0;
@@ -121,7 +127,6 @@
 #search {
   position: relative;
   width: calc(100% - 2rem);
-  margin-left: 1rem;
   margin-top: 1rem;
   margin-bottom: 0.25rem;
 }
@@ -131,12 +136,13 @@
   outline: none;
   background-color: #efefef;
   border-radius: 0.75rem;
-  width: calc(100% - 1rem);
+  width: calc(100% - 3rem);
   height: 2rem;
   margin: 0;
   padding: 0;
   font-size: 1rem;
   padding-left: 1rem;
+  padding-right: 2rem;
 }
 
 #search .icon {
@@ -182,4 +188,6 @@
 
 .searchContainer {
   width: 100vw;
+  display: flex;
+  justify-content: center;
 }

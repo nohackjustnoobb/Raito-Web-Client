@@ -98,18 +98,19 @@ const Home = () => {
   };
 
   const forceUpdate = useForceUpdate();
-  window.forceUpdate = () => forceUpdate();
   useEffect(() => {
+    window.forceUpdate = () => forceUpdate();
+    window.setPage = (page) => {
+      setIndex(page);
+      if (window.init[page]) {
+        window.init[page]();
+      }
+    };
+
     window.betterMangaApp.init();
     window.init = {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const setPage = (page) => {
-    setIndex(page);
-    if (window.init[page]) {
-      window.init[page]();
-    }
-  };
 
   return (
     <>
@@ -118,7 +119,7 @@ const Home = () => {
           {Object.keys(tabs).map((v, i) => (
             <li
               key={i}
-              onClick={i === index ? () => {} : () => setPage(i)}
+              onClick={i === index ? () => {} : () => window.setPage(i)}
               style={styles[i === index ? "selected" : "notSelected"]}
             >
               {v}
@@ -131,7 +132,7 @@ const Home = () => {
         slideRenderer={slideRenderer}
         slideCount={Object.keys(tabs).length}
         index={index}
-        onChangeIndex={(index) => setPage(index)}
+        onChangeIndex={(index) => window.setPage(index)}
         enableMouseEvents
       />
     </>

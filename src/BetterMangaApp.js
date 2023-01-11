@@ -144,10 +144,25 @@ class Driver {
   async getSuggestion(text) {
     if (!this.supportSuggestion || !text) return [];
 
-    return await this.get("suggestions", {
+    return await window.betterMangaApp.get("suggestion", {
       driver: this.identifier,
       text: text,
     });
+  }
+
+  async search(text, page = 1) {
+    if (!text) return [];
+
+    const manga = (
+      await window.betterMangaApp.get("search", {
+        driver: this.identifier,
+        text: text,
+        page: page,
+      })
+    ).map((v) => SimpleManga.fromJSON(v));
+    manga.forEach((v) => this.addManga(v));
+
+    return manga;
   }
 }
 

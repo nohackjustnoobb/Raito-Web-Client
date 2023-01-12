@@ -14,11 +14,11 @@ function Collections() {
   useEffect(() => {
     window.addEventListener("resize", () => forceUpdate());
     window.addEventListener("orientationchange", () => forceUpdate());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    window.forceUpdate[0] = () => forceUpdate();
+  });
 
   const getWidth = () => {
-    const targetWidth = 250;
+    const targetWidth = 150;
 
     const width = window.innerWidth - convertRemToPixels(2);
 

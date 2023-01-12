@@ -46,6 +46,18 @@
   color: #cbcbcb;
 }
 
+#reset {
+  display: flex;
+  align-items: center;
+}
+
+#reset p {
+  margin: 0;
+  font-weight: bold;
+  color: black;
+  font-size: 0.75rem;
+}
+
 #update div p {
   margin: 0;
   font-weight: bold;

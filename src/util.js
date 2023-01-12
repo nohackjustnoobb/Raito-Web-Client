@@ -31,4 +31,7 @@ function useForceUpdate() {
   return () => setValue((value) => value + 1);
 }
 
-export { Loader, convertRemToPixels, useForceUpdate };
+const forceUpdateAll = () =>
+  Object.values(window.forceUpdate).forEach((f) => f());
+
+export { Loader, convertRemToPixels, useForceUpdate, forceUpdateAll };

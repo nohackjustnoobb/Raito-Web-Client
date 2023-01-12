@@ -1,5 +1,6 @@
 import { tify } from "chinese-conv";
 import { db } from "./db";
+import { forceUpdateAll } from "./util";
 
 class SimpleManga {
   static fromJSON(data) {
@@ -136,7 +137,7 @@ class Driver {
     this.categories = result.categories;
     this.supportSuggestion = result.suggestion;
 
-    window.forceUpdate();
+    forceUpdateAll();
 
     return await this.getCategories();
   }
@@ -175,9 +176,11 @@ class BetterMangaApp {
     // check if initialized
     this.initialized = false;
 
+    // state
+    this.selectedDriver = null;
+
     // settings
     this.defaultDriver = null;
-    this.selectedDriver = null;
     this.forceTranslate = true;
     this.forceTwoPage = false;
     this.forceOnePage = false;
@@ -239,7 +242,7 @@ class BetterMangaApp {
 
           counter += k.length;
           updateState();
-          window.forceUpdate();
+          forceUpdateAll();
 
           response.forEach(async (v) => {
             const driver = this.getDriver(v.driver);
@@ -266,7 +269,7 @@ class BetterMangaApp {
 
     this.updateTime = Date.now();
     this.isUpdating = false;
-    window.forceUpdate();
+    forceUpdateAll();
   }
 
   translate(text) {
@@ -293,6 +296,33 @@ class BetterMangaApp {
       localStorage.setItem("defaultDriver", this.defaultDriver.identifier);
     }
     this.selectedDriver = this.defaultDriver;
+
+    this.forceTranslate = localStorage.getItem("forceTranslate");
+    this.forceTranslate =
+      this.forceTranslate === null ? true : this.forceTranslate === "true";
+
+    this.forceTwoPage = localStorage.getItem("forceTwoPage");
+    this.forceTwoPage =
+      this.forceTwoPage === null ? true : this.forceTwoPage === "true";
+
+    this.forceOnePage = localStorage.getItem("forceOnePage");
+    this.forceOnePage =
+      this.forceOnePage === null ? true : this.forceOnePage === "true";
+  }
+
+  save() {
+    localStorage.setItem("forceTwoPage", this.forceTwoPage);
+    localStorage.setItem("forceOnePage", this.forceOnePage);
+    localStorage.setItem("forceTranslate", this.forceTranslate);
+    localStorage.setItem("defaultDriver", this.defaultDriver.identifier);
+  }
+
+  reset() {
+    this.defaultDriver = this.availableDrivers[0];
+    this.forceTranslate = true;
+    this.forceTwoPage = false;
+    this.forceOnePage = false;
+    this.save();
   }
 
   async getManga(mangaList, showAll = false, useCache = true) {

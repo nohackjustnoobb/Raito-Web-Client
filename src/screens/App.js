@@ -1,8 +1,15 @@
+import React from "react";
 import SwipeableViews from "react-swipeable-views";
 import { virtualize } from "react-swipeable-views-utils";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Icon from "@mdi/react";
-import { mdiRefresh, mdiCloudSync, mdiChevronDown, mdiDatabase } from "@mdi/js";
+import {
+  mdiRefresh,
+  mdiCloudSync,
+  mdiChevronDown,
+  mdiDatabase,
+  mdiCogSync,
+} from "@mdi/js";
 
 import "./App.css";
 
@@ -10,7 +17,7 @@ import Collections from "./collections/collections";
 import History from "./history/history";
 import Library from "./library/library";
 import Settings from "./settings/settings";
-import { useForceUpdate } from "../util";
+import { forceUpdateAll, useForceUpdate } from "../util";
 
 const tabs = {
   收藏庫: <Collections />,
@@ -78,30 +85,31 @@ const TabButtons = ({ index }) => {
       </select>
       <Icon path={mdiChevronDown} size={0.75} />
     </div>,
+    <div
+      id="reset"
+      onClick={() => {
+        window.betterMangaApp.reset();
+        forceUpdateAll();
+      }}
+    >
+      <Icon path={mdiCogSync} size={0.75} />
+      <p>重設</p>
+    </div>,
   ];
 
   return tabButtons[index];
 };
 
-const Home = () => {
-  const [index, setIndex] = useState(0);
-  const styles = {
-    selected: {
-      fontSize: "2rem",
-      transform: ["translateY(.25rem)"],
-    },
-    notSelected: {
-      fontSize: "1rem",
-      color: "#BEBEBE",
-      cursor: "pointer",
-    },
-  };
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
 
-  const forceUpdate = useForceUpdate();
-  useEffect(() => {
-    window.forceUpdate = () => forceUpdate();
+    this.state = { index: 0 };
+  }
+
+  componentDidMount() {
     window.setPage = (page) => {
-      setIndex(page);
+      this.setState({ index: page });
       if (window.init[page]) {
         window.init[page]();
       }
@@ -109,34 +117,52 @@ const Home = () => {
 
     window.betterMangaApp.init();
     window.init = {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    window.forceUpdate = {};
+  }
 
-  return (
-    <>
-      <ul id="tabMenu">
-        <div>
-          {Object.keys(tabs).map((v, i) => (
-            <li
-              key={i}
-              onClick={i === index ? () => {} : () => window.setPage(i)}
-              style={styles[i === index ? "selected" : "notSelected"]}
-            >
-              {v}
-            </li>
-          ))}
-        </div>
-        <TabButtons index={index} />
-      </ul>
-      <VirtualizeSwipeableViews
-        slideRenderer={slideRenderer}
-        slideCount={Object.keys(tabs).length}
-        index={index}
-        onChangeIndex={(index) => window.setPage(index)}
-        enableMouseEvents
-      />
-    </>
-  );
-};
+  render() {
+    const styles = {
+      selected: {
+        fontSize: "2rem",
+        transform: ["translateY(.25rem)"],
+      },
+      notSelected: {
+        fontSize: "1rem",
+        color: "#BEBEBE",
+        cursor: "pointer",
+      },
+    };
+
+    return (
+      <>
+        <ul id="tabMenu">
+          <div>
+            {Object.keys(tabs).map((v, i) => (
+              <li
+                key={i}
+                onClick={
+                  i === this.state.index ? () => {} : () => window.setPage(i)
+                }
+                style={
+                  styles[i === this.state.index ? "selected" : "notSelected"]
+                }
+              >
+                {v}
+              </li>
+            ))}
+          </div>
+          <TabButtons index={this.state.index} />
+        </ul>
+        <VirtualizeSwipeableViews
+          slideRenderer={slideRenderer}
+          slideCount={Object.keys(tabs).length}
+          index={this.state.index}
+          onChangeIndex={(index) => window.setPage(index)}
+          enableMouseEvents
+        />
+      </>
+    );
+  }
+}
 
 export default Home;

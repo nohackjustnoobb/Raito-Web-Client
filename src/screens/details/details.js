@@ -233,7 +233,7 @@ class Details extends React.Component {
                     key={v}
                     onClick={() => {
                       this.close();
-                      window.search(v);
+                      window.search(window.betterMangaApp.translate(v));
                     }}
                   >
                     {window.betterMangaApp.translate(v)}
@@ -331,7 +331,7 @@ class Details extends React.Component {
                       key={v}
                       onClick={() => {
                         this.close();
-                        window.search(v);
+                        window.search(window.betterMangaApp.translate(v));
                       }}
                     >
                       {window.betterMangaApp.translate(v)}

@@ -24,6 +24,7 @@ class History extends React.Component {
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
+    window.forceUpdate[1] = () => this.forceUpdate();
     window.init[1] = async () => {
       if (this.init) return;
       this.init = true;

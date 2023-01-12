@@ -125,8 +125,10 @@ class Library extends React.Component {
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
+    window.forceUpdate[2] = () => this.forceUpdate();
     window.init[2] = (force = false, search = null) => {
       if (this.state.init && !force) return;
+      this.searchText = "";
       this.setState(
         {
           init: true,
@@ -141,13 +143,14 @@ class Library extends React.Component {
             await window.betterMangaApp.selectedDriver.getCategories();
             this.setState({ loading: false });
           })();
-
           (async () => {
             await window.betterMangaApp.selectedDriver.getList(
               this.state.selected,
               1
             );
-            this.setState({ listLoading: false });
+            this.setState({ listLoading: false }, () => {
+              if (window.syncInput) window.syncInput();
+            });
           })();
 
           if (search) window.search(search);
@@ -175,6 +178,7 @@ class Library extends React.Component {
   }
 
   async select(v) {
+    this.searchText = "";
     this.setState(
       {
         listLoading: true,
@@ -184,6 +188,7 @@ class Library extends React.Component {
         search: [],
       },
       async () => {
+        window.syncInput();
         await window.betterMangaApp.selectedDriver.getList(v, this.state.page);
 
         this.setState({ listLoading: false });
@@ -249,7 +254,7 @@ class Library extends React.Component {
       const width =
         window.innerWidth -
         convertRemToPixels(3) -
-        convertRemToPixels(isPhone ? 5 : 10);
+        convertRemToPixels(isPhone ? 5 : 11.5);
 
       const columnCount = Math.round(width / targetWidth);
       return [

@@ -387,7 +387,7 @@ class BetterMangaApp {
 
   // the functions below are not designed to be called directly
   async removeCollection(manga) {
-    await db.collections.delete([manga.driver.identifier, manga.id]);
+    await await db.collections.delete([manga.driver.identifier, manga.id]);
   }
 
   async addCollection(manga) {

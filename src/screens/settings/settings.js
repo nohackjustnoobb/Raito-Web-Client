@@ -6,7 +6,7 @@ import { convertRemToPixels, forceUpdateAll } from "../../util";
 
 class Settings extends React.Component {
   componentDidMount() {
-    window.forceUpdate[3] = () => this.forceUpdate();
+    window.forceUpdate.push(() => this.forceUpdate());
   }
 
   render() {

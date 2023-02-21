@@ -14,7 +14,7 @@ function Collections() {
   useEffect(() => {
     window.addEventListener("resize", () => forceUpdate());
     window.addEventListener("orientationchange", () => forceUpdate());
-    window.forceUpdate[0] = () => forceUpdate();
+    window.forceUpdate.push(() => forceUpdate());
   });
 
   const getWidth = () => {

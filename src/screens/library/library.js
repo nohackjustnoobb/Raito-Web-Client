@@ -125,7 +125,7 @@ class Library extends React.Component {
     window.addEventListener("resize", () => this.forceUpdate());
     window.addEventListener("orientationchange", () => this.forceUpdate());
 
-    window.forceUpdate[2] = () => this.forceUpdate();
+    window.forceUpdate.push(() => this.forceUpdate());
     window.init[2] = (force = false, search = null) => {
       if (this.state.init && !force) return;
       this.searchText = "";

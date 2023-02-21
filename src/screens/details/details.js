@@ -204,7 +204,10 @@ class Details extends React.Component {
                   }
                 }}
                 onTouchMove={(e) => {
-                  if (this.contentRef.current) {
+                  if (
+                    this.contentRef.current &&
+                    e.touches[0].pageY - this.startY > 0
+                  ) {
                     this.contentRef.current.style.transform = `translateY(${
                       (e.touches[0].pageY - this.startY) * 2
                     }px)`;
@@ -271,7 +274,7 @@ class Details extends React.Component {
                     .fill(`${width}px`)
                     .join(" "),
                   maxHeight:
-                    window.innerHeight - offsetTop - convertRemToPixels(5),
+                    window.innerHeight - offsetTop - convertRemToPixels(6),
                 }}
               >
                 {this.details?.episodes ? (
@@ -298,7 +301,13 @@ class Details extends React.Component {
                   />
                 </div>
                 <div className="read" onClick={() => this.startReading()}>
-                  {this.state.history?.episode ? "繼續" : "開始"}閱讀
+                  <span>
+                    {this.state.history?.episode
+                      ? `續看${window.betterMangaApp.translate(
+                          this.state.history.episode
+                        )}`
+                      : "開始閱讀"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -353,7 +362,13 @@ class Details extends React.Component {
                     />
                   </div>
                   <div className="read" onClick={() => this.startReading()}>
-                    {this.state.history?.episode ? "繼續" : "開始"}閱讀
+                    <span>
+                      {this.state.history?.episode
+                        ? `續看${window.betterMangaApp.translate(
+                            this.state.history.episode
+                          )}`
+                        : "開始閱讀"}
+                    </span>
                   </div>
                 </div>
               </div>

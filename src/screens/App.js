@@ -40,6 +40,8 @@ const TabButtons = ({ index }) => {
   const forceUpdate = useForceUpdate();
   useEffect(() => {
     var interval = setInterval(() => forceUpdate(), 60000);
+    window.forceUpdate.push(() => forceUpdate());
+
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -117,7 +119,7 @@ class Home extends React.Component {
 
     window.betterMangaApp.init();
     window.init = {};
-    window.forceUpdate = {};
+    window.forceUpdate = [];
   }
 
   render() {

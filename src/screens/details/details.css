@@ -241,20 +241,20 @@
 }
 
 .details .desktopOptions {
-  width: 30vw;
+  width: calc(60vh / 12 * 9);
   bottom: 1rem;
 }
 
 .details .desktopOptions .collect {
-  width: 6vw;
+  width: 20%;
 }
 
 .details .desktopOptions .notCollect {
-  width: 6vw;
+  width: 20%;
 }
 
 .details .desktopOptions .read {
-  width: calc(24vw - 1rem);
+  width: calc(80% - 1rem);
 }
 
 .details .desktopContent {
@@ -264,7 +264,7 @@
 }
 
 .details .desktopContent img {
-  width: 30vw;
+  height: 60vh;
   aspect-ratio: 9/12;
   object-fit: cover;
   margin-top: 1rem;
@@ -277,18 +277,18 @@
 }
 
 .details .desktopTitle {
-  width: 30vw;
+  width: calc(60vh / 12 * 9);
 }
 
 .details .desktopDescription {
-  width: 30vw;
-  max-height: 34vh;
+  max-height: calc(40vh - 11rem);
+  width: calc(60vh / 12 * 9);
 }
 
 .desktopEpisodes .status {
   margin-left: 0;
   margin-top: 1rem;
-  width: calc(70vw - 3rem);
+  width: calc(100vw - 60vh / 12 * 9 - 3rem);
 }
 
 .desktopEpisodes .episodes {

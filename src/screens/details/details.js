@@ -110,9 +110,7 @@ class Details extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", () => this.forceUpdate());
-    window.addEventListener("orientationchange", () => this.forceUpdate());
-
+    setTimeout(() => window.forceUpdate.push(() => this.forceUpdate()), 100);
     window.showDetails = async (manga) => {
       if (this.loading) return;
 
@@ -160,8 +158,9 @@ class Details extends React.Component {
 
     function getWidth() {
       const width =
-        window.innerWidth * (isPhone ? 1 : 0.7) -
-        convertRemToPixels(isPhone ? 2 : 3);
+        window.innerWidth -
+        convertRemToPixels(isPhone ? 2 : 3) -
+        window.innerHeight * 0.45;
       const columnCount = Math.round(width / targetWidth);
       return [
         (width - convertRemToPixels(1) * (columnCount - 1)) / columnCount,

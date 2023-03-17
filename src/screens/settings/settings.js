@@ -52,7 +52,7 @@ class Settings extends React.Component {
               window.betterMangaApp.forceTwoPage
                 ? "雙頁"
                 : window.betterMangaApp.forceOnePage
-                ? "雙頁"
+                ? "單頁"
                 : "自動"
             }
             onChange={(event) => {
@@ -74,7 +74,6 @@ class Settings extends React.Component {
               }
 
               window.betterMangaApp.save();
-              forceUpdateAll();
             }}
           >
             <option>自動</option>

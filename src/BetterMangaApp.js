@@ -167,6 +167,8 @@ class Driver {
   }
 }
 
+class User {}
+
 class BetterMangaApp {
   constructor() {
     // storage server info
@@ -178,6 +180,9 @@ class BetterMangaApp {
 
     // state
     this.selectedDriver = null;
+
+    // user
+    this.user = null;
 
     // settings
     this.defaultDriver = null;
@@ -248,6 +253,7 @@ class BetterMangaApp {
             const driver = this.getDriver(v.driver);
             driver.addManga(SimpleManga.fromJSON(v));
 
+            const manga = await db.collections.get([v.driver, v.id]);
             await db.collections.put({
               driver: v.driver,
               id: v.id,
@@ -259,8 +265,9 @@ class BetterMangaApp {
             });
 
             const history = await db.history.get([v.driver, v.id]);
-            if (history.latest !== v.latest) {
+            if (history.latest !== v.latest && manga.latest !== v.latest) {
               db.history.update([v.driver, v.id], { datetime: Date.now() });
+              console.log("Hello");
             }
           });
         }
@@ -315,6 +322,7 @@ class BetterMangaApp {
     localStorage.setItem("forceOnePage", this.forceOnePage);
     localStorage.setItem("forceTranslate", this.forceTranslate);
     localStorage.setItem("defaultDriver", this.defaultDriver.identifier);
+    forceUpdateAll();
   }
 
   reset() {

@@ -21,9 +21,6 @@ class History extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", () => this.forceUpdate());
-    window.addEventListener("orientationchange", () => this.forceUpdate());
-
     window.forceUpdate.push(() => this.forceUpdate());
     window.init[1] = async () => {
       if (this.init) return;
@@ -100,6 +97,8 @@ class History extends React.Component {
       this.state.history.length > this.page * 10 + 10
     ) {
       await this.loadMore(true);
+
+      await new Promise((r) => setTimeout(r, 100));
       await this.ensureScrollable();
     }
   }

@@ -12,8 +12,6 @@ function Collections() {
   const forceUpdate = useForceUpdate();
 
   useEffect(() => {
-    window.addEventListener("resize", () => forceUpdate());
-    window.addEventListener("orientationchange", () => forceUpdate());
     window.forceUpdate.push(() => forceUpdate());
   });
 
@@ -42,7 +40,7 @@ function Collections() {
         (w) => w.driver === v2.driver && w.id === v2.id
       );
 
-      return v2History?.datetime - v1History?.datetime;
+      return v2History.datetime - v1History.datetime;
     });
   }
 

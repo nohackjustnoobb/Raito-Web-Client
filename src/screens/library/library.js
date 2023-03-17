@@ -122,9 +122,6 @@ class Library extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", () => this.forceUpdate());
-    window.addEventListener("orientationchange", () => this.forceUpdate());
-
     window.forceUpdate.push(() => this.forceUpdate());
     window.init[2] = (force = false, search = null) => {
       if (this.state.init && !force) return;
@@ -150,6 +147,7 @@ class Library extends React.Component {
             );
             this.setState({ listLoading: false }, () => {
               if (window.syncInput) window.syncInput();
+              this.ensureScrollable();
             });
           })();
 
@@ -172,7 +170,7 @@ class Library extends React.Component {
       this.setState({ search: result, listLoading: false }, () => {
         this.loading = false;
         window.syncInput();
-        this.ensureScrollable();
+        this.ensureScrollable(true);
       });
     };
   }
@@ -191,7 +189,7 @@ class Library extends React.Component {
         window.syncInput();
         await window.betterMangaApp.selectedDriver.getList(v, this.state.page);
 
-        this.setState({ listLoading: false });
+        this.setState({ listLoading: false }, () => this.ensureScrollable());
       }
     );
   }
@@ -203,49 +201,47 @@ class Library extends React.Component {
           e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight
         ) < 50;
 
-    if ((bottom && !this.pageLoading) || force) {
+    if ((bottom || force) && !this.pageLoading) {
       this.pageLoading = true;
-      this.setState(
-        {
-          pageLoading: true,
-          page: this.state.page + 1,
-        },
-        async () => {
-          if (this.state.search.length) {
-            const result = await window.betterMangaApp.selectedDriver.search(
-              this.searchText,
-              this.state.page
-            );
-            if (!result.length) throw new Error("");
+      this.setState({
+        pageLoading: true,
+      });
 
-            this.setState({
-              search: [...this.state.search, ...result],
-            });
-          } else {
-            await window.betterMangaApp.selectedDriver.getList(
-              this.state.selected,
-              this.state.page
-            );
-          }
-          this.setState(
-            { pageLoading: false },
-            () => (this.pageLoading = false)
-          );
-        }
+      if (this.state.search.length) {
+        const result = await window.betterMangaApp.selectedDriver.search(
+          this.searchText,
+          this.state.page + 1
+        );
+        if (!result.length) throw new Error("");
+
+        this.setState({
+          search: [...this.state.search, ...result],
+        });
+      } else {
+        await window.betterMangaApp.selectedDriver.getList(
+          this.state.selected,
+          this.state.page + 1
+        );
+      }
+
+      this.setState(
+        { pageLoading: false, page: this.state.page + 1 },
+        () => (this.pageLoading = false)
       );
     }
   }
 
-  async ensureScrollable() {
+  async ensureScrollable(search = false) {
     const container = document.getElementById("list");
     const list = container.getElementsByTagName("ul")[0];
 
     if (list.scrollHeight < container.clientHeight) {
       const cacheLength = this.state.search.length;
       await this.onScroll(undefined, true);
-      if (cacheLength === this.state.search.length) return;
+      if (cacheLength === this.state.search.length && search) return;
 
-      await this.ensureScrollable();
+      await new Promise((r) => setTimeout(r, 100));
+      await this.ensureScrollable(search);
     }
   }
 
@@ -254,7 +250,13 @@ class Library extends React.Component {
       const width =
         window.innerWidth -
         convertRemToPixels(3) -
-        convertRemToPixels(isPhone ? 5 : 11.5);
+        convertRemToPixels(
+          isPhone
+            ? 5
+            : /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+            ? 13.5
+            : 11.5
+        );
 
       const columnCount = Math.round(width / targetWidth);
       return [

@@ -235,9 +235,9 @@ class Manga extends React.Component {
   }
 
   componentDidMount() {
+    setTimeout(() => this.updateEpisode(), 100);
+    setTimeout(() => window.forceUpdate.push(() => this.forceUpdate()), 100);
     setInterval(() => this.updateEpisode(), 1000);
-    window.addEventListener("resize", () => this.forceUpdate());
-    window.addEventListener("orientationchange", () => this.forceUpdate());
 
     window.read = async (manga, episode, isExtra, page = null) => {
       if (this.loading) return;

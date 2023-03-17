@@ -110,6 +110,9 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
+    window.addEventListener("resize", () => forceUpdateAll());
+    window.addEventListener("orientationchange", () => forceUpdateAll());
+
     window.setPage = (page) => {
       this.setState({ index: page });
       if (window.init[page]) {

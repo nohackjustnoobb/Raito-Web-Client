@@ -10,8 +10,26 @@ class Settings extends React.Component {
   }
 
   render() {
+    const user = window.betterMangaApp.user;
+
     return (
       <ul className="settings">
+        <li>
+          <span>
+            帳戶：<b>{user.token ? user.email : ""}</b>
+          </span>
+          <button
+            onClick={() => {
+              if (user.token) {
+                if (window.confirm("確認登出？")) user.logout();
+              } else {
+                window.openLogin();
+              }
+            }}
+          >
+            {user.token ? "登出" : "登錄"}
+          </button>
+        </li>
         <li>
           <span>預設來源：</span>
           <select

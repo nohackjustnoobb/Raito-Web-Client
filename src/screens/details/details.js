@@ -160,7 +160,7 @@ class Details extends React.Component {
       const width =
         window.innerWidth -
         convertRemToPixels(isPhone ? 2 : 3) -
-        window.innerHeight * 0.45;
+        (isPhone ? 0 : window.innerHeight * 0.45);
       const columnCount = Math.round(width / targetWidth);
       return [
         (width - convertRemToPixels(1) * (columnCount - 1)) / columnCount,

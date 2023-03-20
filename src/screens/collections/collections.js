@@ -71,10 +71,10 @@ function Collections() {
                 >
                   {v.isEnd ? (
                     <div className="end">完結</div>
-                  ) : vHistory?.latest && v.latest === vHistory.latest ? (
-                    <></>
-                  ) : (
+                  ) : vHistory?.hvUpdate ? (
                     <div className="new">更新</div>
+                  ) : (
+                    <></>
                   )}
                   <img src={v.thumbnail} alt={v.thumbnail} width={width} />
                   <p>{window.betterMangaApp.translate(v.title)}</p>

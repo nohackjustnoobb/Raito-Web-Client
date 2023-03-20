@@ -167,7 +167,45 @@ class Driver {
   }
 }
 
-class User {}
+class User {
+  constructor() {
+    this.token = localStorage.getItem("token");
+    this.email = localStorage.getItem("email");
+  }
+
+  async login(email, password) {
+    if (!window.betterMangaApp) return false;
+
+    var result = await window.betterMangaApp.post(
+      "user/token",
+      {},
+      JSON.stringify({ username: email, password: password }),
+      { "Content-Type": "application/json" }
+    );
+
+    if (result) {
+      this.token = result.token;
+      this.email = email;
+
+      localStorage.setItem("token", this.token);
+      localStorage.setItem("email", this.email);
+
+      forceUpdateAll();
+    }
+
+    return Boolean(result);
+  }
+
+  async logout() {
+    this.token = null;
+    this.email = null;
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+
+    forceUpdateAll();
+  }
+}
 
 class BetterMangaApp {
   constructor() {
@@ -182,7 +220,7 @@ class BetterMangaApp {
     this.selectedDriver = null;
 
     // user
-    this.user = null;
+    this.user = new User();
 
     // settings
     this.defaultDriver = null;
@@ -194,6 +232,8 @@ class BetterMangaApp {
     this.isUpdating = false;
     this.updateTime = null;
     this.updateState = null;
+
+    // sync status
   }
 
   getDriver(id) {
@@ -253,7 +293,6 @@ class BetterMangaApp {
             const driver = this.getDriver(v.driver);
             driver.addManga(SimpleManga.fromJSON(v));
 
-            const manga = await db.collections.get([v.driver, v.id]);
             await db.collections.put({
               driver: v.driver,
               id: v.id,
@@ -265,9 +304,12 @@ class BetterMangaApp {
             });
 
             const history = await db.history.get([v.driver, v.id]);
-            if (history.latest !== v.latest && manga.latest !== v.latest) {
-              db.history.update([v.driver, v.id], { datetime: Date.now() });
-              console.log("Hello");
+            if (history.latest !== v.latest) {
+              db.history.update([v.driver, v.id], {
+                datetime: Date.now(),
+                hvUpdate: true,
+                latest: v.latest,
+              });
             }
           });
         }
@@ -357,17 +399,23 @@ class BetterMangaApp {
     return mangaList.map((v) => v.driver.getCachedManga(v.id, showAll));
   }
 
-  async get(action, params) {
+  async fetch(method, action, params, body, headers = {}) {
     Object.keys(params).forEach(
       (key) => params[key] === undefined && delete params[key]
     );
+
+    if (this.user.token) {
+      headers["Authorization"] = `token ${this.user.token}`;
+    }
 
     const response = await fetch(
       `${process.env.REACT_APP_ADDRESS}${action}${
         Object.keys(params).length === 0 ? "" : "?"
       }` + new URLSearchParams(params),
       {
-        method: "GET",
+        method: method,
+        headers: new Headers(headers),
+        body: body,
       }
     );
 
@@ -381,6 +429,10 @@ class BetterMangaApp {
     return;
   }
 
+  get = async (action, params) => this.fetch("GET", action, params, undefined);
+  post = async (action, params, body, headers) =>
+    this.fetch("POST", action, params, body, headers);
+
   async addHistory(driver, id, episode, latest, page, isExtra) {
     await db.history.put({
       driver: driver,
@@ -390,6 +442,7 @@ class BetterMangaApp {
       page: page,
       isExtra: isExtra,
       datetime: Date.now(),
+      hvUpdate: false,
     });
   }
 
@@ -419,6 +472,7 @@ class BetterMangaApp {
       db.history.update([manga.driver.identifier, manga.id], {
         latest: latest,
         datetime: Date.now(),
+        hvUpdate: false,
       });
     } else {
       await this.addHistory(
@@ -432,18 +486,16 @@ class BetterMangaApp {
     }
   }
 
-  async getEpisodes(manga, episode, isExtra = false) {
-    const response = await fetch(
-      `${process.env.REACT_APP_ADDRESS}episode?${new URLSearchParams({
+  getEpisodes = async (manga, episode, isExtra = false) =>
+    await this.post(
+      "episode",
+      {
         is_extra: isExtra ? "1" : "0",
         driver: manga.driver.identifier,
         episode: episode,
-      })}`,
-      { method: "POST", body: manga.driverData }
+      },
+      manga.driverData
     );
-
-    return await response.json();
-  }
 }
 
 export default BetterMangaApp;

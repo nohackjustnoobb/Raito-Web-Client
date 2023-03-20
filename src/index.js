@@ -6,6 +6,7 @@ import "./index.css";
 import Home from "./screens/App";
 import Details from "./screens/details/details";
 import Manga from "./screens/manga/manga";
+import Login from "./screens/login/login";
 import BetterMangaApp from "./BetterMangaApp";
 import { Loader } from "./util";
 
@@ -17,5 +18,6 @@ root.render(
     <Manga />
     <Details />
     <Home />
+    <Login />
   </React.StrictMode>
 );

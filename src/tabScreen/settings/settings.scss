@@ -1,0 +1,45 @@
+#reset {
+  display: flex;
+  align-items: flex-end;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+#settings {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  #content {
+    margin: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    height: 1.75rem;
+  }
+
+  #credit {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    margin-bottom: max(1rem, env(safe-area-inset-bottom));
+    font-size: 0.75rem;
+
+    a {
+      color: black;
+      font-weight: bold;
+      text-decoration: none;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
+    }
+  }
+}

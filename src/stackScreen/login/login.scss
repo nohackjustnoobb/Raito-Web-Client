@@ -1,0 +1,55 @@
+.login-enter {
+  opacity: 0;
+}
+
+.login-enter-active {
+  opacity: 1;
+  transition: opacity 250ms;
+}
+
+.login-exit-active {
+  opacity: 0;
+  transition: opacity 250ms;
+}
+
+.loginWrapper {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .loginContent {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 2rem;
+    padding-bottom: 0.5rem;
+    border-radius: 1rem;
+    z-index: 2;
+  }
+
+  .background {
+    background-color: #00000044;
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .login {
+    .row {
+      display: flex;
+      margin-bottom: 1rem;
+
+      button {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}

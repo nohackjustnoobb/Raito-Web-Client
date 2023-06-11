@@ -6,12 +6,9 @@ body {
   font-family: sans-serif;
   height: 100vh;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #root {
   position: fixed;
-}
-
-img {
-  pointer-events: none;
 }

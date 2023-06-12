@@ -1,15 +1,16 @@
 import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
-import { mdiChevronLeft, mdiWindowClose } from "@mdi/js";
+import { mdiWindowClose } from "@mdi/js";
 import { Pressable, Space, ViewPort } from "react-zoomable-ui";
 
 import "./read.scss";
 
 import { pushLoader } from "../../utils/utils";
-import { Checkbox, Slider } from "@mui/material";
+
 import { DisplayMode } from "../../classes/settingsState";
 import { Manga } from "../../classes/manga";
+import Menu from "./menu";
 
 class Warning extends Component<{ noNextOne: boolean }> {
   constructor(props: { noNextOne: boolean }) {
@@ -26,81 +27,6 @@ class Warning extends Component<{ noNextOne: boolean }> {
           <h2>{this.props.noNextOne ? "沒有下一話了" : "沒有上一話了"}</h2>
         </div>
       </div>
-    );
-  }
-}
-
-class Menu extends Component<{
-  show: boolean;
-  title: string | null;
-  page: number | null;
-  maxPage: number | null;
-  pageOffset: boolean;
-  showOffset: boolean;
-  toggleOffset: () => void;
-  close: () => void;
-  scrollToPage: (page: number) => void;
-}> {
-  timeout: number = 500;
-
-  render(): ReactNode {
-    return (
-      <>
-        <div className="upperMenuWrapper">
-          <CSSTransition
-            in={this.props.show}
-            classNames="upperMenu"
-            timeout={this.timeout}
-            unmountOnExit
-            mountOnEnter
-          >
-            <div className="upperMenu">
-              <div className="close" onClick={() => this.props.close()}>
-                <Icon path={mdiChevronLeft} size={1.5} />
-                <h2>{this.props.title}</h2>
-              </div>
-              {this.props.showOffset && (
-                <div className="pageOffset">
-                  <Checkbox
-                    checked={this.props.pageOffset}
-                    onChange={this.props.toggleOffset}
-                  />
-                  <h3>封面偏移</h3>
-                </div>
-              )}
-            </div>
-          </CSSTransition>
-        </div>
-
-        <div className="lowerMenuWrapper">
-          <CSSTransition
-            in={this.props.show}
-            classNames="lowerMenu"
-            timeout={this.timeout}
-            unmountOnExit
-            mountOnEnter
-          >
-            <div className="lowerMenu">
-              <h3>
-                {this.props.page} / {this.props.maxPage}
-              </h3>
-              {this.props.page && (
-                <div className="sliderWrapper">
-                  <Slider
-                    value={this.props.page}
-                    max={this.props.maxPage!}
-                    min={1}
-                    step={1}
-                    onChange={(_, value) =>
-                      this.props.scrollToPage(value as number)
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          </CSSTransition>
-        </div>
-      </>
     );
   }
 }
@@ -240,13 +166,16 @@ class Read extends Component<
 
     // get the urls
     var urls = await this.props.manga.get(index, this.props.isExtra);
-    this.setState((prevState) => ({
-      episodesUrls: {
-        ...prevState.episodesUrls,
-        [index]: urls,
-      },
-      show: true,
-    }));
+    this.setState(
+      (prevState) => ({
+        episodesUrls: {
+          ...prevState.episodesUrls,
+          [index]: urls,
+        },
+        show: true,
+      }),
+      () => setTimeout(() => this.tryRestoreViewPort(), 250)
+    );
   }
 
   close() {
@@ -292,20 +221,25 @@ class Read extends Component<
         zoom: [1, 3],
       });
 
-      // restore the previous position
-      if (this.prevHeight)
-        // DK why setTimeout solves this problem
-        setTimeout(() =>
-          this.viewPoint!.camera.updateTopLeft(
-            this.viewPoint!.left,
-            this.containerRef!.clientHeight - this.prevHeight!
-          )
-        );
+      this.tryRestoreViewPort();
     }
+  }
+
+  tryRestoreViewPort() {
+    // restore the previous position
+    if (this.prevHeight)
+      // DK why setTimeout solves this problem
+      setTimeout(() =>
+        this.viewPoint!.camera.updateTopLeft(
+          this.viewPoint!.left,
+          this.containerRef!.clientHeight - this.prevHeight!
+        )
+      );
   }
 
   toggleOffset() {
     // update the viewport
+    this.prevHeight = null;
     this.setState({ pageOffset: !this.state.pageOffset }, () =>
       this.updateViewPort()
     );
@@ -500,52 +434,63 @@ class Read extends Component<
                 >
                   {Object.keys(this.state.episodesUrls)
                     .reverse()
-                    .map((index: any) =>
-                      this.state.episodesUrls[index].map((url, page) => (
-                        <Fragment key={`${index}_${page}`}>
-                          {!isOnePage &&
-                            page === 0 &&
-                            this.state.pageOffset && <div className="spacer" />}
-                          <div
-                            style={{
-                              width:
-                                isOnePage ||
-                                this.wideImage.includes(`${index}_${page}`)
-                                  ? "100%"
-                                  : "50%",
-                            }}
-                            onMouseEnter={(event) =>
-                              this.updateState(event.target as HTMLElement)
-                            }
-                            onTouchStart={(event) =>
-                              this.updateState(event.target as HTMLElement)
-                            }
-                            id={`${index}_${page}`}
-                            data-page={page}
-                            data-index={index}
-                          >
-                            <img
-                              src={url}
-                              alt=""
-                              onLoad={(event) => {
-                                // check if the image is horizontal
-                                const element =
-                                  event.target as HTMLImageElement;
-                                if (
-                                  element.naturalWidth >= element.naturalHeight
-                                ) {
-                                  this.wideImage.push(`${index}_${page}`);
-                                  this.forceUpdate(() => this.updateViewPort());
-                                }
-
-                                // update the bound
-                                this.updateViewPort();
+                    .map((index: any) => (
+                      <Fragment key={`${index}`}>
+                        {this.state.episodesUrls[index].map((url, page) => (
+                          <Fragment key={`${index}_${page}`}>
+                            {!isOnePage &&
+                              page === 0 &&
+                              this.state.pageOffset && (
+                                <div className="spacer" />
+                              )}
+                            <div
+                              style={{
+                                width:
+                                  isOnePage ||
+                                  this.wideImage.includes(`${index}_${page}`)
+                                    ? "100%"
+                                    : "50%",
                               }}
-                            />
-                          </div>
-                        </Fragment>
-                      ))
-                    )}
+                              onMouseEnter={(event) =>
+                                this.updateState(event.target as HTMLElement)
+                              }
+                              onTouchStart={(event) =>
+                                this.updateState(event.target as HTMLElement)
+                              }
+                              id={`${index}_${page}`}
+                              data-page={page}
+                              data-index={index}
+                            >
+                              <img
+                                src={url}
+                                alt=""
+                                onLoad={(event) => {
+                                  // check if the image is horizontal
+                                  const element =
+                                    event.target as HTMLImageElement;
+                                  if (
+                                    element.naturalWidth >=
+                                    element.naturalHeight
+                                  ) {
+                                    this.wideImage.push(`${index}_${page}`);
+                                    this.forceUpdate(() =>
+                                      this.updateViewPort()
+                                    );
+                                  }
+
+                                  // update the bound
+                                  this.updateViewPort();
+                                }}
+                              />
+                            </div>
+                          </Fragment>
+                        ))}
+                        {!isOnePage &&
+                          (this.state.episodesUrls[index].length +
+                            (this.state.pageOffset ? 1 : 0)) %
+                            2 && <div className="spacer" />}
+                      </Fragment>
+                    ))}
                 </div>
               </Pressable>
             </Space>

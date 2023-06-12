@@ -29,8 +29,6 @@ class BetterMangaApp {
   syncCollectionsState: SyncCollectionsState = { isSyncing: false };
 
   async initialize() {
-    // TODO debug only
-    await this.fetch("GET", "", {}, undefined, {}, false);
     await this.settingsState.initialize();
   }
 
@@ -200,6 +198,7 @@ class BetterMangaApp {
 
     // if can't find then create one
     this.availableDrivers.push(new Driver(id));
+    return this.getDriver(id);
   }
 
   translate(text: string): string {

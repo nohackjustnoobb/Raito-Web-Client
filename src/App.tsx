@@ -28,7 +28,6 @@ class App extends Component<{}, { tabIndex: number }> {
 
     this.state = {
       // Tabs Index
-      // TODO debug only
       tabIndex: 0,
     };
   }

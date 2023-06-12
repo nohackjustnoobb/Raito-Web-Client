@@ -32,11 +32,8 @@ class SettingsState {
   }
 
   save() {
-    if (this.defaultDriver) {
+    if (this.defaultDriver)
       localStorage.setItem("defaultDriver", this.defaultDriver);
-    } else {
-      localStorage.removeItem("defaultDriver");
-    }
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
     localStorage.setItem("forceTranslate", this.forceTranslate ? "1" : "0");
     localStorage.setItem(
@@ -63,9 +60,12 @@ class SettingsState {
 
   async initialize() {
     // check if there are default driver
-    await window.BMA.selectDriver(
-      this.defaultDriver ?? window.BMA.availableDrivers[0].identifier
-    );
+    if (!this.defaultDriver) {
+      await window.BMA.fetch("GET", "", {}, undefined, {}, false);
+      this.defaultDriver = window.BMA.availableDrivers[0].identifier;
+    }
+
+    await window.BMA.selectDriver(this.defaultDriver);
   }
 }
 

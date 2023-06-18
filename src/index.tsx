@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from "./App";
 import BetterMangaApp from "./classes/betterMangaApp";
 import StackView, { Stack } from "./stackScreen/stack";
@@ -50,3 +51,5 @@ window.FUM = new ForceUpdateManager();
 // update the screen when screen rotate or resize
 window.addEventListener("resize", () => window.forceUpdate());
 window.addEventListener("orientationchange", () => window.forceUpdate());
+
+serviceWorkerRegistration.register();

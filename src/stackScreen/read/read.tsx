@@ -47,7 +47,7 @@ class Read extends Component<
   inCooldown: boolean = false;
   // store image that is wider
   wideImage: Array<string> = [];
-  // store the initial touch position
+  // check if transform should enabled
   startX: boolean = false;
   // detect if ready
   ready: boolean = false;

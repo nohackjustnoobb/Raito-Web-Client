@@ -5,6 +5,7 @@ import { mdiCogSync } from "@mdi/js";
 
 import TabScreen from "../tabScreen";
 import "./settings.scss";
+import { pushLoader } from "../../utils/utils";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -31,20 +32,37 @@ class SettingsTab extends React.Component {
         <div id="content">
           <div className="options">
             <span>
-              帳戶：<b>{user.email ?? ""}</b>
+              帳戶：<b>{user.email ?? "未登錄"}</b>
             </span>
-            <button
-              onClick={() => {
-                if (user.token) {
-                  if (window.confirm("確認登出？")) user.logout();
-                } else {
-                  window.BMA.user.pushLogin();
-                }
-              }}
-            >
-              {user.token ? "登出" : "登錄"}
-            </button>
+            <div>
+              {user.token && (
+                <button
+                  onClick={async () => {
+                    localStorage.removeItem("lastSync");
+
+                    // sync the data without timestamp
+                    pushLoader();
+                    await window.BMA.sync();
+                    window.stack.pop();
+                  }}
+                >
+                  同步所有數據
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (user.token) {
+                    if (window.confirm("確認登出？")) user.logout();
+                  } else {
+                    window.BMA.user.pushLogin();
+                  }
+                }}
+              >
+                {user.token ? "登出" : "登錄"}
+              </button>
+            </div>
           </div>
+
           <div className="options">
             <span>預設來源：</span>
             <select

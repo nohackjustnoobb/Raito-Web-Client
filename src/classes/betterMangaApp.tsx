@@ -99,10 +99,14 @@ class BetterMangaApp {
 
   async syncHistories() {
     // get the time of the lasy sync
-    const date = localStorage.getItem("date");
+    const date = localStorage.getItem("lastSync");
     const history = (await db.histories.toArray()).filter(
       (v) => date === null || v.datetime >= Number(date)
     );
+
+    // save the time
+    const now = Date.now();
+    localStorage.setItem("lastSync", `${now}`);
 
     (
       await this.post(
@@ -126,10 +130,6 @@ class BetterMangaApp {
           new: v.new,
         })
     );
-
-    // save the time
-    const now = Date.now();
-    localStorage.setItem("date", `${now}`);
   }
 
   async syncCollections() {

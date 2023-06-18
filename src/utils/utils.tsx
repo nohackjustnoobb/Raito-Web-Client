@@ -24,6 +24,10 @@ function errorHandler(status: number) {
     case 400:
       alert("Error 400\nBad Request");
       break;
+    case 401:
+      window.BMA.user.logout();
+      alert("Error 401\nUser data was reset.\nPlease refresh the page.");
+      break;
     case 500:
       alert("Error 500\nInternal Server Error");
       break;

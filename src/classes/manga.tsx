@@ -1,5 +1,6 @@
 import Details from "../stackScreen/details/details";
 import Read from "../stackScreen/read/read";
+import ReadStable from "../stackScreen/read/read_stable";
 import db, { history, collection } from "./db";
 import Driver from "./driver";
 
@@ -56,12 +57,21 @@ class Manga {
 
   read(episodesIndex: number, isExtra: boolean, page: number | null = null) {
     window.stack.push(
-      <Read
-        manga={this}
-        episodesIndex={episodesIndex}
-        isExtra={isExtra}
-        page={page}
-      />
+      window.BMA.settingsState.useUnstableFeature ? (
+        <Read
+          manga={this}
+          episodesIndex={episodesIndex}
+          isExtra={isExtra}
+          page={page}
+        />
+      ) : (
+        <ReadStable
+          manga={this}
+          episodesIndex={episodesIndex}
+          isExtra={isExtra}
+          page={page}
+        />
+      )
     );
   }
 

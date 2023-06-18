@@ -1,7 +1,5 @@
 import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
-import Icon from "@mdi/react";
-import { mdiWindowClose } from "@mdi/js";
 import { Pressable, Space, ViewPort } from "react-zoomable-ui";
 
 import "./read.scss";
@@ -11,25 +9,7 @@ import { pushLoader } from "../../utils/utils";
 import { DisplayMode } from "../../classes/settingsState";
 import { Manga } from "../../classes/manga";
 import Menu from "./menu";
-
-class Warning extends Component<{ noNextOne: boolean }> {
-  constructor(props: { noNextOne: boolean }) {
-    super(props);
-
-    setTimeout(() => window.stack.pop(), 1000);
-  }
-
-  render(): ReactNode {
-    return (
-      <div className="warning">
-        <div className="warningContainer">
-          <Icon path={mdiWindowClose} size={3} />
-          <h2>{this.props.noNextOne ? "沒有下一話了" : "沒有上一話了"}</h2>
-        </div>
-      </div>
-    );
-  }
-}
+import Warning from "./warning";
 
 class Read extends Component<
   {
@@ -67,7 +47,7 @@ class Read extends Component<
   inCooldown: boolean = false;
   // store image that is wider
   wideImage: Array<string> = [];
-  // check if transform should enabled
+  // store the initial touch position
   startX: boolean = false;
   // detect if ready
   ready: boolean = false;

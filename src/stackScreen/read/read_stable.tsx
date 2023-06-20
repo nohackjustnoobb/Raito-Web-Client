@@ -145,7 +145,8 @@ class ReadStable extends Component<
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {
-    if (this.lastLoad && Date.now() < this.lastLoad + 10000) return;
+    if (this.lastLoad && Date.now() < this.lastLoad + 5000) return;
+    if (setLastLoad) this.lastLoad = Date.now();
 
     // reset previous height data
     this.prevHeight = null;
@@ -168,7 +169,7 @@ class ReadStable extends Component<
       return window.stack.push(<Warning noNextOne={false} />);
 
     // get the urls
-    if (setLastLoad) this.lastLoad = Date.now();
+
     var urls = await this.props.manga.get(index, this.props.isExtra);
     this.setState((prevState) => ({
       episodesUrls: {

@@ -113,13 +113,19 @@ class Driver {
     });
   }
 
-  async getDetails(ids: Array<string>, showAll: boolean = true): Promise<void> {
+  async getDetails(
+    ids: Array<string>,
+    showAll: boolean = true,
+    cache: boolean = true
+  ): Promise<void> {
     // check if initializated
     if (!this.initialized) await this.initialize();
 
     // filter the cached ids
     const filtered = ids.filter(
-      (id) => !Object.keys(showAll ? this.manga : this.simpleManga).includes(id)
+      (id) =>
+        !Object.keys(showAll ? this.manga : this.simpleManga).includes(id) ||
+        !cache
     );
     if (!filtered.length) return;
 

@@ -80,7 +80,7 @@ class BetterMangaApp {
 
         for (const chunk of chunks) {
           // get the manga
-          await driver?.getDetails(chunk);
+          await driver?.getDetails(chunk, false, false);
 
           // update the state
           counter += chunk.length;

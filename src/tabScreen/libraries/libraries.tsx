@@ -13,6 +13,7 @@ const categories: { [category: string]: string } = {
   Love: "戀愛",
   Campus: "校園",
   Yuri: "百合",
+  "Cross-Dressing": "偽娘",
   BL: "甲甲",
   Adventure: "冒險",
   Harem: "后宮",
@@ -31,7 +32,6 @@ const categories: { [category: string]: string } = {
   Hentai: "Hentai",
   Mecha: "機甲",
   Restricted: "R18",
-  "Cross-Dressing": "偽娘",
 };
 
 class LibrariesTabState extends React.Component {

@@ -96,10 +96,14 @@ class SearchBar extends React.Component<
           <input
             enterKeyHint="search"
             value={this.state.keyword}
-            onFocus={() => this.setState({ focus: true })}
-            onBlur={() =>
-              setTimeout(() => this.setState({ focus: false }), 250)
-            }
+            onFocus={() => {
+              this.setState({ focus: true });
+              window.toggleTab(false);
+            }}
+            onBlur={() => {
+              setTimeout(() => this.setState({ focus: false }), 250);
+              window.toggleTab(true);
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 const element = event.target as HTMLDivElement;
@@ -204,6 +208,7 @@ class LibrariesTab extends React.Component<
 
       // update the cached driver
       this.driver = window.BMA.selectedDriver?.identifier;
+      this.forceUpdate();
       return;
     }
 
@@ -211,7 +216,8 @@ class LibrariesTab extends React.Component<
     if (
       window.BMA.selectedDriver &&
       !this.state.loading &&
-      (!window.BMA.selectedDriver.list[this.state.catergory] ||
+      ((!this.state.keyword &&
+        !window.BMA.selectedDriver.list[this.state.catergory]) ||
         (this.state.keyword &&
           !window.BMA.selectedDriver.search[this.state.keyword]))
     ) {
@@ -263,7 +269,8 @@ class LibrariesTab extends React.Component<
   }
 
   shouldLoadMore() {
-    const element = this.content!;
+    if (!this.content) return;
+    const element = this.content;
 
     // check if reached the bottom or not scrollable
     if (
@@ -326,19 +333,23 @@ class LibrariesTab extends React.Component<
               >
                 全部
               </li>
-              {window.BMA.selectedDriver?.categories.map((v) => (
-                <li
-                  key={v}
-                  onClick={() => this.setCatergory(v)}
-                  className={
-                    this.state.catergory === v && !this.state.keyword
-                      ? "selected"
-                      : ""
-                  }
-                >
-                  {categories[v]}
-                </li>
-              ))}
+              {Object.keys(categories)
+                .filter((v) =>
+                  window.BMA.selectedDriver?.categories.includes(v)
+                )
+                .map((v) => (
+                  <li
+                    key={v}
+                    onClick={() => this.setCatergory(v)}
+                    className={
+                      this.state.catergory === v && !this.state.keyword
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    {categories[v]}
+                  </li>
+                ))}
             </ul>
           </div>
           <div

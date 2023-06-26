@@ -14,7 +14,7 @@ import Settings from "./tabScreen/settings/settings";
 // declare SwipeableView for tabs
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
-class App extends Component<{}, { tabIndex: number }> {
+class App extends Component<{}, { tabIndex: number; enable: boolean }> {
   // All the tabs are added here
   static readonly tabs: Array<TabScreen> = [
     Collections,
@@ -29,12 +29,15 @@ class App extends Component<{}, { tabIndex: number }> {
     this.state = {
       // Tabs Index
       tabIndex: 0,
+      enable: true,
     };
   }
 
   componentDidMount(): void {
     // set global variable for changing the tabs index
     window.setTab = (index: number): void => this.setState({ tabIndex: index });
+    window.toggleTab = (enable: boolean): void =>
+      this.setState({ enable: enable });
   }
 
   render(): ReactNode {
@@ -71,6 +74,7 @@ class App extends Component<{}, { tabIndex: number }> {
           onChangeIndex={(index) => window.setTab(index)}
           enableMouseEvents
           resistance
+          disabled={!this.state.enable}
           ignoreNativeScroll
         />
       </>

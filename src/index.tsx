@@ -15,6 +15,7 @@ declare global {
     setTab: (index: number) => void;
     forceUpdate: () => void;
     search: (keyword: string) => void;
+    toggleTab: (enable: boolean) => void;
     stack: Stack;
     BMA: BetterMangaApp;
     FUM: ForceUpdateManager;

@@ -9,6 +9,7 @@ In order to build or develop the project, it is essential to create a `.env.loca
 `env.local`
 
 ```
+REACT_APP_VERSION=$npm_package_version
 REACT_APP_ADDRESS=http://<backend-server-ip-address>/
 ```
 

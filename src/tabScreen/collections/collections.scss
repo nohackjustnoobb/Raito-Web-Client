@@ -85,32 +85,44 @@
       text-overflow: ellipsis;
     }
 
-    .end {
+    @mixin overlay($theme: #ff0055aa) {
       z-index: 2;
       position: absolute;
-      background-color: #ff0055aa;
+      background-color: $theme;
       color: white;
       font-weight: bold;
       font-size: 1rem;
       padding: 0.125rem;
       padding-left: 1rem;
       padding-right: 1rem;
-      border-radius: 0.5rem 0 0.5rem 0;
       backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 1.5rem;
+      white-space: nowrap;
+    }
+
+    .end {
+      @include overlay;
     }
 
     .new {
-      z-index: 2;
-      position: absolute;
-      background-color: #00ff22aa;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 0.125rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      border-radius: 0.5rem 0 0.5rem 0;
-      backdrop-filter: blur(10px);
+      @include overlay(#00ff22aa);
+    }
+
+    .driverID {
+      @include overlay(#006affaa);
+      border-radius: 0.5rem 0 0 0.5rem;
+      right: 0;
+      bottom: 5.9rem;
+    }
+
+    .mangaID {
+      @include overlay(#006affaa);
+      border-radius: 0.5rem 0 0 0.5rem;
+      right: 0;
+      bottom: 4rem;
     }
   }
 }

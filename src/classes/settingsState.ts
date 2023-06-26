@@ -9,6 +9,7 @@ class SettingsState {
   forceTranslate: boolean;
   displayMode: DisplayMode;
   useUnstableFeature: boolean;
+  debugMode: boolean;
 
   constructor() {
     // getting from local storage and setting default values
@@ -23,6 +24,9 @@ class SettingsState {
       useUnstableFeatureString !== null
         ? useUnstableFeatureString === "1"
         : false;
+
+    const debugModeString = localStorage.getItem("debugMode");
+    this.debugMode = debugModeString !== null ? debugModeString === "1" : false;
 
     const displayModeString = localStorage.getItem("displayMode");
     this.displayMode =
@@ -40,6 +44,7 @@ class SettingsState {
       "useUnstableFeature",
       this.useUnstableFeature ? "1" : "0"
     );
+    localStorage.setItem("debugMode", this.debugMode ? "1" : "0");
   }
 
   reset() {
@@ -48,6 +53,7 @@ class SettingsState {
     this.displayMode = DisplayMode.Auto;
     this.defaultDriver = null;
     this.useUnstableFeature = false;
+    this.debugMode = false;
 
     // update the settings
     this.update();

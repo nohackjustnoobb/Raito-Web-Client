@@ -122,6 +122,12 @@ class CollectionsTab extends React.Component<
                     {history?.new && !manga.isEnd && (
                       <div className="new">更新</div>
                     )}
+                    {window.BMA.settingsState.debugMode && (
+                      <>
+                        <div className="driverID">{manga.driver}</div>
+                        <div className="mangaID">{manga.id}</div>
+                      </>
+                    )}
                     <img src={manga.thumbnail} alt="" />
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>

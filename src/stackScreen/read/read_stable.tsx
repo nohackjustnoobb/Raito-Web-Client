@@ -304,7 +304,7 @@ class ReadStable extends Component<
             onTouchEnd={(event) => {
               if (this.startX) {
                 this.startX = false;
-                const shouldClose = event.changedTouches[0].pageX > 150;
+                const shouldClose = event.changedTouches[0].pageX > 100;
 
                 // check if swiped 150 px
                 if (shouldClose) {

@@ -178,7 +178,7 @@ class Driver {
 
         // update history is required
         const history = histories.find((value) => value.id === manga);
-        if (history?.latest !== mangaObject.latest) {
+        if (mangaObject.latest && history?.latest !== mangaObject.latest) {
           await db.histories.update([this.identifier, mangaObject.id], {
             datetime: Date.now(),
             new: true,

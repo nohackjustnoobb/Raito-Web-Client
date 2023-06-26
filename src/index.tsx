@@ -34,6 +34,9 @@ window.BMA.initialize().then(() => {
       primary: {
         main: "#000",
       },
+      secondary: {
+        main: "#006affaa",
+      },
     },
   });
 

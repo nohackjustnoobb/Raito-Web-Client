@@ -357,6 +357,11 @@ class LibrariesTab extends React.Component<
                   className="manga"
                 >
                   {manga.isEnd && <div className="end">完結</div>}
+                  {window.BMA.settingsState.debugMode && (
+                    <>
+                      <div className="mangaID">{manga.id}</div>
+                    </>
+                  )}
                   <img src={manga.thumbnail} alt={manga.thumbnail} />
                   <p>{window.BMA.translate(manga.title)}</p>
                   <p className="latest">

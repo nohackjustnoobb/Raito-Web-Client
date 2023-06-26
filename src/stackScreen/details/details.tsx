@@ -46,9 +46,14 @@ class Details extends Component<
 
     // show loader
     pushLoader();
+    const manga = await this.props.manga.getDetails();
     // get the details
     this.setState(
-      { manga: await this.props.manga.getDetails(), show: true },
+      {
+        manga: manga,
+        show: true,
+        extra: !Boolean(manga.episodes.serial.length),
+      },
       () => {
         // setup observers for current manga state
         liveQuery(() =>

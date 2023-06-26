@@ -16,7 +16,8 @@ class User {
       "user/token",
       {},
       JSON.stringify({ username: email, password: password }),
-      { "Content-Type": "application/json" }
+      { "Content-Type": "application/json" },
+      false
     );
 
     if (result) {
@@ -57,6 +58,43 @@ class User {
 
     // update the screens
     window.forceUpdate();
+  }
+
+  async clear(password: string) {
+    localStorage.removeItem("lastSync");
+
+    // delete local data
+    await db.collections.clear();
+    await db.histories.clear();
+
+    // delete remote data
+    return await window.BMA.post(
+      "user/clear",
+      {},
+      JSON.stringify({ password: password }),
+      { "Content-Type": "application/json" },
+      false
+    );
+  }
+
+  async create(email: string, password: string, key: string) {
+    return await window.BMA.post(
+      "user/create",
+      {},
+      JSON.stringify({ username: email, password: password, key: key }),
+      { "Content-Type": "application/json" },
+      false
+    );
+  }
+
+  async changePassword(newPassword: string, oldPassword: string) {
+    return await window.BMA.post(
+      "user/me",
+      {},
+      JSON.stringify({ newPassword: newPassword, oldPassword: oldPassword }),
+      { "Content-Type": "application/json" },
+      false
+    );
   }
 
   pushLogin = () => window.stack.push(<Login />);

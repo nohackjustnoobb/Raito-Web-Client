@@ -1,11 +1,11 @@
 import React from "react";
-import { Checkbox } from "@mui/material";
+import { Checkbox, Button } from "@mui/material";
 import Icon from "@mdi/react";
 import { mdiCogSync } from "@mdi/js";
 
 import TabScreen from "../tabScreen";
 import "./settings.scss";
-import { pushLoader } from "../../utils/utils";
+import UserSettings from "../../stackScreen/user_settings/userSettings";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -34,33 +34,21 @@ class SettingsTab extends React.Component {
             <span>
               帳戶：<b>{user.email ?? "未登錄"}</b>
             </span>
-            <div>
-              {user.token && (
-                <button
-                  onClick={async () => {
-                    localStorage.removeItem("lastSync");
-
-                    // sync the data without timestamp
-                    pushLoader();
-                    await window.BMA.sync();
-                    window.stack.pop();
-                  }}
-                >
-                  同步所有數據
-                </button>
-              )}
-              <button
+            <span>
+              <Button
+                variant={user.token ? "outlined" : "contained"}
+                size="small"
                 onClick={() => {
                   if (user.token) {
-                    if (window.confirm("確認登出？")) user.logout();
+                    window.stack.push(<UserSettings />);
                   } else {
                     window.BMA.user.pushLogin();
                   }
                 }}
               >
-                {user.token ? "登出" : "登錄"}
-              </button>
-            </div>
+                {user.token ? "帳戶設定" : "登錄"}
+              </Button>
+            </span>
           </div>
 
           <div className="options">
@@ -117,8 +105,22 @@ class SettingsTab extends React.Component {
             />
           </div>
           <div className="options">
+            <span>開發者模式：</span>
+            <Checkbox
+              checked={window.BMA.settingsState.debugMode}
+              onChange={(_, checked) => {
+                window.BMA.settingsState.debugMode = checked;
+                window.BMA.settingsState.update();
+              }}
+            />
+          </div>
+          <div className="options">
             <span>伺服器版本：</span>
             <b>{window.BMA.version}</b>
+          </div>
+          <div className="options">
+            <span>客戶端版本：</span>
+            <b>{process.env.REACT_APP_VERSION}</b>
           </div>
         </div>
         <p id="credit">

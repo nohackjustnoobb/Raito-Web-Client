@@ -1,4 +1,5 @@
 import { CSSTransition } from "react-transition-group";
+import { Button, TextField } from "@mui/material";
 import { Component, ReactNode } from "react";
 
 import "./login.scss";
@@ -34,6 +35,10 @@ class Login extends Component<
 
     if (await window.BMA.user.login(this.state.email, this.state.password)) {
       this.close();
+
+      // let browser to save password
+      window.location.hash = "success";
+      setTimeout(() => (window.location.hash = ""), 50);
     } else {
       alert("郵箱或密碼錯誤");
       this.setState({ password: "" });
@@ -53,9 +58,15 @@ class Login extends Component<
           <div className="login">
             <div className="background" onClick={() => this.close()} />
             <div className="loginContent">
+              <img src="./icon-512x512.png" alt="" />
+              <h2>Better Manga App</h2>
               <div className="row">
-                <span>電郵：</span>
-                <input
+                <TextField
+                  size="small"
+                  fullWidth
+                  id="outlined-basic"
+                  label="電郵"
+                  variant="outlined"
                   type="email"
                   autoComplete="username"
                   value={this.state.email}
@@ -65,9 +76,13 @@ class Login extends Component<
                 />
               </div>
               <div className="row">
-                <span>密碼：</span>
-                <input
+                <TextField
+                  size="small"
+                  id="outlined-basic"
+                  label="密碼"
+                  variant="outlined"
                   type="password"
+                  fullWidth
                   autoComplete="current-password"
                   value={this.state.password}
                   onKeyDown={(event) => {
@@ -79,8 +94,23 @@ class Login extends Component<
                 />
               </div>
               <div className="row">
-                <button onClick={() => this.close()}>取消</button>
-                <button onClick={() => this.login()}>登錄</button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  fullWidth
+                  onClick={() => this.close()}
+                >
+                  取消
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth
+                  onClick={() => this.login()}
+                >
+                  登錄
+                </Button>
               </div>
             </div>
           </div>

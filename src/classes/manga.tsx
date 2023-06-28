@@ -15,6 +15,7 @@ class Manga {
   categories: Array<string>;
   driverData: string;
   episodes: { serial: Array<string>; extra: Array<string> };
+  latest: string | null;
 
   constructor(data: any) {
     this.driver = window.BMA.getDriver(data.driver)!;
@@ -27,6 +28,7 @@ class Manga {
     this.categories = data.categories;
     this.driverData = data.driverData;
     this.episodes = data.episodes;
+    this.latest = data.latest;
   }
 
   static async fromID(id: string, driverID: string): Promise<Manga> {
@@ -40,7 +42,7 @@ class Manga {
 
   toSimple(): SimpleManga {
     const latest =
-      this.episodes.serial.length === 0
+      this.latest ?? this.episodes.serial.length === 0
         ? this.episodes.extra[0]
         : this.episodes.serial[0];
 
@@ -114,7 +116,7 @@ class Manga {
 
   async save(episode: string, page: number, isExtra: boolean) {
     const latest =
-      this.episodes.serial.length === 0
+      this.latest ?? this.episodes.serial.length === 0
         ? this.episodes.extra[0]
         : this.episodes.serial[0];
 
@@ -153,7 +155,7 @@ class Manga {
 
     // add to DB
     const latest =
-      this.episodes.serial.length === 0
+      this.latest ?? this.episodes.serial.length === 0
         ? this.episodes.extra[0]
         : this.episodes.serial[0];
 

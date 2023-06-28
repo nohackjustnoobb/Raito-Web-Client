@@ -40,7 +40,8 @@ export function register(config?: Config) {
     }
 
     window.addEventListener("load", () => {
-      const swUrl = `${process.env.REACT_APP_ADDRESS}/service-worker.js`;
+      const url = new URL(process.env.REACT_APP_ADDRESS!);
+      const swUrl = `${url.origin}/service-worker.js`;
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.

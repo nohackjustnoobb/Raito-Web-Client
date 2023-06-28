@@ -13,7 +13,7 @@ import "./index.css";
 declare global {
   interface Window {
     setTab: (index: number) => void;
-    forceUpdate: () => void;
+    forceUpdate: (screenEvent?: boolean) => void;
     search: (keyword: string) => void;
     toggleTab: (enable: boolean) => void;
     stack: Stack;
@@ -53,7 +53,7 @@ window.BMA.initialize().then(() => {
 window.FUM = new ForceUpdateManager();
 
 // update the screen when screen rotate or resize
-window.addEventListener("resize", () => window.forceUpdate());
-window.addEventListener("orientationchange", () => window.forceUpdate());
+window.addEventListener("resize", () => window.forceUpdate(true));
+window.addEventListener("orientationchange", () => window.forceUpdate(true));
 
 serviceWorkerRegistration.register();

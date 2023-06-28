@@ -16,8 +16,8 @@ class HistoriesTabState extends React.Component {
     // register for update events
     window.FUM.register(this.forceUpdate.bind(this));
 
-    // update every minute
-    this.interval = setInterval(() => this.forceUpdate(), 60000);
+    // update every second
+    this.interval = setInterval(() => this.forceUpdate(), 1000);
   }
 
   componentWillUnmount() {
@@ -45,10 +45,9 @@ class HistoriesTabState extends React.Component {
               <p>
                 同步於{" "}
                 {Math.round(
-                  (Date.now() - window.BMA.syncCollectionsState.lastSync) /
-                    60000
+                  (Date.now() - window.BMA.syncCollectionsState.lastSync) / 1000
                 )}{" "}
-                分鐘前
+                秒前
               </p>
             )}
       </div>
@@ -78,7 +77,7 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
 
     // sync every minute
     window.BMA.sync();
-    this.interval = setInterval(() => window.BMA.sync(), 60000);
+    this.interval = setInterval(() => window.BMA.sync(), 30000);
   }
 
   componentWillUnmount() {

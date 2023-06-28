@@ -15,8 +15,8 @@ class CollectionsTabState extends React.Component {
     // register for update events
     window.FUM.register(this.forceUpdate.bind(this));
 
-    // update every minute
-    this.interval = setInterval(() => this.forceUpdate(), 60000);
+    // update every second
+    this.interval = setInterval(() => this.forceUpdate(), 1000);
   }
 
   componentWillUnmount() {
@@ -39,9 +39,9 @@ class CollectionsTabState extends React.Component {
                 更新於{" "}
                 {Math.round(
                   (Date.now() - window.BMA.updateCollectionsState.lastUpdate) /
-                    60000
+                    1000
                 )}{" "}
-                分鐘前
+                秒前
               </p>
             )}
       </div>
@@ -53,6 +53,8 @@ class CollectionsTab extends React.Component<
   {},
   { collections: Array<collection>; histories: Array<history> }
 > {
+  interval: NodeJS.Timeout | null = null;
+
   constructor(props: {}) {
     super(props);
 
@@ -77,6 +79,11 @@ class CollectionsTab extends React.Component<
 
     // update the collection
     window.BMA.updateCollections();
+    this.interval = setInterval(() => window.BMA.updateCollections(), 60000);
+  }
+
+  componentWillUnmount() {
+    if (this.interval) clearInterval(this.interval);
   }
 
   render(): React.ReactNode {

@@ -154,7 +154,7 @@ class SearchBar extends React.Component<
                   window.search(suggestion);
                 }}
               >
-                {window.BMA.translate(suggestion)}
+                <span>{window.BMA.translate(suggestion)}</span>
               </li>
             ))}
           </ul>
@@ -184,6 +184,11 @@ class LibrariesTab extends React.Component<
   componentDidMount(): void {
     // register for update events
     window.FUM.register(this.forceUpdate.bind(this));
+
+    // update the ui when the page hide or show
+    document.addEventListener("visibilitychange", () =>
+      setTimeout(() => this.forceUpdate(), 250)
+    );
 
     // set global variable for searching
     window.search = (keyword: string) => this.setState({ keyword: keyword });

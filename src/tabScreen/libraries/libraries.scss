@@ -243,11 +243,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    color: black;
     font-weight: normal;
 
-    :last-child {
-      border-bottom: 0;
+    span {
+      color: #777;
     }
+  }
+
+  :last-child {
+    border-bottom: 0;
   }
 }

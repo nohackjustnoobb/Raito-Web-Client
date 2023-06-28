@@ -41,6 +41,8 @@ class ReadStable extends Component<
   timeoutId: NodeJS.Timeout | null = null;
   // check if transform should enabled
   startX: boolean = false;
+  // store if the page is hidden
+  isHidden: boolean = false;
 
   constructor(props: {
     manga: Manga;
@@ -63,6 +65,8 @@ class ReadStable extends Component<
   async componentDidMount() {
     // register for update events
     window.FUM.register(() => {
+      if (this.isHidden) return;
+
       // cache the page and index before updating
       const page = this.state.page;
       const index = this.state.index;
@@ -70,6 +74,17 @@ class ReadStable extends Component<
         // restore it
         if (page && index) this.scrollToPage(index, page, false);
       });
+    }, true);
+
+    // reset the prevHeight when the page hide or show
+    document.addEventListener("visibilitychange", () => {
+      this.prevHeight = null;
+
+      if (document.visibilityState !== "visible") {
+        this.isHidden = true;
+      } else {
+        setTimeout(() => (this.isHidden = false), 500);
+      }
     });
 
     // show loader

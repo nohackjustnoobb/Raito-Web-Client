@@ -42,9 +42,10 @@ class Manga {
 
   toSimple(): SimpleManga {
     const latest =
-      this.latest ?? this.episodes.serial.length === 0
+      this.latest ??
+      (this.episodes.serial.length === 0
         ? this.episodes.extra[0]
-        : this.episodes.serial[0];
+        : this.episodes.serial[0]);
 
     return new SimpleManga({
       driver: this.driver.identifier,
@@ -116,9 +117,10 @@ class Manga {
 
   async save(episode: string, page: number, isExtra: boolean) {
     const latest =
-      this.latest ?? this.episodes.serial.length === 0
+      this.latest ??
+      (this.episodes.serial.length === 0
         ? this.episodes.extra[0]
-        : this.episodes.serial[0];
+        : this.episodes.serial[0]);
 
     // update or create history
     await db.histories.put({

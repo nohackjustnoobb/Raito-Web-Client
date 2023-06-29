@@ -5,58 +5,54 @@ enum DisplayMode {
 }
 
 class SettingsState {
-  defaultDriver: string | null;
-  forceTranslate: boolean;
-  displayMode: DisplayMode;
-  useUnstableFeature: boolean;
-  debugMode: boolean;
+  defaultDriver: string | null = null;
+  forceTranslate: boolean = true;
+  displayMode: DisplayMode = DisplayMode.Auto;
+  useUnstableFeature: boolean = false;
+  debugMode: boolean = false;
 
-  constructor() {
-    // getting from local storage and setting default values
-    this.defaultDriver = localStorage.getItem("defaultDriver");
+  saveBool(key: string, value: boolean) {
+    localStorage.setItem(key, value ? "1" : "0");
+  }
 
-    const forceTranslateString = localStorage.getItem("forceTranslate");
-    this.forceTranslate =
-      forceTranslateString !== null ? forceTranslateString === "1" : true;
+  loadBool(key: string): boolean | null {
+    const itemString = localStorage.getItem(key);
+    if (!itemString) return null;
 
-    const useUnstableFeatureString = localStorage.getItem("useUnstableFeature");
-    this.useUnstableFeature =
-      useUnstableFeatureString !== null
-        ? useUnstableFeatureString === "1"
-        : false;
+    return itemString === "1";
+  }
 
-    const debugModeString = localStorage.getItem("debugMode");
-    this.debugMode = debugModeString !== null ? debugModeString === "1" : false;
+  constructor(load: boolean = true) {
+    if (load) {
+      // getting from local storage and setting default values
+      this.defaultDriver = localStorage.getItem("defaultDriver");
 
-    const displayModeString = localStorage.getItem("displayMode");
-    this.displayMode =
-      displayModeString !== null
-        ? JSON.parse(displayModeString)
-        : DisplayMode.Auto;
+      this.forceTranslate = this.loadBool("forceTranslate") ?? true;
+      this.useUnstableFeature = this.loadBool("useUnstableFeature") ?? false;
+      this.debugMode = this.loadBool("debugMode") ?? false;
+
+      const displayModeString = localStorage.getItem("displayMode");
+      this.displayMode =
+        displayModeString !== null
+          ? JSON.parse(displayModeString)
+          : DisplayMode.Auto;
+    }
   }
 
   save() {
     if (this.defaultDriver)
       localStorage.setItem("defaultDriver", this.defaultDriver);
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
-    localStorage.setItem("forceTranslate", this.forceTranslate ? "1" : "0");
-    localStorage.setItem(
-      "useUnstableFeature",
-      this.useUnstableFeature ? "1" : "0"
-    );
-    localStorage.setItem("debugMode", this.debugMode ? "1" : "0");
+    this.saveBool("forceTranslate", this.forceTranslate);
+    this.saveBool("useUnstableFeature", this.useUnstableFeature);
+    this.saveBool("debugMode", this.debugMode);
   }
 
   reset() {
-    // set all the settings to default
-    this.forceTranslate = true;
-    this.displayMode = DisplayMode.Auto;
-    this.defaultDriver = null;
-    this.useUnstableFeature = false;
-    this.debugMode = false;
+    window.BMA.settingsState = new SettingsState(false);
 
     // update the settings
-    this.update();
+    window.BMA.settingsState.update();
   }
 
   update() {

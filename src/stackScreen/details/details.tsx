@@ -214,7 +214,8 @@ class Details extends Component<
                   className="content"
                   ref={(ref) => (this.verticalContentRef = ref)}
                 >
-                  {window.BMA.settingsState.useUnstableFeature && (
+                  {window.BMA.settingsState
+                    .experimentalSwipeDownToPopDetails && (
                     <>
                       <div
                         className="swipable"

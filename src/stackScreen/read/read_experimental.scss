@@ -30,30 +30,23 @@
   list-style-type: none;
   font-size: 0;
   background-color: white;
-  overflow-y: scroll;
-  scrollbar-width: none;
+}
 
-  &::-webkit-scrollbar {
-    display: none;
+.readContainer {
+  width: 100vw;
+  flex-wrap: wrap;
+  display: flex;
+  flex-direction: row-reverse;
+  transition: width 500ms;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+
+  .spacer {
+    width: 50%;
   }
 
-  .readContent {
-    padding-top: env(safe-area-inset-top);
-
-    .episodes {
-      display: flex;
-      flex-direction: row-reverse;
-      width: 100%;
-      flex-wrap: wrap;
-
-      .spacer {
-        width: 50%;
-      }
-
-      img {
-        width: 100%;
-        pointer-events: none;
-      }
-    }
+  img {
+    width: 100%;
   }
 }

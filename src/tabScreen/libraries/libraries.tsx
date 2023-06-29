@@ -31,7 +31,7 @@ const categories: { [category: string]: string } = {
   Sports: "運動",
   Hentai: "Hentai",
   Mecha: "機甲",
-  Restricted: "R18",
+  Restricted: "R15",
 };
 
 class LibrariesTabState extends React.Component {

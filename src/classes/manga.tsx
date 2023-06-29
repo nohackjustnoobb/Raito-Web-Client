@@ -1,6 +1,6 @@
 import Details from "../stackScreen/details/details";
+import ReadExperimental from "../stackScreen/read/read_experimental";
 import Read from "../stackScreen/read/read";
-import ReadStable from "../stackScreen/read/read_stable";
 import db, { history, collection } from "./db";
 import Driver from "./driver";
 
@@ -60,15 +60,15 @@ class Manga {
 
   read(episodesIndex: number, isExtra: boolean, page: number | null = null) {
     window.stack.push(
-      window.BMA.settingsState.useUnstableFeature ? (
-        <Read
+      window.BMA.settingsState.experimentalUseZoomableComponent ? (
+        <ReadExperimental
           manga={this}
           episodesIndex={episodesIndex}
           isExtra={isExtra}
           page={page}
         />
       ) : (
-        <ReadStable
+        <Read
           manga={this}
           episodesIndex={episodesIndex}
           isExtra={isExtra}

@@ -6,6 +6,7 @@ import { mdiCogSync } from "@mdi/js";
 import TabScreen from "../tabScreen";
 import "./settings.scss";
 import UserSettings from "../../stackScreen/user_settings/userSettings";
+import ExperimentalSettings from "../../stackScreen/experimental_settings/experimentalSettings";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -95,15 +96,16 @@ class SettingsTab extends React.Component {
             />
           </div>
           <div className="options">
-            <span>使用不稳定功能：</span>
-            <Checkbox
-              checked={window.BMA.settingsState.useUnstableFeature}
-              onChange={(_, checked) => {
-                window.BMA.settingsState.useUnstableFeature = checked;
-                window.BMA.settingsState.update();
-              }}
-            />
+            <span>實驗性功能：</span>
+            <Button
+              variant={"outlined"}
+              size="small"
+              onClick={() => window.stack.push(<ExperimentalSettings />)}
+            >
+              功能選單
+            </Button>
           </div>
+
           <div className="options">
             <span>開發者模式：</span>
             <Checkbox

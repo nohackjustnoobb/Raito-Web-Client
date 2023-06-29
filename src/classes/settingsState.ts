@@ -8,8 +8,12 @@ class SettingsState {
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
   displayMode: DisplayMode = DisplayMode.Auto;
-  useUnstableFeature: boolean = false;
   debugMode: boolean = false;
+
+  // experimental functions
+  experimentalSwipeDownToPopDetails: boolean = false;
+  experimentalUseZoomableComponent: boolean = false;
+  experimentalOverscrollToLoadPreviousEpisodes: boolean = true;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -27,15 +31,26 @@ class SettingsState {
       // getting from local storage and setting default values
       this.defaultDriver = localStorage.getItem("defaultDriver");
 
-      this.forceTranslate = this.loadBool("forceTranslate") ?? true;
-      this.useUnstableFeature = this.loadBool("useUnstableFeature") ?? false;
-      this.debugMode = this.loadBool("debugMode") ?? false;
+      this.forceTranslate =
+        this.loadBool("forceTranslate") ?? this.forceTranslate;
+      this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
+
+      // experimental functions
+      this.experimentalSwipeDownToPopDetails =
+        this.loadBool("experimentalSwipeDownToPopDetails") ??
+        this.experimentalSwipeDownToPopDetails;
+      this.experimentalUseZoomableComponent =
+        this.loadBool("experimentalUseZoomableComponent") ??
+        this.experimentalUseZoomableComponent;
+      this.experimentalOverscrollToLoadPreviousEpisodes =
+        this.loadBool("experimentalOverscrollToLoadPreviousEpisodes") ??
+        this.experimentalOverscrollToLoadPreviousEpisodes;
 
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
         displayModeString !== null
           ? JSON.parse(displayModeString)
-          : DisplayMode.Auto;
+          : this.displayMode;
     }
   }
 
@@ -44,12 +59,26 @@ class SettingsState {
       localStorage.setItem("defaultDriver", this.defaultDriver);
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
     this.saveBool("forceTranslate", this.forceTranslate);
-    this.saveBool("useUnstableFeature", this.useUnstableFeature);
     this.saveBool("debugMode", this.debugMode);
+
+    // experimental functions
+    this.saveBool(
+      "experimentalSwipeDownToPopDetails",
+      this.experimentalSwipeDownToPopDetails
+    );
+    this.saveBool(
+      "experimentalUseZoomableComponent",
+      this.experimentalUseZoomableComponent
+    );
+    this.saveBool(
+      "experimentalOverscrollToLoadPreviousEpisodes",
+      this.experimentalOverscrollToLoadPreviousEpisodes
+    );
   }
 
   reset() {
     window.BMA.settingsState = new SettingsState(false);
+    window.BMA.settingsState.initialize();
 
     // update the settings
     window.BMA.settingsState.update();

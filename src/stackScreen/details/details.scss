@@ -69,6 +69,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       user-select: all;
+      cursor: text;
     }
 
     .author {
@@ -80,6 +81,7 @@
       font-size: 1rem;
       color: #888888;
       font-weight: bold;
+      cursor: pointer;
 
       li {
         margin-right: 0.25rem;

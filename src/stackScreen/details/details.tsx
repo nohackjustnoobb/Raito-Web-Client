@@ -98,7 +98,16 @@ class Details extends Component<
         <ul className="author">
           {this.state.manga &&
             this.state.manga.author.map((name) => (
-              <li key={name}>{window.BMA.translate(name)}</li>
+              <li
+                key={name}
+                onClick={() => {
+                  this.close();
+                  window.setTab(2);
+                  window.search(name);
+                }}
+              >
+                {name}
+              </li>
             ))}
         </ul>
         <p>

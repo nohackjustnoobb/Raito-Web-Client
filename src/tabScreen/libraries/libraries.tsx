@@ -66,12 +66,12 @@ class LibrariesTabState extends React.Component {
 }
 
 class SearchBar extends React.Component<
-  {},
+  { keyword: string | null },
   { keyword: string; suggestions: Array<string> | undefined; focus: boolean }
 > {
   private timeoutId: NodeJS.Timeout | null = null;
 
-  constructor(props: {}) {
+  constructor(props: { keyword: string | null }) {
     super(props);
 
     this.state = {
@@ -87,6 +87,11 @@ class SearchBar extends React.Component<
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
     }
+  }
+
+  componentDidUpdate(prevProps: { keyword: string | null }) {
+    if (this.props.keyword && this.props.keyword !== prevProps.keyword)
+      this.setState({ keyword: this.props.keyword });
   }
 
   render(): React.ReactNode {
@@ -325,10 +330,10 @@ class LibrariesTab extends React.Component<
 
     return (
       <div id="libraries">
-        {isVertical && <SearchBar />}
+        {isVertical && <SearchBar keyword={this.state.keyword} />}
         <div id="wrapper">
           <div id="categories">
-            {!isVertical && <SearchBar />}
+            {!isVertical && <SearchBar keyword={this.state.keyword} />}
             <ul>
               <li
                 onClick={() => this.setCatergory("")}

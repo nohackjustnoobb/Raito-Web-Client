@@ -157,9 +157,10 @@ class Manga {
 
     // add to DB
     const latest =
-      this.latest ?? this.episodes.serial.length === 0
+      this.latest ??
+      (this.episodes.serial.length === 0
         ? this.episodes.extra[0]
-        : this.episodes.serial[0];
+        : this.episodes.serial[0]);
 
     await db.collections.put({
       driver: this.driver.identifier,

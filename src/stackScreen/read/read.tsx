@@ -136,25 +136,28 @@ class Read extends Component<
     }, 250);
 
     // scroll to the target page if requested
-    // TODO count the page that loaded
     if (this.props.page) {
+      // use setTimeout to prevent it from blocking the code execution
       setTimeout(async () => {
         const index = this.props.episodesIndex;
         const page = this.props.page;
 
         // check if the page is already loaded
-        var element: HTMLElement | null;
+        let loaded = true;
         do {
-          element = document.getElementById(`${index}_${page}`);
+          loaded = true;
+          for (let i = 0; i < page!; i++) {
+            const element = document.getElementById(`${index}_${i}`);
+            if (!element || !(element.children[0] as HTMLImageElement).complete)
+              loaded = false;
+          }
+
           // sleep for 50 ms
           await new Promise((resolve) => setTimeout(resolve, 50));
-        } while (
-          !element ||
-          !(element.children[0] as HTMLImageElement).complete
-        );
+        } while (!loaded);
 
-        setTimeout(() => this.scrollToPage(index, page!, false), 100);
-      }, 50);
+        this.scrollToPage(index, page!, false);
+      });
     }
   }
 

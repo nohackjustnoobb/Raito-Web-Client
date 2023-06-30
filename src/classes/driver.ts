@@ -17,7 +17,7 @@ class Driver {
 
     // get the driver information
     const result = await window.BMA.get("categories", {
-      d: this.identifier,
+      driver: this.identifier,
     });
     this.categories = result.categories;
     this.supportSuggestion = result.suggestion;
@@ -38,9 +38,9 @@ class Driver {
 
     // get the list of manga
     const body = await window.BMA.get("list", {
-      d: this.identifier,
-      ...(category !== "" && { c: category }),
-      p: String(page),
+      driver: this.identifier,
+      ...(category !== "" && { category: category }),
+      page: String(page),
     });
 
     // check if the object is already initialized
@@ -79,9 +79,9 @@ class Driver {
 
     // get the results
     const body = await window.BMA.get("search", {
-      d: this.identifier,
-      k: keyword,
-      p: String(page),
+      driver: this.identifier,
+      keyword: keyword,
+      page: String(page),
     });
 
     // check if the object is already initialized
@@ -108,8 +108,8 @@ class Driver {
     if (!this.supportSuggestion || !keyword) return [];
 
     return await window.BMA.get("suggestion", {
-      d: this.identifier,
-      k: keyword,
+      driver: this.identifier,
+      keyword: keyword,
     });
   }
 
@@ -131,9 +131,9 @@ class Driver {
 
     // get the results
     const body = await window.BMA.get("details", {
-      d: this.identifier,
-      i: filtered.join(","),
-      sa: showAll ? "1" : "0",
+      driver: this.identifier,
+      ids: filtered.join(","),
+      "show-all": showAll ? "1" : "0",
     });
 
     // cache the results

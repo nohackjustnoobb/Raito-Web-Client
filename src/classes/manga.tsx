@@ -103,13 +103,13 @@ class Manga {
     );
   }
 
-  async get(episodesIndex: number, isExtra: boolean): Promise<Array<string>> {
+  async get(episodeIndex: number, isExtra: boolean): Promise<Array<string>> {
     return await window.BMA.post(
       "episode",
       {
-        ie: isExtra ? "1" : "0",
-        d: this.driver.identifier,
-        e: String(episodesIndex),
+        "is-extra": isExtra ? "1" : "0",
+        driver: this.driver.identifier,
+        episode: String(episodeIndex),
       },
       this.driverData
     );

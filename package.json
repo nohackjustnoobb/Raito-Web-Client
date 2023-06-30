@@ -1,6 +1,6 @@
 {
   "name": "better-manga-app",
-  "version": "Beta v0.2.8",
+  "version": "Beta v0.2.9",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",

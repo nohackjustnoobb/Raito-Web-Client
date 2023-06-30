@@ -41,8 +41,10 @@ class Read extends Component<
   timeoutId: NodeJS.Timeout | null = null;
   // check if transform should enabled
   startX: boolean = false;
-  // store if the page is hidden
+  // if the page is hidden
   isHidden: boolean = false;
+  // if overscolling the page
+  isOverscolling: boolean = false;
 
   constructor(props: {
     manga: Manga;
@@ -134,6 +136,7 @@ class Read extends Component<
     }, 250);
 
     // scroll to the target page if requested
+    // TODO count the page that loaded
     if (this.props.page) {
       setTimeout(async () => {
         const index = this.props.episodesIndex;
@@ -224,6 +227,13 @@ class Read extends Component<
   }
 
   shouldLoadMore(event?: React.WheelEvent<HTMLDivElement>) {
+    if (this.isOverscolling) {
+      this.restorePosition();
+
+      if (this.readRef && this.readRef.scrollTop >= 0)
+        this.isOverscolling = false;
+    }
+
     if (!this.timeoutId) {
       this.timeoutId = setTimeout(async () => {
         // check if bottom reached
@@ -244,10 +254,15 @@ class Read extends Component<
           this.readRef &&
           window.BMA.settingsState
             .experimentalOverscrollToLoadPreviousEpisodes &&
+          !this.isOverscolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
         ) {
           await this.loadMore(false);
+
+          if (this.readRef.scrollTop < 0) {
+            this.isOverscolling = true;
+          }
         }
 
         this.timeoutId = null;

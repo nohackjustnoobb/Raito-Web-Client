@@ -6,7 +6,7 @@ Better Manga App / Server is an open-source project aimed at simplifying the pro
 
 In order to build or develop the project, it is essential to create a `.env.local` file that includes the IP address of the backend server. An example of the `.env.local` file is shown below:
 
-`env.local`
+`.env.local`
 
 ```
 REACT_APP_VERSION=$npm_package_version

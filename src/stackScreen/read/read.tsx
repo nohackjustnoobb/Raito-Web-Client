@@ -150,7 +150,7 @@ class Read extends Component<
           !(element.children[0] as HTMLImageElement).complete
         );
 
-        this.scrollToPage(index, page!, false);
+        setTimeout(() => this.scrollToPage(index, page!, false), 100);
       }, 50);
     }
   }

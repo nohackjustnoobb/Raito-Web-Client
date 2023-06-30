@@ -179,6 +179,9 @@ class Driver {
         // update history is required
         const history = histories.find((value) => value.id === manga);
         if (mangaObject.latest && history?.latest !== mangaObject.latest) {
+          // remove the cached manga details
+          if (this.manga[manga]) delete this.manga[manga];
+
           await db.histories.update([this.identifier, mangaObject.id], {
             datetime: Date.now(),
             new: true,

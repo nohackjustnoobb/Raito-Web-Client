@@ -41,8 +41,10 @@ class Read extends Component<
   timeoutId: NodeJS.Timeout | null = null;
   // check if transform should enabled
   startX: boolean = false;
-  // store if the page is hidden
+  // if the page is hidden
   isHidden: boolean = false;
+  // if overscolling the page
+  isOverscolling: boolean = false;
 
   constructor(props: {
     manga: Manga;
@@ -135,23 +137,27 @@ class Read extends Component<
 
     // scroll to the target page if requested
     if (this.props.page) {
+      // use setTimeout to prevent it from blocking the code execution
       setTimeout(async () => {
         const index = this.props.episodesIndex;
         const page = this.props.page;
 
         // check if the page is already loaded
-        var element: HTMLElement | null;
+        let loaded = true;
         do {
-          element = document.getElementById(`${index}_${page}`);
+          loaded = true;
+          for (let i = 0; i < page!; i++) {
+            const element = document.getElementById(`${index}_${i}`);
+            if (!element || !(element.children[0] as HTMLImageElement).complete)
+              loaded = false;
+          }
+
           // sleep for 50 ms
           await new Promise((resolve) => setTimeout(resolve, 50));
-        } while (
-          !element ||
-          !(element.children[0] as HTMLImageElement).complete
-        );
+        } while (!loaded);
 
-        setTimeout(() => this.scrollToPage(index, page!, false), 100);
-      }, 50);
+        this.scrollToPage(index, page!, false);
+      });
     }
   }
 
@@ -224,6 +230,13 @@ class Read extends Component<
   }
 
   shouldLoadMore(event?: React.WheelEvent<HTMLDivElement>) {
+    if (this.isOverscolling) {
+      this.restorePosition();
+
+      if (this.readRef && this.readRef.scrollTop >= 0)
+        this.isOverscolling = false;
+    }
+
     if (!this.timeoutId) {
       this.timeoutId = setTimeout(async () => {
         // check if bottom reached
@@ -244,10 +257,15 @@ class Read extends Component<
           this.readRef &&
           window.BMA.settingsState
             .experimentalOverscrollToLoadPreviousEpisodes &&
+          !this.isOverscolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
         ) {
           await this.loadMore(false);
+
+          if (this.readRef.scrollTop < 0) {
+            this.isOverscolling = true;
+          }
         }
 
         this.timeoutId = null;

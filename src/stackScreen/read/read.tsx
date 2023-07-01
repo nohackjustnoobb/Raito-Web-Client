@@ -89,6 +89,16 @@ class Read extends Component<
       }
     });
 
+    window.addEventListener(
+      "touchmove",
+      (event) => {
+        if (this.startX) event.preventDefault();
+      },
+      {
+        passive: false,
+      }
+    );
+
     // show loader
     pushLoader();
     // get the urls

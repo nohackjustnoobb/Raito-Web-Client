@@ -204,7 +204,15 @@ class BetterMangaApp {
   translate(text: string): string {
     if (!this.settingsState.forceTranslate) return text;
 
-    return zhConvertor.s2t(text);
+    const replaceWordPairs: { [wordToReplace: string]: string } = { 捲: "卷" };
+
+    // loop through all word pairs and replace the words
+    let resultText: string = zhConvertor.s2t(text);
+    for (const word in replaceWordPairs) {
+      resultText = resultText.replaceAll(word, replaceWordPairs[word]);
+    }
+
+    return resultText;
   }
 
   async selectDriver(id: string) {

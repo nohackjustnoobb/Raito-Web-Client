@@ -203,8 +203,8 @@ class Manga {
       // sync with server
       if (
         !(await window.BMA.fetch("DELETE", "user/collections", {
-          d: this.driver.identifier,
-          i: this.id,
+          driver: this.driver.identifier,
+          id: this.id,
         }))
       )
         return;

@@ -1,15 +1,13 @@
 import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
-import { Pressable, Space, ViewPort } from "react-zoomable-ui";
+import BetterScroll from "better-scroll";
 
 import "./read_experimental.scss";
-
-import { pushLoader } from "../../utils/utils";
-
-import { DisplayMode } from "../../classes/settingsState";
 import { Manga } from "../../classes/manga";
-import Menu from "./menu";
 import Warning from "./warning";
+import { pushLoader } from "../../utils/utils";
+import { DisplayMode } from "../../classes/settingsState";
+import Menu from "./menu";
 
 class ReadExperimental extends Component<
   {
@@ -20,37 +18,35 @@ class ReadExperimental extends Component<
   },
   {
     show: boolean;
+    episodesUrls: { [index: number]: Array<string> };
     menu: boolean;
     page: number | null;
     index: number | null;
     pageOffset: boolean;
-    episodesUrls: { [index: number]: Array<string> };
   }
 > {
   // timeout of the transition
   timeout: number = 500;
-  // timeout of detecting double or single click
-  timeoutId: NodeJS.Timeout | null = null;
-  // counter for counting clicks
-  counter: number = 0;
-  // viewPoint for space
-  viewPoint: ViewPort | null = null;
-  // reference for container
-  containerRef: HTMLElement | null = null;
-  // reference for read
-  readRef: HTMLElement | null = null;
-  // state for loading
-  loading: boolean = false;
+  // BetterScroll
+  betterScroll: BetterScroll | null = null;
   // cache for previous height
   prevHeight: number | null = null;
-  // use to slow down the moveby
-  inCooldown: boolean = false;
+  // reference for read
+  readRef: HTMLElement | null = null;
+  // state for cooldown
+  lastLoad: number | null = null;
   // store image that is wider
   wideImage: Array<string> = [];
+  // scale of the content
+  scale: number = 1;
+  // timeout for preventing tap to fire when double clicked
+  timeoutId: NodeJS.Timeout | null = null;
+  // timer for updating the status
+  statusUpdater: NodeJS.Timeout | null = null;
+  // if the page is hidden
+  isHidden: boolean = false;
   // check if transform should enabled
   startX: boolean = false;
-  // detect if ready
-  ready: boolean = false;
 
   constructor(props: {
     manga: Manga;
@@ -71,61 +67,181 @@ class ReadExperimental extends Component<
   }
 
   async componentDidMount() {
+    // init BetterScroll
+    setTimeout(async () => {
+      while (!this.readRef) {
+        // sleep for 50 ms
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+      this.betterScroll = new BetterScroll(this.readRef, {
+        mouseWheel: {
+          speed: 20,
+          invert: false,
+          easeTime: 300,
+        },
+        tap: "tap",
+        dblclick: {
+          delay: 300,
+        },
+        pullDownRefresh: {
+          threshold: 50,
+          stop: 0,
+        },
+        pullUpLoad: {
+          threshold: 50,
+          stop: 0,
+        },
+        deceleration: 0.002,
+        freeScroll: true,
+        zoom: {
+          start: 1,
+          min: 1,
+          max: 2,
+        },
+      });
+
+      // sync the scale
+      this.betterScroll.on(
+        "zoomEnd",
+        (event: { scale: number }) => (this.scale = event.scale)
+      );
+
+      this.betterScroll.on("pullingDown", async () => {
+        await this.loadMore(false);
+        this.betterScroll!.finishPullDown();
+      });
+
+      this.betterScroll.on("pullingUp", async () => {
+        await this.loadMore();
+        this.betterScroll!.finishPullUp();
+      });
+
+      // double click to zoom in and out
+      this.readRef.addEventListener("dblclick", (event) => {
+        setTimeout(() => {
+          if (this.timeoutId) clearTimeout(this.timeoutId);
+          this.timeoutId = null;
+
+          this.betterScroll?.zoomTo(
+            this.scale === 2 ? 1 : 2,
+            -this.betterScroll.x + event.x,
+            -this.betterScroll.y + event.y
+          );
+        });
+      });
+
+      // single click to toggle menu
+      this.readRef.addEventListener("tap", (event) => {
+        if (this.timeoutId) clearTimeout(this.timeoutId);
+        this.timeoutId = setTimeout(() => {
+          console.log(event);
+          this.setState({ menu: !this.state.menu });
+        }, 300);
+      });
+    });
+
     // register for update events
     window.FUM.register(() => {
+      if (this.isHidden) return;
+
+      // cache the page and index before updating
+      const page = this.state.page;
+      const index = this.state.index;
       this.forceUpdate(() => {
-        // restore the previous page
-        if (this.state.index && this.state.page && this.viewPoint)
-          this.updateViewPort();
-        this.scrollToPage(this.state.index!, this.state.page!);
+        // restore it
+        if (page && index) this.scrollToPage(index, page, false);
       });
+    }, true);
+
+    // reset the prevHeight when the page hide or show
+    document.addEventListener("visibilitychange", () => {
+      this.prevHeight = null;
+
+      if (document.visibilityState !== "visible") {
+        this.isHidden = true;
+      } else {
+        setTimeout(() => (this.isHidden = false), 500);
+      }
     });
 
     // show loader
     pushLoader();
     // get the urls
-    await this.loadMore(undefined, true);
+    await this.loadMore(true, false);
     // pop the loader
     window.stack.pop();
 
-    // scroll to the target page if requested
-    setTimeout(async () => {
-      this.viewPoint?.camera.updateTopLeft(0, 0, 1);
+    // update the status every 250 ms
+    this.statusUpdater = setInterval(() => {
+      const elements = document.elementsFromPoint(
+        window.innerWidth / 2,
+        window.innerHeight / 2
+      );
 
-      if (this.props.page) {
+      for (const element of elements) {
+        if (element.className === "imgWrapper") {
+          // get the data from the element
+          const index = element.getAttribute("data-index");
+          const page = element.getAttribute("data-page");
+
+          // check if null or changed
+          if (
+            index !== null &&
+            page !== null &&
+            (Number(index) !== this.state.index ||
+              Number(page) !== this.state.page)
+          ) {
+            this.setState(
+              { index: Number(index), page: Number(page) + 1 },
+              () =>
+                // save it to history
+                this.props.manga.save(
+                  (this.props.isExtra
+                    ? this.props.manga.episodes.extra
+                    : this.props.manga.episodes.serial)[this.state.index!],
+                  this.state.page!,
+                  this.props.isExtra
+                )
+            );
+          }
+
+          break;
+        }
+      }
+    }, 250);
+
+    // scroll to the target page if requested
+    if (this.props.page) {
+      // use setTimeout to prevent it from blocking the code execution
+      setTimeout(async () => {
         const index = this.props.episodesIndex;
         const page = this.props.page;
 
         // check if the page is already loaded
-        var element: HTMLElement | null;
+        let loaded = true;
         do {
-          element = document.getElementById(`${index}_${page}`);
+          loaded = true;
+          for (let i = 0; i < page!; i++) {
+            const element = document.getElementById(`${index}_${i}`);
+            if (!element || !(element.children[0] as HTMLImageElement).complete)
+              loaded = false;
+          }
+
           // sleep for 50 ms
           await new Promise((resolve) => setTimeout(resolve, 50));
-        } while (!element);
+        } while (!loaded);
 
-        this.scrollToPage(index, page);
-      }
-    }, 50);
-
-    // fix the zoom factor
-    let confirmCounter = 0;
-    const confirmation = setInterval(() => {
-      if (confirmCounter === 4) {
-        clearInterval(confirmation);
-        this.ready = true;
-      }
-
-      if (this.viewPoint?.zoomFactor !== 1)
-        this.viewPoint?.camera.updateTopLeft(0, 0, 1);
-
-      confirmCounter++;
-    }, 250);
+        this.scrollToPage(index, page!, false);
+      });
+    }
   }
 
-  async loadMore(next: boolean = true, force: boolean = false) {
-    // check if half of the images are loaded
-    if (!this.ready && !force) return;
+  async loadMore(next: boolean = true, setLastLoad: boolean = true) {
+    if (this.lastLoad && Date.now() < this.lastLoad + 1000) return;
+    if (setLastLoad) this.lastLoad = Date.now();
+
+    // reset previous height data
+    this.prevHeight = null;
 
     // get next or previous episode
     var index =
@@ -146,16 +262,40 @@ class ReadExperimental extends Component<
 
     // get the urls
     var urls = await this.props.manga.get(index, this.props.isExtra);
-    this.setState(
-      (prevState) => ({
-        episodesUrls: {
-          ...prevState.episodesUrls,
-          [index]: urls,
-        },
-        show: true,
-      }),
-      () => setTimeout(() => this.tryRestoreViewPort(), 250)
-    );
+    this.setState((prevState) => ({
+      episodesUrls: {
+        ...prevState.episodesUrls,
+        [index]: urls,
+      },
+      show: true,
+    }));
+
+    // cache previous height
+    if (!next && this.readRef) {
+      this.prevHeight = this.readRef.children[0].clientHeight;
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.statusUpdater) clearInterval(this.statusUpdater);
+  }
+
+  componentDidUpdate() {
+    // update the BetterScroll state
+    this.betterScroll?.refresh();
+  }
+
+  scrollToPage(index: number, page: number, smooth: boolean = true) {
+    const element = document.getElementById(`${index}_${page}`);
+
+    if (element)
+      this.betterScroll?.scrollToElement(element, smooth ? 300 : 0, 0, 0);
+  }
+
+  toggleOffset() {
+    // update the viewport
+    this.prevHeight = null;
+    this.setState({ pageOffset: !this.state.pageOffset });
   }
 
   close() {
@@ -163,80 +303,13 @@ class ReadExperimental extends Component<
     setTimeout(() => window.stack.pop(), this.timeout);
   }
 
-  updateState(element: HTMLElement) {
-    // get the data from the element
-    const index = element.getAttribute("data-index");
-    const page = element.getAttribute("data-page");
-
-    if (
-      index !== null &&
-      page !== null &&
-      (Number(index) !== this.state.index || Number(page) !== this.state.page)
-    ) {
-      this.setState({ index: Number(index), page: Number(page) + 1 }, () =>
-        this.props.manga.save(
-          (this.props.isExtra
-            ? this.props.manga.episodes.extra
-            : this.props.manga.episodes.serial)[this.state.index!],
-          this.state.page!,
-          this.props.isExtra
-        )
-      );
-    }
-  }
-
-  componentWillUnmount() {
-    // clear the timeout when unmount
-    if (this.timeoutId !== null) {
-      clearTimeout(this.timeoutId);
-    }
-  }
-
-  updateViewPort() {
-    if (this.viewPoint && this.containerRef) {
-      // set the bounds
-      this.viewPoint.setBounds({
-        x: [0, window.innerWidth],
-        y: [-10, this.containerRef.clientHeight],
-        zoom: [1, 3],
-      });
-
-      this.tryRestoreViewPort();
-    }
-  }
-
-  tryRestoreViewPort() {
-    // restore the previous position
-    if (this.prevHeight)
-      // DK why setTimeout solves this problem
-      setTimeout(() =>
-        this.viewPoint!.camera.updateTopLeft(
-          this.viewPoint!.left,
-          this.containerRef!.clientHeight - this.prevHeight!
-        )
-      );
-  }
-
-  toggleOffset() {
-    // update the viewport
-    this.prevHeight = null;
-    this.setState({ pageOffset: !this.state.pageOffset }, () =>
-      this.updateViewPort()
-    );
-  }
-
-  scrollToPage(index: number, page: number) {
-    const element = document.getElementById(`${index}_${page}`);
-
-    // check if the element exists
-    if (element) {
-      // sync the state first
-      this.setState({ index: index, page: page });
-
-      this.viewPoint?.camera.centerFitElementIntoView(
-        element,
-        { additionalBounds: { zoom: [1, 1] } },
-        { durationMilliseconds: 250 }
+  restorePosition() {
+    this.betterScroll?.refresh();
+    if (this.prevHeight && this.readRef) {
+      this.betterScroll?.scrollTo(
+        this.betterScroll.x,
+        -(this.readRef.children[0].clientHeight - this.prevHeight),
+        0
       );
     }
   }
@@ -287,6 +360,7 @@ class ReadExperimental extends Component<
               // check if swipe from edge
               if (startX < 20) {
                 this.startX = true;
+                this.betterScroll?.disable();
               }
             }}
             onTouchMove={(event) => {
@@ -298,7 +372,8 @@ class ReadExperimental extends Component<
             onTouchEnd={(event) => {
               if (this.startX) {
                 this.startX = false;
-                const shouldClose = event.changedTouches[0].pageX > 150;
+                this.betterScroll?.enable();
+                const shouldClose = event.changedTouches[0].pageX > 100;
 
                 // check if swiped 150 px
                 if (shouldClose) {
@@ -322,158 +397,57 @@ class ReadExperimental extends Component<
               }
             }}
           >
-            <Space
-              pollForElementResizing
-              treatTwoFingerTrackPadGesturesLikeTouch
-              onCreate={(viewPort) => {
-                // store the viewport
-                this.viewPoint = viewPort;
-              }}
-              onUpdated={async () => {
-                // check if bottom is reached
-                if (
-                  !this.loading &&
-                  this.viewPoint!.top + this.viewPoint!.height ===
-                    this.containerRef?.clientHeight
-                ) {
-                  this.loading = true;
-                  // reset the previous height
-                  this.prevHeight = null;
+            <div className="readContent">
+              {Object.keys(this.state.episodesUrls)
+                .reverse()
+                .map((episodesIndex: any) => (
+                  <div className="episodes" key={episodesIndex}>
+                    {this.state.episodesUrls[episodesIndex].map((url, page) => {
+                      const id = `${episodesIndex}_${page}`;
 
-                  await this.loadMore();
+                      return (
+                        <Fragment key={id}>
+                          {page === 0 &&
+                            this.state.pageOffset &&
+                            !isOnePage && <div className="spacer" />}
+                          <div
+                            id={id}
+                            data-page={page}
+                            data-index={episodesIndex}
+                            className="imgWrapper"
+                            style={{
+                              width:
+                                this.wideImage.includes(id) || isOnePage
+                                  ? "100%"
+                                  : "50%",
+                            }}
+                          >
+                            <img
+                              src={url}
+                              alt=""
+                              onLoad={(event) => {
+                                // check if the image is horizontal
+                                const element =
+                                  event.target as HTMLImageElement;
+                                if (
+                                  element.naturalWidth >= element.naturalHeight
+                                ) {
+                                  this.wideImage.push(id);
+                                  this.forceUpdate(() =>
+                                    this.restorePosition()
+                                  );
+                                }
 
-                  // prevent too many requests
-                  setTimeout(() => (this.loading = false), 1000);
-                }
-
-                // check if top is reached
-                if (this.viewPoint!.top < 0) {
-                  // prevent over scroll position with cooldown delay
-                  if (!this.inCooldown) {
-                    this.inCooldown = true;
-
-                    setTimeout(() => {
-                      this.viewPoint!.camera.updateTopLeft(
-                        this.viewPoint!.left!,
-                        0
-                      );
-
-                      this.inCooldown = false;
-                    }, 250);
-                  }
-
-                  if (!this.loading) {
-                    this.loading = true;
-                    // cache the previous height
-                    this.prevHeight = this.containerRef?.clientHeight ?? null;
-
-                    await this.loadMore(false);
-
-                    // prevent too many requests
-                    setTimeout(() => (this.loading = false), 1000);
-                  }
-                }
-              }}
-            >
-              <Pressable
-                onTap={() => {
-                  // reset the timeout
-                  if (this.timeoutId !== null) {
-                    clearTimeout(this.timeoutId);
-                  }
-
-                  // update counter
-                  this.counter++;
-
-                  // set timeout
-                  this.timeoutId = setTimeout(async () => {
-                    // check whether single click or double click
-                    if (this.counter === 1) {
-                      this.setState({ menu: !this.state.menu });
-                    } else if (this.counter === 2) {
-                      // zoom in or reset zoom factor
-                      if (this.viewPoint) {
-                        this.viewPoint.camera.moveBy(
-                          0,
-                          0,
-                          this.viewPoint.zoomFactor === 3 ? -Infinity : 1,
-                          undefined,
-                          undefined,
-                          { durationMilliseconds: 250 }
-                        );
-                      }
-                    }
-
-                    this.counter = 0;
-                  }, 200);
-                }}
-              >
-                <div
-                  className="readContainer"
-                  ref={(ref) => (this.containerRef = ref)}
-                >
-                  {Object.keys(this.state.episodesUrls)
-                    .reverse()
-                    .map((index: any) => (
-                      <Fragment key={`${index}`}>
-                        {this.state.episodesUrls[index].map((url, page) => (
-                          <Fragment key={`${index}_${page}`}>
-                            {!isOnePage &&
-                              page === 0 &&
-                              this.state.pageOffset && (
-                                <div className="spacer" />
-                              )}
-                            <div
-                              style={{
-                                width:
-                                  isOnePage ||
-                                  this.wideImage.includes(`${index}_${page}`)
-                                    ? "100%"
-                                    : "50%",
+                                this.restorePosition();
                               }}
-                              onMouseEnter={(event) =>
-                                this.updateState(event.target as HTMLElement)
-                              }
-                              onTouchStart={(event) =>
-                                this.updateState(event.target as HTMLElement)
-                              }
-                              id={`${index}_${page}`}
-                              data-page={page}
-                              data-index={index}
-                            >
-                              <img
-                                src={url}
-                                alt=""
-                                onLoad={(event) => {
-                                  // check if the image is horizontal
-                                  const element =
-                                    event.target as HTMLImageElement;
-                                  if (
-                                    element.naturalWidth >=
-                                    element.naturalHeight
-                                  ) {
-                                    this.wideImage.push(`${index}_${page}`);
-                                    this.forceUpdate(() =>
-                                      this.updateViewPort()
-                                    );
-                                  }
-
-                                  // update the bound
-                                  this.updateViewPort();
-                                }}
-                              />
-                            </div>
-                          </Fragment>
-                        ))}
-                        {!isOnePage &&
-                          (this.state.episodesUrls[index].length +
-                            (this.state.pageOffset ? 1 : 0)) %
-                            2 && <div className="spacer" />}
-                      </Fragment>
-                    ))}
-                </div>
-              </Pressable>
-            </Space>
+                            />
+                          </div>
+                        </Fragment>
+                      );
+                    })}
+                  </div>
+                ))}
+            </div>
           </div>
         </CSSTransition>
       </div>

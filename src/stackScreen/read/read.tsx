@@ -106,7 +106,7 @@ class Read extends Component<
     // pop the loader
     window.stack.pop();
 
-    // update the status every 1 second
+    // update the status every 250 ms
     this.statusUpdater = setInterval(() => {
       const elements = document.elementsFromPoint(
         window.innerWidth / 2,

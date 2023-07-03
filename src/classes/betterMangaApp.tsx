@@ -59,37 +59,45 @@ class BetterMangaApp {
     for (let items of [notEnd, end]) {
       // sort items by driver
       let sorted: { [driver: string]: Array<string> } = {};
-      for (var item of items) {
+      for (let item of items) {
         if (!sorted[item.driver]) sorted[item.driver] = [];
         sorted[item.driver].push(item.id);
       }
 
+      let promises = [];
       // loop through each driver
       for (const driverID in sorted) {
-        // get the driver object
-        const driver = this.getDriver(driverID);
+        promises.push(
+          // eslint-disable-next-line no-loop-func
+          (async () => {
+            // get the driver object
+            const driver = this.getDriver(driverID);
 
-        const ids = sorted[driverID];
+            const ids = sorted[driverID];
 
-        // split the ids every chunkSize
-        const chunks = [];
-        for (let i = 0; i < ids.length; i += chunkSize) {
-          const chunk = ids.slice(i, i + chunkSize);
-          chunks.push(chunk);
-        }
+            // split the ids every chunkSize
+            const chunks = [];
+            for (let i = 0; i < ids.length; i += chunkSize) {
+              const chunk = ids.slice(i, i + chunkSize);
+              chunks.push(chunk);
+            }
 
-        for (const chunk of chunks) {
-          // get the manga
-          await driver?.getDetails(chunk, false, false);
+            for (const chunk of chunks) {
+              // get the manga
+              await driver?.getDetails(chunk, false, false);
 
-          // update the state
-          counter += chunk.length;
-          updateState();
-          window.forceUpdate();
+              // update the state
+              counter += chunk.length;
+              updateState();
+              window.forceUpdate();
 
-          await driver?.update();
-        }
+              await driver?.update();
+            }
+          })()
+        );
       }
+
+      await Promise.all(promises);
     }
 
     this.updateCollectionsState.lastUpdate = Date.now();
@@ -250,6 +258,7 @@ class BetterMangaApp {
         method: method,
         headers: new Headers(headers),
         body: body,
+        cache: "no-cache",
       }
     );
 

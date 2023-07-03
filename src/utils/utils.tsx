@@ -16,13 +16,15 @@ function pushLoader(): void {
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-function errorHandler(status: number) {
+async function errorHandler(response: Response) {
+  const status = response.status;
+
   switch (status) {
     case 404:
-      alert("Error 404\nNot Found");
+      alert(`Error 404\n${await response.json()}`);
       break;
     case 400:
-      alert("Error 400\nBad Request");
+      alert(`Error 400\n${await response.json()}`);
       break;
     case 401:
       window.BMA.user.logout();
@@ -32,7 +34,9 @@ function errorHandler(status: number) {
       alert("Error 500\nInternal Server Error");
       break;
     default:
-      alert("An error occurred\nError code: " + status);
+      alert(
+        `An error occurred\nError code: ${status}\n${await response.json()}`
+      );
   }
 }
 

@@ -204,7 +204,10 @@ class BetterMangaApp {
   translate(text: string): string {
     if (!this.settingsState.forceTranslate) return text;
 
-    const replaceWordPairs: { [wordToReplace: string]: string } = { 捲: "卷" };
+    const replaceWordPairs: { [wordToReplace: string]: string } = {
+      捲: "卷",
+      係: "系",
+    };
 
     // loop through all word pairs and replace the words
     let resultText: string = zhConvertor.s2t(text);
@@ -269,7 +272,7 @@ class BetterMangaApp {
     }
 
     // handle the error if any
-    return handleError && errorHandler(response.status);
+    return handleError && (await errorHandler(response));
   }
 
   // helper function to GET and POST

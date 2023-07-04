@@ -83,10 +83,13 @@ class ReadExperimental extends Component<
         dblclick: {
           delay: 300,
         },
-        pullDownRefresh: {
-          threshold: 50,
-          stop: 0,
-        },
+        pullDownRefresh: window.BMA.settingsState
+          .experimentalOverscrollToLoadPreviousEpisodes
+          ? {
+              threshold: 50,
+              stop: 0,
+            }
+          : undefined,
         pullUpLoad: {
           threshold: 50,
           stop: 0,

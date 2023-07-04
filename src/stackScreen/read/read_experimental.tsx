@@ -139,7 +139,6 @@ class ReadExperimental extends Component<
       this.readRef.addEventListener("tap", (event) => {
         if (this.timeoutId) clearTimeout(this.timeoutId);
         this.timeoutId = setTimeout(() => {
-          console.log(event);
           this.setState({ menu: !this.state.menu });
         }, 300);
       });
@@ -154,7 +153,7 @@ class ReadExperimental extends Component<
       const index = this.state.index;
       this.forceUpdate(() => {
         // restore it
-        if (page && index) this.scrollToPage(index, page, false);
+        if (page && index) this.scrollToPage(index, page);
       });
     }, true);
 
@@ -196,24 +195,22 @@ class ReadExperimental extends Component<
             (Number(index) !== this.state.index ||
               Number(page) !== this.state.page)
           ) {
-            this.setState(
-              { index: Number(index), page: Number(page) + 1 },
-              () =>
-                // save it to history
-                this.props.manga.save(
-                  (this.props.isExtra
-                    ? this.props.manga.episodes.extra
-                    : this.props.manga.episodes.serial)[this.state.index!],
-                  this.state.page!,
-                  this.props.isExtra
-                )
+            this.setState({ index: Number(index), page: Number(page) }, () =>
+              // save it to history
+              this.props.manga.save(
+                (this.props.isExtra
+                  ? this.props.manga.episodes.extra
+                  : this.props.manga.episodes.serial)[this.state.index!],
+                this.state.page!,
+                this.props.isExtra
+              )
             );
           }
 
           break;
         }
       }
-    }, 250);
+    }, 50);
 
     // scroll to the target page if requested
     if (this.props.page) {
@@ -236,7 +233,7 @@ class ReadExperimental extends Component<
           await new Promise((resolve) => setTimeout(resolve, 50));
         } while (!loaded);
 
-        this.scrollToPage(index, page!, false);
+        this.scrollToPage(index, page!);
       });
     }
   }
@@ -291,11 +288,10 @@ class ReadExperimental extends Component<
     this.betterScroll?.refresh();
   }
 
-  scrollToPage(index: number, page: number, smooth: boolean = true) {
+  scrollToPage(index: number, page: number) {
     const element = document.getElementById(`${index}_${page}`);
 
-    if (element)
-      this.betterScroll?.scrollToElement(element, smooth ? 300 : 0, 0, 0);
+    if (element) this.betterScroll?.scrollToElement(element, 0, 0, 0);
   }
 
   toggleOffset() {
@@ -331,7 +327,7 @@ class ReadExperimental extends Component<
         <Menu
           show={this.state.menu && this.state.show}
           close={this.close.bind(this)}
-          page={this.state.page}
+          page={this.state.page !== null ? this.state.page + 1 : null}
           showOffset={!isOnePage}
           toggleOffset={this.toggleOffset.bind(this)}
           pageOffset={this.state.pageOffset}

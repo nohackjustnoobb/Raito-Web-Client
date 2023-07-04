@@ -19,7 +19,7 @@ class ForceUpdateManager {
   }
 
   unregister(index: number) {
-    delete this.forceUpdateList[index];
+    this.forceUpdateList.splice(index, 1);
   }
 }
 

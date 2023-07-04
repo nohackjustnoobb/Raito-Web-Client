@@ -9,8 +9,17 @@ class ForceUpdateManager {
     };
   }
 
-  register(forceUpdate: () => void, onlyListenOnScreenEvent: boolean = false) {
-    this.forceUpdateList.push([forceUpdate, onlyListenOnScreenEvent]);
+  register(
+    forceUpdate: () => void,
+    onlyListenOnScreenEvent: boolean = false
+  ): number {
+    return (
+      this.forceUpdateList.push([forceUpdate, onlyListenOnScreenEvent]) - 1
+    );
+  }
+
+  unregister(index: number) {
+    delete this.forceUpdateList[index];
   }
 }
 

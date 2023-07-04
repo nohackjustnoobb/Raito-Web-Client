@@ -47,6 +47,8 @@ class ReadExperimental extends Component<
   isHidden: boolean = false;
   // check if transform should enabled
   startX: boolean = false;
+  // id of ForceUpdateManager
+  FUMID: number | null = null;
 
   constructor(props: {
     manga: Manga;
@@ -144,7 +146,7 @@ class ReadExperimental extends Component<
     });
 
     // register for update events
-    window.FUM.register(() => {
+    this.FUMID = window.FUM.register(() => {
       if (this.isHidden) return;
 
       // cache the page and index before updating
@@ -281,6 +283,7 @@ class ReadExperimental extends Component<
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   componentDidUpdate() {

@@ -35,9 +35,15 @@ const categories: { [category: string]: string } = {
 };
 
 class LibrariesTabState extends React.Component {
+  FUMID: number | null = null;
+
   componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+  }
+
+  componentWillUnmount() {
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {
@@ -175,6 +181,7 @@ class LibrariesTab extends React.Component<
 > {
   driver: string | undefined = undefined;
   content: HTMLDivElement | null = null;
+  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -188,7 +195,7 @@ class LibrariesTab extends React.Component<
 
   componentDidMount(): void {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // update the ui when the page hide or show
     document.addEventListener("visibilitychange", () =>
@@ -200,6 +207,10 @@ class LibrariesTab extends React.Component<
 
     // update the component
     this.forceUpdate();
+  }
+
+  componentWillUnmount() {
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   componentDidUpdate(): void {

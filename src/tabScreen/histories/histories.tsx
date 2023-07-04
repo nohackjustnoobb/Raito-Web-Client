@@ -11,10 +11,11 @@ import { Manga } from "../../classes/manga";
 
 class HistoriesTabState extends React.Component {
   interval: NodeJS.Timeout | null = null;
+  FUMID: number | null = null;
 
   componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // update every second
     this.interval = setInterval(() => this.forceUpdate(), 1000);
@@ -22,6 +23,7 @@ class HistoriesTabState extends React.Component {
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {
@@ -57,6 +59,7 @@ class HistoriesTabState extends React.Component {
 
 class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
   interval: NodeJS.Timeout | null = null;
+  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -68,7 +71,7 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
 
   componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // trace for histories changes
     liveQuery(() =>
@@ -82,6 +85,7 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {

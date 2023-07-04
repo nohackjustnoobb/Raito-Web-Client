@@ -5,6 +5,7 @@ import "./experimentalSettings.scss";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
+  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -15,8 +16,12 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
   }
 
   componentDidMount() {
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
     this.setState({ show: true });
+  }
+
+  componentWillUnmount() {
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   close() {

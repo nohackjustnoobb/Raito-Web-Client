@@ -10,10 +10,11 @@ import { SimpleManga } from "../../classes/manga";
 
 class CollectionsTabState extends React.Component {
   interval: NodeJS.Timeout | null = null;
+  FUMID: number | null = null;
 
   componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // update every second
     this.interval = setInterval(() => this.forceUpdate(), 1000);
@@ -21,6 +22,7 @@ class CollectionsTabState extends React.Component {
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {
@@ -54,6 +56,7 @@ class CollectionsTab extends React.Component<
   { collections: Array<collection>; histories: Array<history> }
 > {
   interval: NodeJS.Timeout | null = null;
+  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -66,7 +69,7 @@ class CollectionsTab extends React.Component<
 
   componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // setup observers for history and collection
     liveQuery(() => db.collections.toArray()).subscribe((result) =>
@@ -84,6 +87,7 @@ class CollectionsTab extends React.Component<
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {

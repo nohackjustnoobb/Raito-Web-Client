@@ -26,6 +26,7 @@ class Details extends Component<
   startY: number | null = null;
   verticalContentRef: HTMLElement | null = null;
   verticalBackgroundRef: HTMLElement | null = null;
+  FUMID: number | null = null;
 
   constructor(props: { manga: SimpleManga }) {
     super(props);
@@ -42,7 +43,7 @@ class Details extends Component<
 
   async componentDidMount() {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
 
     // show loader
     pushLoader();
@@ -74,6 +75,10 @@ class Details extends Component<
     setTimeout(() => this.setState({ showBackground: true }), this.timeout / 2);
     // pop the loader
     window.stack.pop();
+  }
+
+  componentWillUnmount() {
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   close() {

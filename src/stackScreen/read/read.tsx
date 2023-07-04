@@ -45,6 +45,8 @@ class Read extends Component<
   isHidden: boolean = false;
   // if overscolling the page
   isOverscolling: boolean = false;
+  // id of ForceUpdateManager
+  FUMID: number | null = null;
 
   constructor(props: {
     manga: Manga;
@@ -66,7 +68,7 @@ class Read extends Component<
 
   async componentDidMount() {
     // register for update events
-    window.FUM.register(() => {
+    this.FUMID = window.FUM.register(() => {
       if (this.isHidden) return;
 
       // cache the page and index before updating
@@ -173,6 +175,7 @@ class Read extends Component<
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {

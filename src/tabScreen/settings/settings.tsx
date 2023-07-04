@@ -20,9 +20,15 @@ class SettingsTabState extends React.Component {
 }
 
 class SettingsTab extends React.Component {
+  FUMID: number | null = null;
+
   componentDidMount(): void {
     // register for update events
-    window.FUM.register(this.forceUpdate.bind(this));
+    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+  }
+
+  componentWillUnmount() {
+    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {

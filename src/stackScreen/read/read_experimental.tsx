@@ -49,6 +49,8 @@ class ReadExperimental extends Component<
   startX: boolean = false;
   // id of ForceUpdateManager
   FUMID: number | null = null;
+  // cache for index and page
+  indexPageCache: Array<[index: number, page: number]> = [];
 
   constructor(props: {
     manga: Manga;
@@ -149,8 +151,7 @@ class ReadExperimental extends Component<
       if (this.isHidden) return;
 
       // cache the page and index before updating
-      const page = this.state.page;
-      const index = this.state.index;
+      const [index, page] = this.indexPageCache[0];
       this.forceUpdate(() => {
         // restore it
         if (page && index) this.scrollToPage(index, page);
@@ -185,26 +186,31 @@ class ReadExperimental extends Component<
       for (const element of elements) {
         if (element.className === "imgWrapper") {
           // get the data from the element
-          const index = element.getAttribute("data-index");
-          const page = element.getAttribute("data-page");
+          const rawIndex = element.getAttribute("data-index");
+          const rawPage = element.getAttribute("data-page");
 
           // check if null or changed
-          if (
-            index !== null &&
-            page !== null &&
-            (Number(index) !== this.state.index ||
-              Number(page) !== this.state.page)
-          ) {
-            this.setState({ index: Number(index), page: Number(page) }, () =>
-              // save it to history
-              this.props.manga.save(
-                (this.props.isExtra
-                  ? this.props.manga.episodes.extra
-                  : this.props.manga.episodes.serial)[this.state.index!],
-                this.state.page!,
-                this.props.isExtra
-              )
-            );
+          if (rawIndex !== null && rawPage !== null) {
+            const index = Number(rawIndex);
+            const page = Number(rawPage);
+
+            // cache the recent 10 index and page
+            if (this.indexPageCache.length >= 10)
+              this.indexPageCache.splice(0, 1);
+            this.indexPageCache.push([index, page]);
+
+            if (index !== this.state.index || page !== this.state.page) {
+              this.setState({ index: index, page: page }, () =>
+                // save it to history
+                this.props.manga.save(
+                  (this.props.isExtra
+                    ? this.props.manga.episodes.extra
+                    : this.props.manga.episodes.serial)[this.state.index!],
+                  this.state.page!,
+                  this.props.isExtra
+                )
+              );
+            }
           }
 
           break;

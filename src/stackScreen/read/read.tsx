@@ -77,7 +77,7 @@ class Read extends Component<
       const [index, page] = this.indexPageCache[0];
       this.forceUpdate(() => {
         // restore it
-        if (page && index) this.scrollToPage(index, page);
+        if (page !== null && index !== null) this.scrollToPage(index, page);
       });
     }, true);
 

@@ -80,8 +80,16 @@ class CollectionsTab extends React.Component<
       this.setState({ histories: result })
     );
 
-    // update the collection
-    window.BMA.updateCollections();
+    // update the collection after syncing
+    setTimeout(async () => {
+      while (!window.BMA.syncCollectionsState.lastSync) {
+        // sleep for 50 ms
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+
+      window.BMA.updateCollections();
+    });
+
     this.interval = setInterval(() => window.BMA.updateCollections(), 60000);
   }
 

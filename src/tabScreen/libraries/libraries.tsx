@@ -162,7 +162,7 @@ class SearchBar extends React.Component<
                 key={suggestion}
                 onClick={() => {
                   this.setState({ keyword: window.BMA.translate(suggestion) });
-                  window.search(suggestion);
+                  window.search(window.BMA.translate(suggestion));
                 }}
               >
                 <span>{window.BMA.translate(suggestion)}</span>

@@ -21,10 +21,10 @@ async function errorHandler(response: Response) {
 
   switch (status) {
     case 404:
-      alert(`Error 404\n${await response.json()}`);
+      alert(`Error 404\n${(await response.json())["error"]}`);
       break;
     case 400:
-      alert(`Error 400\n${await response.json()}`);
+      alert(`Error 400\n${(await response.json())["error"]}`);
       break;
     case 401:
       window.BMA.user.logout();
@@ -35,7 +35,9 @@ async function errorHandler(response: Response) {
       break;
     default:
       alert(
-        `An error occurred\nError code: ${status}\n${await response.json()}`
+        `An error occurred\nError code: ${status}\n${
+          (await response.json())["error"]
+        }`
       );
   }
 }

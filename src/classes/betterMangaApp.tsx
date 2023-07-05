@@ -13,7 +13,7 @@ interface UpdateCollectionsState {
   currentState?: string;
 }
 
-interface SyncCollectionsState {
+interface SyncState {
   isSyncing: boolean;
   lastSync?: number;
   currentState?: string;
@@ -26,7 +26,7 @@ class BetterMangaApp {
   selectedDriver: Driver | null = null;
   settingsState: SettingsState = new SettingsState();
   updateCollectionsState: UpdateCollectionsState = { isUpdating: false };
-  syncCollectionsState: SyncCollectionsState = { isSyncing: false };
+  syncState: SyncState = { isSyncing: false };
 
   async initialize() {
     await this.settingsState.initialize();
@@ -175,25 +175,25 @@ class BetterMangaApp {
     if (!this.user.token) return;
 
     // prevent multiple syncing at a time
-    if (this.syncCollectionsState.isSyncing) return;
-    this.syncCollectionsState.isSyncing = true;
+    if (this.syncState.isSyncing) return;
+    this.syncState.isSyncing = true;
 
     // update state
-    this.syncCollectionsState.currentState = "同步歴史中";
+    this.syncState.currentState = "同步歴史中";
     window.forceUpdate();
 
     // sync the histories
     await this.syncHistories();
 
     // update state
-    this.syncCollectionsState.currentState = "同步收藏中";
+    this.syncState.currentState = "同步收藏中";
     window.forceUpdate();
 
     // sync the collections
     await this.syncCollections();
 
-    this.syncCollectionsState.isSyncing = false;
-    this.syncCollectionsState.lastSync = Date.now();
+    this.syncState.isSyncing = false;
+    this.syncState.lastSync = Date.now();
     window.forceUpdate();
   }
 

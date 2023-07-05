@@ -39,15 +39,15 @@ class HistoriesTabState extends React.Component {
           <Icon path={mdiCloudSync} size={0.75} />
           <span>同步</span>
         </div>
-        {window.BMA.syncCollectionsState.isSyncing
-          ? window.BMA.syncCollectionsState.currentState && (
-              <p>{window.BMA.syncCollectionsState.currentState}</p>
+        {window.BMA.syncState.isSyncing
+          ? window.BMA.syncState.currentState && (
+              <p>{window.BMA.syncState.currentState}</p>
             )
-          : window.BMA.syncCollectionsState.lastSync && (
+          : window.BMA.syncState.lastSync && (
               <p>
                 同步於{" "}
                 {Math.round(
-                  (Date.now() - window.BMA.syncCollectionsState.lastSync) / 1000
+                  (Date.now() - window.BMA.syncState.lastSync) / 1000
                 )}{" "}
                 秒前
               </p>

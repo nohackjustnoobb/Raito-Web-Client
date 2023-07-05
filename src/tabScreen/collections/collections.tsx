@@ -82,7 +82,7 @@ class CollectionsTab extends React.Component<
 
     // update the collection after syncing
     setTimeout(async () => {
-      while (!window.BMA.syncCollectionsState.lastSync) {
+      while (!window.BMA.syncState.lastSync) {
         // sleep for 50 ms
         await new Promise((resolve) => setTimeout(resolve, 50));
       }

@@ -56,4 +56,10 @@ window.FUM = new ForceUpdateManager();
 window.addEventListener("resize", () => window.forceUpdate(true));
 window.addEventListener("orientationchange", () => window.forceUpdate(true));
 
+// reset the update and sync state when site is minimized
+document.addEventListener("visibilitychange", () => {
+  window.BMA.updateCollectionsState.isUpdating = false;
+  window.BMA.syncState.isSyncing = false;
+});
+
 serviceWorkerRegistration.register();

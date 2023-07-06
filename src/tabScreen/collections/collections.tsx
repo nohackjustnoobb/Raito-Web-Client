@@ -32,20 +32,20 @@ class CollectionsTabState extends React.Component {
           <Icon path={mdiRefresh} size={0.75} />
           <span>更新</span>
         </div>
-        {window.BMA.updateCollectionsState.isUpdating
-          ? window.BMA.updateCollectionsState.currentState && (
-              <p>更新中 {window.BMA.updateCollectionsState.currentState}</p>
-            )
-          : window.BMA.updateCollectionsState.lastUpdate && (
-              <p>
-                更新於{" "}
-                {Math.round(
-                  (Date.now() - window.BMA.updateCollectionsState.lastUpdate) /
-                    1000
-                )}{" "}
-                秒前
-              </p>
-            )}
+        {window.BMA.updateCollectionsState.currentState ? (
+          <p>更新中 {window.BMA.updateCollectionsState.currentState}</p>
+        ) : (
+          window.BMA.updateCollectionsState.lastUpdate && (
+            <p>
+              更新於{" "}
+              {Math.round(
+                (Date.now() - window.BMA.updateCollectionsState.lastUpdate) /
+                  1000
+              )}{" "}
+              秒前
+            </p>
+          )
+        )}
       </div>
     );
   }

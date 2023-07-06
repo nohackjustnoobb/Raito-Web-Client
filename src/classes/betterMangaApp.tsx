@@ -67,6 +67,7 @@ class BetterMangaApp {
 
     this.updateCollectionsState.lastUpdate = Date.now();
     this.updateCollectionsState.isUpdating = false;
+    this.updateCollectionsState.currentState = undefined;
     window.forceUpdate();
   }
 
@@ -215,6 +216,7 @@ class BetterMangaApp {
 
     this.syncState.isSyncing = false;
     this.syncState.lastSync = Date.now();
+    this.syncState.currentState = undefined;
     window.forceUpdate();
   }
 

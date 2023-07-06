@@ -8,12 +8,12 @@ class SettingsState {
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
   displayMode: DisplayMode = DisplayMode.Auto;
+  overscrollToLoadPreviousEpisodes: boolean = true;
   debugMode: boolean = false;
 
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
   experimentalUseZoomableComponent: boolean = false;
-  experimentalOverscrollToLoadPreviousEpisodes: boolean = true;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -34,6 +34,9 @@ class SettingsState {
       this.forceTranslate =
         this.loadBool("forceTranslate") ?? this.forceTranslate;
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
+      this.overscrollToLoadPreviousEpisodes =
+        this.loadBool("overscrollToLoadPreviousEpisodes") ??
+        this.overscrollToLoadPreviousEpisodes;
 
       // experimental functions
       this.experimentalSwipeDownToPopDetails =
@@ -42,9 +45,6 @@ class SettingsState {
       this.experimentalUseZoomableComponent =
         this.loadBool("experimentalUseZoomableComponent") ??
         this.experimentalUseZoomableComponent;
-      this.experimentalOverscrollToLoadPreviousEpisodes =
-        this.loadBool("experimentalOverscrollToLoadPreviousEpisodes") ??
-        this.experimentalOverscrollToLoadPreviousEpisodes;
 
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
@@ -60,6 +60,10 @@ class SettingsState {
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
+    this.saveBool(
+      "overscrollToLoadPreviousEpisodes",
+      this.overscrollToLoadPreviousEpisodes
+    );
 
     // experimental functions
     this.saveBool(
@@ -69,10 +73,6 @@ class SettingsState {
     this.saveBool(
       "experimentalUseZoomableComponent",
       this.experimentalUseZoomableComponent
-    );
-    this.saveBool(
-      "experimentalOverscrollToLoadPreviousEpisodes",
-      this.experimentalOverscrollToLoadPreviousEpisodes
     );
   }
 

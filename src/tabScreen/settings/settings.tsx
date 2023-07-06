@@ -37,98 +37,124 @@ class SettingsTab extends React.Component {
     return (
       <div id="settings">
         <div id="content">
-          <div className="options">
-            <span>
-              帳戶：<b>{user.email ?? "未登錄"}</b>
-            </span>
-            <span>
-              <Button
-                variant={user.token ? "outlined" : "contained"}
-                size="small"
-                onClick={() => {
-                  if (user.token) {
-                    window.stack.push(<UserSettings />);
-                  } else {
-                    window.BMA.user.pushLogin();
-                  }
+          <h3>一般設定</h3>
+          <div className="subSettings">
+            <div className="options">
+              <span>
+                帳戶：<b>{user.email ?? "未登錄"}</b>
+              </span>
+              <span>
+                <Button
+                  variant={user.token ? "outlined" : "contained"}
+                  size="small"
+                  onClick={() => {
+                    if (user.token) {
+                      window.stack.push(<UserSettings />);
+                    } else {
+                      window.BMA.user.pushLogin();
+                    }
+                  }}
+                >
+                  {user.token ? "帳戶設定" : "登錄"}
+                </Button>
+              </span>
+            </div>
+            <div className="options">
+              <span>預設來源：</span>
+              <select
+                value={
+                  window.BMA.settingsState.defaultDriver ??
+                  window.BMA.availableDrivers[0].identifier
+                }
+                onChange={(event) => {
+                  window.BMA.settingsState.defaultDriver = event.target.value;
+                  window.BMA.settingsState.update();
                 }}
               >
-                {user.token ? "帳戶設定" : "登錄"}
+                {window.BMA.availableDrivers?.map((v) => (
+                  <option key={v.identifier}>{v.identifier}</option>
+                ))}
+              </select>
+            </div>
+            <div className="options">
+              <span>強制翻譯為繁體：</span>
+              <Checkbox
+                checked={window.BMA.settingsState.forceTranslate}
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.forceTranslate = checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
+          </div>
+
+          <h3>閱讀器設定</h3>
+          <div className="subSettings">
+            <div className="options">
+              <span>漫畫排版：</span>
+              <select
+                value={window.BMA.settingsState.displayMode}
+                onChange={(event) => {
+                  window.BMA.settingsState.displayMode = Number(
+                    event.target.value
+                  );
+                  window.BMA.settingsState.update();
+                }}
+              >
+                <option value={0}>自動</option>
+                <option value={1}>單頁</option>
+                <option value={2}>雙頁</option>
+              </select>
+            </div>
+            <div className="options">
+              <span>下拉加載上一話：</span>
+              <Checkbox
+                checked={
+                  window.BMA.settingsState.overscrollToLoadPreviousEpisodes
+                }
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.overscrollToLoadPreviousEpisodes =
+                    checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
+          </div>
+          <h3>其他設定</h3>
+          <div className="subSettings">
+            <div className="options">
+              <span>實驗性功能：</span>
+              <Button
+                variant={"outlined"}
+                size="small"
+                onClick={() => window.stack.push(<ExperimentalSettings />)}
+              >
+                功能選單
               </Button>
-            </span>
+            </div>
+
+            <div className="options">
+              <span>開發者模式：</span>
+              <Checkbox
+                checked={window.BMA.settingsState.debugMode}
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.debugMode = checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
           </div>
 
-          <div className="options">
-            <span>預設來源：</span>
-            <select
-              value={
-                window.BMA.settingsState.defaultDriver ??
-                window.BMA.availableDrivers[0].identifier
-              }
-              onChange={(event) => {
-                window.BMA.settingsState.defaultDriver = event.target.value;
-                window.BMA.settingsState.update();
-              }}
-            >
-              {window.BMA.availableDrivers?.map((v) => (
-                <option key={v.identifier}>{v.identifier}</option>
-              ))}
-            </select>
-          </div>
-          <div className="options">
-            <span>漫畫排版：</span>
-            <select
-              value={window.BMA.settingsState.displayMode}
-              onChange={(event) => {
-                window.BMA.settingsState.displayMode = Number(
-                  event.target.value
-                );
-                window.BMA.settingsState.update();
-              }}
-            >
-              <option value={0}>自動</option>
-              <option value={1}>單頁</option>
-              <option value={2}>雙頁</option>
-            </select>
-          </div>
-          <div className="options">
-            <span>強制翻譯為繁體：</span>
-            <Checkbox
-              checked={window.BMA.settingsState.forceTranslate}
-              onChange={(_, checked) => {
-                window.BMA.settingsState.forceTranslate = checked;
-                window.BMA.settingsState.update();
-              }}
-            />
-          </div>
-          <div className="options">
-            <span>實驗性功能：</span>
-            <Button
-              variant={"outlined"}
-              size="small"
-              onClick={() => window.stack.push(<ExperimentalSettings />)}
-            >
-              功能選單
-            </Button>
-          </div>
-
-          <div className="options">
-            <span>開發者模式：</span>
-            <Checkbox
-              checked={window.BMA.settingsState.debugMode}
-              onChange={(_, checked) => {
-                window.BMA.settingsState.debugMode = checked;
-                window.BMA.settingsState.update();
-              }}
-            />
-          </div>
-          <div className="options">
-            <span>伺服器版本：</span>
-            <b>{window.BMA.version}</b>
-          </div>
-          <div className="options">
-            <span>客戶端版本：</span>
-            <b>{process.env.REACT_APP_VERSION}</b>
+          <h3>版本</h3>
+          <div className="subSettings">
+            <div className="options">
+              <span>伺服器版本：</span>
+              <b>{window.BMA.version}</b>
+            </div>
+            <div className="options">
+              <span>客戶端版本：</span>
+              <b>{process.env.REACT_APP_VERSION}</b>
+            </div>
           </div>
         </div>
         <p id="credit">

@@ -272,8 +272,7 @@ class Read extends Component<
         // check if top is reached
         if (
           this.readRef &&
-          window.BMA.settingsState
-            .experimentalOverscrollToLoadPreviousEpisodes &&
+          window.BMA.settingsState.overscrollToLoadPreviousEpisodes &&
           !this.isOverscolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))

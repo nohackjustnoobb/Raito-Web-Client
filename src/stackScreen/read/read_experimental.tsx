@@ -88,7 +88,7 @@ class ReadExperimental extends Component<
           delay: 300,
         },
         pullDownRefresh: window.BMA.settingsState
-          .experimentalOverscrollToLoadPreviousEpisodes
+          .overscrollToLoadPreviousEpisodes
           ? {
               threshold: 50,
               stop: 0,

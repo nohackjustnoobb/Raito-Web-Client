@@ -114,8 +114,8 @@
 
       .extra {
         font-weight: bold;
-        color: #bdbdbd;
-        background-color: #efefef;
+        color: #b0b0b0;
+        background-color: #e6e6e6;
         padding: 1rem;
         font-size: 1rem;
         border-radius: 2rem;
@@ -129,7 +129,7 @@
       }
 
       .enable {
-        color: white;
+        color: #f7f7f7;
         background-color: #575757;
       }
     }
@@ -148,8 +148,8 @@
 
       li {
         cursor: pointer;
-        background-color: #f4f4f4;
-        color: #a9a4a4;
+        background-color: #ececec;
+        color: #929292;
         font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
@@ -185,7 +185,7 @@
 
     .notCollected {
       width: 20%;
-      color: white;
+      color: #f7f7f7;
       background-color: #575757;
     }
 
@@ -238,7 +238,7 @@
       height: 65%;
       width: calc(100% - 2rem);
       bottom: 0;
-      background-color: white;
+      background-color: #f7f7f7;
       border-radius: 1rem 1rem 0 0;
       box-shadow: 0 -5px 10px #00000044;
       padding: 1rem;
@@ -282,7 +282,7 @@
       top: 1rem;
     }
 
-    background-color: white;
+    background-color: #f7f7f7;
     width: calc(100% - 2rem);
     height: 100%;
     padding: 1rem;

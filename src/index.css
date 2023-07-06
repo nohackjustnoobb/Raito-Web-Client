@@ -8,6 +8,7 @@ body {
   scroll-behavior: smooth;
   cursor: default;
   -webkit-tap-highlight-color: transparent;
+  background-color: #f7f7f7;
 }
 
 #root {

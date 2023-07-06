@@ -57,20 +57,6 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
                 />
               </div>
               <div className="options">
-                <span>OverscrollToLoadPreviousEpisodes:</span>
-                <Checkbox
-                  checked={
-                    window.BMA.settingsState
-                      .experimentalOverscrollToLoadPreviousEpisodes
-                  }
-                  onChange={(_, checked) => {
-                    window.BMA.settingsState.experimentalOverscrollToLoadPreviousEpisodes =
-                      checked;
-                    window.BMA.settingsState.update();
-                  }}
-                />
-              </div>
-              <div className="options">
                 <span>SwipeDownToPopDetails:</span>
                 <Checkbox
                   checked={

@@ -96,8 +96,8 @@ class SearchBar extends React.Component<
   }
 
   componentDidUpdate(prevProps: { keyword: string | null }) {
-    if (this.props.keyword && this.props.keyword !== prevProps.keyword)
-      this.setState({ keyword: this.props.keyword });
+    if (this.props.keyword !== prevProps.keyword)
+      this.setState({ keyword: this.props.keyword ?? "" });
   }
 
   render(): React.ReactNode {
@@ -204,9 +204,6 @@ class LibrariesTab extends React.Component<
 
     // set global variable for searching
     window.search = (keyword: string) => this.setState({ keyword: keyword });
-
-    // update the component
-    this.forceUpdate();
   }
 
   componentWillUnmount() {
@@ -214,6 +211,8 @@ class LibrariesTab extends React.Component<
   }
 
   componentDidUpdate(): void {
+    if (window.tabIndex !== 2) return;
+
     // check if the driver is changed
     if (this.driver !== window.BMA.selectedDriver?.identifier) {
       // scroll back to the top
@@ -382,9 +381,9 @@ class LibrariesTab extends React.Component<
               <p id="noMatchManga">沒有符合條件的漫畫</p>
             )}
             <div id="content">
-              {manga.map((manga) => (
+              {manga.map((manga, index) => (
                 <div
-                  key={`${manga.driver.identifier}${manga.id}`}
+                  key={`${manga.driver.identifier}${manga.id}${index}`}
                   onClick={() => manga.pushDetails()}
                   className="manga"
                 >

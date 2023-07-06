@@ -19,6 +19,7 @@ declare global {
     stack: Stack;
     BMA: BetterMangaApp;
     FUM: ForceUpdateManager;
+    tabIndex: number;
   }
 }
 

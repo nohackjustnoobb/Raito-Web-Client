@@ -38,6 +38,12 @@ class App extends Component<{}, { tabIndex: number; enable: boolean }> {
     window.setTab = (index: number): void => this.setState({ tabIndex: index });
     window.toggleTab = (enable: boolean): void =>
       this.setState({ enable: enable });
+    this.forceUpdate();
+  }
+
+  componentDidUpdate(): void {
+    window.tabIndex = this.state.tabIndex;
+    window.forceUpdate();
   }
 
   render(): ReactNode {

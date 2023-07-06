@@ -6,7 +6,7 @@ import { liveQuery } from "dexie";
 
 import db, { history } from "../../classes/db";
 import "./histories.scss";
-import { pushLoader } from "../../utils/utils";
+import { convertRemToPixels, pushLoader } from "../../utils/utils";
 import { Manga } from "../../classes/manga";
 
 class HistoriesTabState extends React.Component {
@@ -55,8 +55,12 @@ class HistoriesTabState extends React.Component {
   }
 }
 
-class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
+class HistoriesTab extends React.Component<
+  {},
+  { histories: Array<history>; showImage: boolean; limit: number }
+> {
   interval: NodeJS.Timeout | null = null;
+  content: HTMLDivElement | null = null;
   FUMID: number | null = null;
 
   constructor(props: {}) {
@@ -64,6 +68,8 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
 
     this.state = {
       histories: [],
+      showImage: false,
+      limit: 20,
     };
   }
 
@@ -86,7 +92,34 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
     if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
+  componentDidUpdate(): void {
+    if (window.tabIndex === 1 && !this.state.showImage) {
+      this.setState({ showImage: true }, () => this.shouldLoadMore());
+    }
+  }
+
+  shouldLoadMore() {
+    if (!this.content) return;
+    const element = this.content;
+
+    // check if reached the bottom or not scrollable
+    if (
+      element.scrollHeight - element.scrollTop === element.clientHeight ||
+      (window.innerWidth > window.innerHeight &&
+        element.clientHeight < window.innerHeight - convertRemToPixels(5))
+    ) {
+      this.setState({ limit: this.state.limit + 20 }, () => {
+        if (this.state.limit < this.state.histories.length)
+          this.shouldLoadMore();
+      });
+    }
+  }
+
   render(): React.ReactNode {
+    const histories = this.state.histories
+      .sort((a, b) => b.datetime - a.datetime)
+      .slice(0, this.state.limit);
+
     return (
       <div id="histories">
         {this.state.histories.length === 0 && (
@@ -94,18 +127,21 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
             <p>沒有歴史</p>
           </div>
         )}
-        <div id="historiesWrapper">
+        <div
+          id="historiesWrapper"
+          onScroll={() => this.shouldLoadMore()}
+          ref={(ref) => (this.content = ref)}
+        >
           <div id="historiesContent">
-            {this.state.histories
-              .sort((a, b) => b.datetime - a.datetime)
-              .map((history) => {
-                const date = new Date(history.datetime);
+            {histories.map((history) => {
+              const date = new Date(history.datetime);
 
-                return (
-                  <div
-                    className="history"
-                    key={`${history.id}_${history.driver}`}
-                  >
+              return (
+                <div
+                  className="history"
+                  key={`${history.id}_${history.driver}`}
+                >
+                  {this.state.showImage && (
                     <img
                       src={history.thumbnail}
                       alt=""
@@ -123,45 +159,46 @@ class HistoriesTab extends React.Component<{}, { histories: Array<history> }> {
                         manga.pushDetails();
                       }}
                     />
-                    <div className="info">
-                      <h3>{window.BMA.translate(history.title)}</h3>
-                      <h4>
-                        上次看到 {window.BMA.translate(history.episode!)} 第
-                        {history.page}頁
-                      </h4>
-                      <h5>更新到 {window.BMA.translate(history.latest)}</h5>
-                      {window.BMA.settingsState.debugMode && (
-                        <div className="debugInfo">
-                          <h5>
-                            {history.driver} <i>#{history.id}</i>
-                          </h5>
-                          <h5>{date.toLocaleString("en-GB")}</h5>
-                        </div>
-                      )}
-                    </div>
-
-                    <div
-                      className="continue"
-                      onClick={async () => {
-                        pushLoader();
-                        // load manga
-                        const manga = await Manga.fromID(
-                          history.id,
-                          history.driver
-                        );
-
-                        // pop the loader
-                        window.stack.pop();
-                        // show details
-                        manga.continue();
-                      }}
-                    >
-                      <Icon path={mdiBookArrowRight} size={1.5} />
-                      續看
-                    </div>
+                  )}
+                  <div className="info">
+                    <h3>{window.BMA.translate(history.title)}</h3>
+                    <h4>
+                      上次看到 {window.BMA.translate(history.episode!)} 第
+                      {history.page}頁
+                    </h4>
+                    <h5>更新到 {window.BMA.translate(history.latest)}</h5>
+                    {window.BMA.settingsState.debugMode && (
+                      <div className="debugInfo">
+                        <h5>
+                          {history.driver} <i>#{history.id}</i>
+                        </h5>
+                        <h5>{date.toLocaleString("en-GB")}</h5>
+                      </div>
+                    )}
                   </div>
-                );
-              })}
+
+                  <div
+                    className="continue"
+                    onClick={async () => {
+                      pushLoader();
+                      // load manga
+                      const manga = await Manga.fromID(
+                        history.id,
+                        history.driver
+                      );
+
+                      // pop the loader
+                      window.stack.pop();
+                      // show details
+                      manga.continue();
+                    }}
+                  >
+                    <Icon path={mdiBookArrowRight} size={1.5} />
+                    續看
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

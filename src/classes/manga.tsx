@@ -77,12 +77,13 @@ class SimpleManga {
     const history = await db.histories.get([this.driver.identifier, this.id]);
     if (history) {
       // update only when latest is changed
-      if (history.latest !== this.latest) {
-        await db.histories.update([this.driver.identifier, this.id], {
-          latest: this.latest,
-          datetime: Date.now(),
-        });
-      }
+      await db.histories.update([this.driver.identifier, this.id], {
+        thumbnail: this.thumbnail,
+        title: this.title,
+        latest: this.latest,
+        datetime: Date.now(),
+        new: false,
+      });
     } else {
       await db.histories.add({
         driver: this.driver.identifier,
@@ -164,6 +165,8 @@ class Manga extends SimpleManga {
       (this.episodes.serial.length === 0
         ? this.episodes.extra[0]
         : this.episodes.serial[0]);
+
+    console.log(this);
   }
 
   read(episodesIndex: number, isExtra: boolean, page: number | null = null) {

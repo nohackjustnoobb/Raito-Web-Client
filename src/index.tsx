@@ -24,30 +24,7 @@ declare global {
 
 // initialize the main engine
 window.BMA = new BetterMangaApp();
-window.BMA.initialize().then(() => {
-  // initialize the main UI
-  const root = ReactDOM.createRoot(
-    document.getElementById("root") as HTMLElement
-  );
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#000",
-      },
-      secondary: {
-        main: "#006affaa",
-      },
-    },
-  });
-
-  root.render(
-    <ThemeProvider theme={theme}>
-      <StackView />
-      <App />
-    </ThemeProvider>
-  );
-});
+window.BMA.initialize();
 
 // initialize the helper class
 window.FUM = new ForceUpdateManager();
@@ -61,5 +38,28 @@ document.addEventListener("visibilitychange", () => {
   window.BMA.updateCollectionsState.isUpdating = false;
   window.BMA.syncState.isSyncing = false;
 });
+
+// initialize the main UI
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#000",
+    },
+    secondary: {
+      main: "#006affaa",
+    },
+  },
+});
+
+root.render(
+  <ThemeProvider theme={theme}>
+    <StackView />
+    <App />
+  </ThemeProvider>
+);
 
 serviceWorkerRegistration.register();

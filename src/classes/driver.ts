@@ -141,7 +141,6 @@ class Driver {
       // cache the manga by its type
       if (showAll) {
         const manga: Manga = new Manga(v);
-        this.simpleManga[manga.id] = manga.toSimple();
         this.manga[manga.id] = manga;
       } else {
         const manga: SimpleManga = new SimpleManga(v);

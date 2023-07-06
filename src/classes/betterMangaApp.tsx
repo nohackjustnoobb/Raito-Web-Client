@@ -5,7 +5,6 @@ import Driver from "./driver";
 import User from "./user";
 import SettingsState from "./settingsState";
 import db from "./db";
-import { Manga } from "./manga";
 
 interface UpdateCollectionsState {
   isUpdating: boolean;
@@ -37,9 +36,6 @@ class BetterMangaApp {
     if (this.updateCollectionsState.isUpdating) return;
     this.updateCollectionsState.isUpdating = true;
 
-    // max number of items fetch at once
-    const chunkSize = 20;
-
     // get all the items that needed to update
     const collections = await db.collections.toArray();
 
@@ -51,58 +47,77 @@ class BetterMangaApp {
     const end = collections.filter((v) => v.isEnd);
 
     // function for updateing the state
-    const updateState = () =>
-      (this.updateCollectionsState.currentState = `${counter} / ${collections.length}`);
+    const updateState = () => {
+      this.updateCollectionsState.currentState = `${counter} / ${collections.length}`;
+      window.forceUpdate();
+    };
     updateState();
-    window.forceUpdate();
 
     for (let items of [notEnd, end]) {
-      // sort items by driver
-      let sorted: { [driver: string]: Array<string> } = {};
-      for (let item of items) {
-        if (!sorted[item.driver]) sorted[item.driver] = [];
-        sorted[item.driver].push(item.id);
-      }
-
-      let promises = [];
-      // loop through each driver
-      for (const driverID in sorted) {
-        promises.push(
-          // eslint-disable-next-line no-loop-func
-          (async () => {
-            // get the driver object
-            const driver = this.getDriver(driverID);
-
-            const ids = sorted[driverID];
-
-            // split the ids every chunkSize
-            const chunks = [];
-            for (let i = 0; i < ids.length; i += chunkSize) {
-              const chunk = ids.slice(i, i + chunkSize);
-              chunks.push(chunk);
-            }
-
-            for (const chunk of chunks) {
-              // get the manga
-              await driver?.getDetails(chunk, false, false);
-
-              // update the state
-              counter += chunk.length;
-              updateState();
-              window.forceUpdate();
-
-              await driver?.update();
-            }
-          })()
-        );
-      }
-
-      await Promise.all(promises);
+      await this.fetchBatchManga(
+        items.map((item) => ({ driver: item.driver, id: item.id })),
+        // eslint-disable-next-line no-loop-func
+        (chunkSize: number) => {
+          // update the state
+          counter += chunkSize;
+          updateState();
+        }
+      );
     }
 
     this.updateCollectionsState.lastUpdate = Date.now();
     this.updateCollectionsState.isUpdating = false;
     window.forceUpdate();
+  }
+
+  async fetchBatchManga(
+    ids: Array<{ driver: string; id: string }>,
+    actionsAfterEachFetch?: (chunkSize: number) => void
+  ) {
+    if (!ids.length) return;
+
+    // max number of items fetch at once
+    const chunkSize = 20;
+
+    // sort items by driver
+    let sorted: { [driver: string]: Array<string> } = {};
+    for (let item of ids) {
+      if (!sorted[item.driver]) sorted[item.driver] = [];
+      sorted[item.driver].push(item.id);
+    }
+
+    let promises = [];
+    // loop through each driver
+    for (const driverID in sorted) {
+      promises.push(
+        // eslint-disable-next-line no-loop-func
+        (async () => {
+          // get the driver object
+          const driver = this.getDriver(driverID);
+
+          const ids = sorted[driverID];
+
+          // split the ids every chunkSize
+          const chunks = [];
+          for (let i = 0; i < ids.length; i += chunkSize) {
+            const chunk = ids.slice(i, i + chunkSize);
+            chunks.push(chunk);
+          }
+
+          for (const chunk of chunks) {
+            // get the manga
+            await driver?.getDetails(chunk, false, false);
+
+            // update the state
+            if (actionsAfterEachFetch) actionsAfterEachFetch(chunk.length);
+
+            await driver?.update();
+          }
+        })()
+      );
+    }
+
+    await Promise.all(promises);
   }
 
   async syncHistories() {
@@ -158,16 +173,22 @@ class BetterMangaApp {
 
     // update the local collections
     localCollections = await db.collections.toArray();
+    let addedManga: Array<{ driver: string; id: string }> = [];
 
-    for (const collection of remoteCollections) {
+    for (const manga of remoteCollections) {
       if (
         !localCollections.find(
-          (v) => v.id === collection.id && v.driver === collection.driver
+          (v) => v.id === manga.id && v.driver === manga.driver
         )
       ) {
-        (await Manga.fromID(collection.id, collection.driver)).add(false);
+        addedManga.push({ driver: manga.driver, id: manga.id });
       }
     }
+
+    await this.fetchBatchManga(addedManga);
+    addedManga.forEach((manga) => {
+      this.getDriver(manga.driver)?.simpleManga[manga.id].add(false);
+    });
   }
 
   async sync() {

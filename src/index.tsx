@@ -8,6 +8,7 @@ import StackView, { Stack } from "./stackScreen/stack";
 import ForceUpdateManager from "./classes/forceUpdateManager";
 
 import "./index.css";
+import { Manga } from "./classes/manga";
 
 // declare global variables
 declare global {
@@ -25,7 +26,23 @@ declare global {
 
 // initialize the main engine
 window.BMA = new BetterMangaApp();
-window.BMA.initialize();
+window.BMA.initialize().then(async () => {
+  if (
+    window.location.pathname === "/details" ||
+    window.location.pathname === "/details/"
+  ) {
+    // driver and id
+    const params = new URLSearchParams(window.location.search);
+    const driver = params.get("driver");
+    const id = params.get("id");
+
+    if (driver && id) {
+      // show details and reset url
+      (await Manga.fromID(id, driver)).pushDetails();
+      window.history.replaceState({}, "", "/");
+    }
+  }
+});
 
 // initialize the helper class
 window.FUM = new ForceUpdateManager();

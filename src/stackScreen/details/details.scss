@@ -1,4 +1,4 @@
-.content-enter {
+content-enter {
   transform: translateY(100%);
 }
 
@@ -230,6 +230,24 @@
       .close {
         top: env(safe-area-inset-top);
       }
+
+      .share {
+        background-color: #00000077;
+        color: white;
+        position: absolute;
+        padding: 0.5rem;
+        border-radius: 50%;
+        top: env(safe-area-inset-top);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        right: 1rem;
+        cursor: pointer;
+
+        svg {
+          transform: translateX(-1px);
+        }
+      }
     }
 
     .content {
@@ -299,6 +317,24 @@
         aspect-ratio: 9/12;
         object-fit: cover;
         height: 55vh;
+      }
+    }
+
+    .status {
+      div {
+        display: flex;
+
+        .share {
+          color: #b0b0b0;
+          border-radius: 1rem;
+          top: env(safe-area-inset-top);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          right: 1rem;
+          margin-right: 0.5rem;
+          cursor: pointer;
+        }
       }
     }
 

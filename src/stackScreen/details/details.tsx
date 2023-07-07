@@ -1,7 +1,12 @@
 import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
-import { mdiChevronLeft, mdiStar, mdiStarOffOutline } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiStar,
+  mdiStarOffOutline,
+  mdiShareVariantOutline,
+} from "@mdi/js";
 import { liveQuery } from "dexie";
 
 import "./details.scss";
@@ -128,6 +133,32 @@ class Details extends Component<
       </div>
     );
 
+    const shareButton = (
+      <div
+        className="share"
+        onClick={async () => {
+          // construct the url
+          let shareUrl = new URL(window.location.href);
+          shareUrl.pathname = "/details";
+          shareUrl.searchParams.append(
+            "driver",
+            this.state.manga!.driver.identifier
+          );
+          shareUrl.searchParams.append("id", this.state.manga!.id);
+
+          // share it
+          try {
+            await navigator.share({
+              url: shareUrl.href,
+              title: window.BMA.translate(this.state.manga!.title),
+            });
+          } catch {}
+        }}
+      >
+        <Icon path={mdiShareVariantOutline} size={isVertical ? 1.25 : 1} />
+      </div>
+    );
+
     const thumbnail = (
       <img
         src={this.state.manga ? this.state.manga.thumbnail : undefined}
@@ -142,14 +173,17 @@ class Details extends Component<
           <h2 className="isEnd">
             {this.state.manga?.isEnd ? "完結" : "連載中"}
           </h2>
-          {Boolean(this.state.manga?.episodes.extra.length) && (
-            <div
-              className={`extra ${this.state.extra ? "enable" : ""}`}
-              onClick={() => this.setState({ extra: !this.state.extra })}
-            >
-              番外
-            </div>
-          )}
+          <div>
+            {!isVertical && shareButton}
+            {Boolean(this.state.manga?.episodes.extra.length) && (
+              <div
+                className={`extra ${this.state.extra ? "enable" : ""}`}
+                onClick={() => this.setState({ extra: !this.state.extra })}
+              >
+                番外
+              </div>
+            )}
+          </div>
         </div>
         <ul className="episodes">
           {this.state.manga &&
@@ -212,6 +246,7 @@ class Details extends Component<
                   ref={(ref) => (this.verticalBackgroundRef = ref)}
                 >
                   {closeButton}
+                  {shareButton}
                   {thumbnail}
                 </div>
               </CSSTransition>

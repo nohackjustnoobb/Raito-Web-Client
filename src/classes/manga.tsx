@@ -165,8 +165,6 @@ class Manga extends SimpleManga {
       (this.episodes.serial.length === 0
         ? this.episodes.extra[0]
         : this.episodes.serial[0]);
-
-    console.log(this);
   }
 
   read(episodesIndex: number, isExtra: boolean, page: number | null = null) {

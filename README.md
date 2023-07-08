@@ -1,6 +1,6 @@
-# Better Manga App
+# Better-Manga-Web-Client
 
-Better Manga App / Server is an open-source project aimed at simplifying the process of reading manga. The project comprises two parts: front-end and back-end. This repository contains the front-end component of the project, which requires a back-end server to operate. The back-end server can be found in the following repository: [Better-Manga-Server](https://github.com/nohackjustnoobb/Better-Manga-Server).
+Better Manga App is an open-source project aimed at simplifying the process of reading manga. The project comprises two parts: front-end and back-end. This repository contains the front-end component of the project, which requires a back-end server to operate. The back-end server can be found in the following repository: [Better-Manga-Server](https://github.com/nohackjustnoobb/Better-Manga-Server).
 
 ## Quick Start
 
@@ -18,13 +18,13 @@ REACT_APP_ADDRESS=http://<backend-server-ip-address>/
 1. Clone the project
 
 ```
-git clone https://github.com/nohackjustnoobb/Better-Manga-App
+git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git
 ```
 
 2. CD into the project and install the dependencies
 
 ```
-cd Better-Manga-App && yarn install
+cd Better-Manga-Web-Client && yarn install
 ```
 
 3. Build the project
@@ -40,13 +40,13 @@ The compiled project should be under the `build` folder.
 1. Clone the project
 
 ```
-git clone https://github.com/nohackjustnoobb/Better-Manga-App
+git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git
 ```
 
 2. CD into the project and install the dependencies
 
 ```
-cd Better-Manga-App && yarn install
+cd Better-Manga-Web-Client && yarn install
 ```
 
 3. Start the server

@@ -160,7 +160,7 @@ class SettingsTab extends React.Component {
         <p id="credit">
           This application is released under the MIT license as open source. (
           <a
-            href="https://github.com/nohackjustnoobb/Better-Manga-App"
+            href="https://github.com/nohackjustnoobb/Better-Manga-Web-Client"
             target={"_blank"}
             rel="noreferrer"
           >

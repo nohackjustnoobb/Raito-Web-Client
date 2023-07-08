@@ -1,4 +1,4 @@
-import zhConvertor from "zhconvertor";
+import chinese from "s2t-chinese";
 
 import { errorHandler } from "../utils/utils";
 import Driver from "./driver";
@@ -235,18 +235,7 @@ class BetterMangaApp {
   translate(text: string): string {
     if (!this.settingsState.forceTranslate) return text;
 
-    const replaceWordPairs: { [wordToReplace: string]: string } = {
-      捲: "卷",
-      係: "系",
-    };
-
-    // loop through all word pairs and replace the words
-    let resultText: string = zhConvertor.s2t(text);
-    for (const word in replaceWordPairs) {
-      resultText = resultText.replaceAll(word, replaceWordPairs[word]);
-    }
-
-    return resultText;
+    return chinese.s2t(text);
   }
 
   async selectDriver(id: string) {

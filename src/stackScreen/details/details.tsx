@@ -53,6 +53,14 @@ class Details extends Component<
     // show loader
     pushLoader();
     const manga = await this.props.manga.getDetails();
+
+    // check if success
+    if (!manga) {
+      // pop the loader
+      window.stack.pop();
+      return this.close();
+    }
+
     // get the details
     this.setState(
       {

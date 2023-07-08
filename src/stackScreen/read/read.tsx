@@ -183,7 +183,7 @@ class Read extends Component<
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {
-    if (this.lastLoad && Date.now() < this.lastLoad + 5000) return;
+    if (this.lastLoad && Date.now() < this.lastLoad + 2500) return;
     if (setLastLoad) this.lastLoad = Date.now();
 
     // reset previous height data
@@ -207,15 +207,26 @@ class Read extends Component<
       return window.stack.push(<Warning noNextOne={false} />);
 
     // get the urls
-
     var urls = await this.props.manga.get(index, this.props.isExtra);
-    this.setState((prevState) => ({
-      episodesUrls: {
-        ...prevState.episodesUrls,
-        [index]: urls,
-      },
-      show: true,
-    }));
+    this.setState(
+      (prevState) => ({
+        episodesUrls: {
+          ...prevState.episodesUrls,
+          [index]: urls,
+        },
+        show: true,
+      }),
+      () => {
+        // load next episode if only one page
+        if (
+          urls.length <= 1 &&
+          Object.keys(this.state.episodesUrls).length === 1
+        ) {
+          this.lastLoad = null;
+          this.loadMore();
+        }
+      }
+    );
 
     // cache previous height
     if (!next && this.readRef) {

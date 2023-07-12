@@ -58,7 +58,7 @@ class Login extends Component<
           <div className="login">
             <div className="background" onClick={() => this.close()} />
             <div className="loginContent">
-              <img src="./icon-512x512.png" alt="" />
+              <img src="./icon-transparent.png" alt="" />
               <h2>Better Manga App</h2>
               <div className="row">
                 <TextField

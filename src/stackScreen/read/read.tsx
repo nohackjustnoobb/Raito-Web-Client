@@ -217,10 +217,10 @@ class Read extends Component<
         show: true,
       }),
       () => {
-        // load next episode if only one page
+        // load next episode if less there page
         if (
           urls.length <= 1 &&
-          Object.keys(this.state.episodesUrls).length === 1
+          Object.keys(this.state.episodesUrls).length < 3
         ) {
           this.lastLoad = null;
           this.loadMore();

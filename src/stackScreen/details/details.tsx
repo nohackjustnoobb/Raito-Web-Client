@@ -2,7 +2,7 @@ import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
 import {
-  mdiChevronLeft,
+  mdiClose,
   mdiStar,
   mdiStarOffOutline,
   mdiShareVariantOutline,
@@ -137,7 +137,7 @@ class Details extends Component<
 
     const closeButton = (
       <div className="close" onClick={() => this.close()}>
-        <Icon path={mdiChevronLeft} size={1.5} color={"white"} />
+        <Icon path={mdiClose} size={1.5} color={"white"} />
       </div>
     );
 

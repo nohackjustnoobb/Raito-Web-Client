@@ -77,9 +77,6 @@ class BetterMangaApp {
   ) {
     if (!ids.length) return;
 
-    // max number of items fetch at once
-    const chunkSize = 20;
-
     // sort items by driver
     let sorted: { [driver: string]: Array<string> } = {};
     for (let item of ids) {
@@ -96,13 +93,19 @@ class BetterMangaApp {
           // get the driver object
           const driver = this.getDriver(driverID);
 
+          const chunkSize = driver!.recommendedChunkSize;
+
           const ids = sorted[driverID];
 
           // split the ids every chunkSize
-          const chunks = [];
-          for (let i = 0; i < ids.length; i += chunkSize) {
-            const chunk = ids.slice(i, i + chunkSize);
-            chunks.push(chunk);
+          let chunks: Array<Array<string>> = [];
+          if (chunkSize !== 0) {
+            for (let i = 0; i < ids.length; i += chunkSize) {
+              let chunk = ids.slice(i, i + chunkSize);
+              chunks.push(chunk);
+            }
+          } else {
+            chunks.push(ids);
           }
 
           for (const chunk of chunks) {

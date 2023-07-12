@@ -9,6 +9,7 @@ class Driver {
   simpleManga: { [id: string]: SimpleManga } = {};
   manga: { [id: string]: Manga } = {};
   initialized: boolean = false;
+  recommendedChunkSize: number = 0;
 
   constructor(public identifier: string) {}
 
@@ -21,6 +22,7 @@ class Driver {
     });
     this.categories = result.categories;
     this.supportSuggestion = result.suggestion;
+    this.recommendedChunkSize = result.recommendedChunkSize;
 
     // update the screens
     window.forceUpdate();

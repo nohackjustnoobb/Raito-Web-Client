@@ -10,10 +10,12 @@ class SettingsState {
   displayMode: DisplayMode = DisplayMode.Auto;
   overscrollToLoadPreviousEpisodes: boolean = true;
   debugMode: boolean = false;
+  ignoreError: boolean = true;
 
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
   experimentalUseZoomableComponent: boolean = false;
+  experimentalShare: boolean = false;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -34,6 +36,7 @@ class SettingsState {
       this.forceTranslate =
         this.loadBool("forceTranslate") ?? this.forceTranslate;
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
+      this.ignoreError = this.loadBool("ignoreError") ?? this.ignoreError;
       this.overscrollToLoadPreviousEpisodes =
         this.loadBool("overscrollToLoadPreviousEpisodes") ??
         this.overscrollToLoadPreviousEpisodes;
@@ -45,6 +48,8 @@ class SettingsState {
       this.experimentalUseZoomableComponent =
         this.loadBool("experimentalUseZoomableComponent") ??
         this.experimentalUseZoomableComponent;
+      this.experimentalShare =
+        this.loadBool("experimentalShare") ?? this.experimentalShare;
 
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
@@ -60,6 +65,7 @@ class SettingsState {
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
+    this.saveBool("ignoreError", this.ignoreError);
     this.saveBool(
       "overscrollToLoadPreviousEpisodes",
       this.overscrollToLoadPreviousEpisodes
@@ -74,6 +80,7 @@ class SettingsState {
       "experimentalUseZoomableComponent",
       this.experimentalUseZoomableComponent
     );
+    this.saveBool("experimentalShare", this.experimentalShare);
   }
 
   reset() {
@@ -92,7 +99,7 @@ class SettingsState {
   async initialize() {
     // check if there are default driver
     if (!this.defaultDriver) {
-      await window.BMA.fetch("GET", "", {}, undefined, {}, false);
+      await window.BMA.get("");
       this.defaultDriver = window.BMA.availableDrivers[0].identifier;
     }
 

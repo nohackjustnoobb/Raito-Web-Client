@@ -69,6 +69,17 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
                   }}
                 />
               </div>
+              <div className="options">
+                <span>Share:</span>
+                <Checkbox
+                  checked={window.BMA.settingsState.experimentalShare}
+                  onChange={(_, checked) => {
+                    window.BMA.settingsState.experimentalShare = checked;
+                    window.BMA.settingsState.update();
+                  }}
+                />
+              </div>
+
               <Button
                 variant={"outlined"}
                 size="small"

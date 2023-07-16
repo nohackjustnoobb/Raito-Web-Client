@@ -29,6 +29,8 @@ class BetterMangaApp {
 
   async initialize() {
     await this.settingsState.initialize();
+    await this.sync();
+    await this.updateCollections();
   }
 
   async updateCollections() {
@@ -296,7 +298,11 @@ class BetterMangaApp {
     }
 
     // handle the error if any
-    return handleError && (await errorHandler(response));
+    return (
+      handleError &&
+      !this.settingsState.ignoreError &&
+      (await errorHandler(response))
+    );
   }
 
   // helper function to GET and POST

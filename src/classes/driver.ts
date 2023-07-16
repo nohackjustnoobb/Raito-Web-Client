@@ -17,7 +17,7 @@ class Driver {
     this.initialized = true;
 
     // get the driver information
-    const result = await window.BMA.get("categories", {
+    const result = await window.BMA.get("driver", {
       driver: this.identifier,
     });
     this.categories = result.categories;

@@ -40,9 +40,9 @@ class CollectionsTabState extends React.Component {
               更新於{" "}
               {Math.round(
                 (Date.now() - window.BMA.updateCollectionsState.lastUpdate) /
-                  1000
+                  60000
               )}{" "}
-              秒前
+              分鐘前
             </p>
           )
         )}
@@ -79,18 +79,6 @@ class CollectionsTab extends React.Component<
     liveQuery(() => db.histories.toArray()).subscribe((result) =>
       this.setState({ histories: result })
     );
-
-    // update the collection after syncing
-    setTimeout(async () => {
-      while (!window.BMA.syncState.lastSync) {
-        // sleep for 50 ms
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
-
-      window.BMA.updateCollections();
-    });
-
-    this.interval = setInterval(() => window.BMA.updateCollections(), 60000);
   }
 
   componentWillUnmount() {

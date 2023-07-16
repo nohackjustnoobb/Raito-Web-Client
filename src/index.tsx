@@ -52,9 +52,18 @@ window.addEventListener("resize", () => window.forceUpdate(true));
 window.addEventListener("orientationchange", () => window.forceUpdate(true));
 
 // reset the update and sync state when site is minimized
-document.addEventListener("visibilitychange", () => {
+document.addEventListener("visibilitychange", async () => {
   window.BMA.updateCollectionsState.isUpdating = false;
   window.BMA.syncState.isSyncing = false;
+
+  // update the collections if not updated for 30 seconds
+  if (
+    document.visibilityState === "visible" &&
+    (!window.BMA.updateCollectionsState.lastUpdate ||
+      Date.now() - window.BMA.updateCollectionsState.lastUpdate > 30000)
+  ) {
+    await window.BMA.updateCollections();
+  }
 });
 
 // initialize the main UI

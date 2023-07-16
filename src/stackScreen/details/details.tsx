@@ -141,7 +141,7 @@ class Details extends Component<
       </div>
     );
 
-    const shareButton = (
+    const shareButton = window.BMA.settingsState.experimentalShare ? (
       <div
         className="share"
         onClick={async () => {
@@ -165,6 +165,8 @@ class Details extends Component<
       >
         <Icon path={mdiShareVariantOutline} size={isVertical ? 1.25 : 1} />
       </div>
+    ) : (
+      <></>
     );
 
     const thumbnail = (

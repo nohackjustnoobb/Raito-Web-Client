@@ -134,6 +134,17 @@ class SettingsTab extends React.Component {
             </div>
 
             <div className="options">
+              <span>忽略錯誤：</span>
+              <Checkbox
+                checked={window.BMA.settingsState.ignoreError}
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.ignoreError = checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
+
+            <div className="options">
               <span>開發者模式：</span>
               <Checkbox
                 checked={window.BMA.settingsState.debugMode}

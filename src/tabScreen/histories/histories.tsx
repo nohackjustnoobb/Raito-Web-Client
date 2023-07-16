@@ -83,7 +83,6 @@ class HistoriesTab extends React.Component<
     ).subscribe((result) => this.setState({ histories: result }));
 
     // sync every minute
-    window.BMA.sync();
     this.interval = setInterval(() => window.BMA.sync(), 30000);
   }
 

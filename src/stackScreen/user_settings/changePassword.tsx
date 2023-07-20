@@ -98,6 +98,7 @@ class ChangePassword extends Component<
                 <Button
                   variant="contained"
                   size="small"
+                  color="secondary"
                   fullWidth
                   onClick={() => this.submit()}
                 >

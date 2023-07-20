@@ -38,6 +38,7 @@ class CreateUser extends Component<
     );
 
     if (result) {
+      this.setState({ email: "", password: "" });
       alert("success");
     } else {
       alert("Fail");
@@ -107,6 +108,7 @@ class CreateUser extends Component<
                 <Button
                   variant="contained"
                   size="small"
+                  color="secondary"
                   fullWidth
                   onClick={() => this.submit()}
                 >

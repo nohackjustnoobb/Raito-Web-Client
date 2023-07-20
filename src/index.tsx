@@ -9,12 +9,15 @@ import ForceUpdateManager from "./classes/forceUpdateManager";
 
 import "./index.css";
 import { Manga } from "./classes/manga";
+import { Component, ReactNode } from "react";
+import { Theme } from "./classes/settingsState";
 
 // declare global variables
 declare global {
   interface Window {
     setTab: (index: number) => void;
     forceUpdate: (screenEvent?: boolean) => void;
+    updateRoot: () => void;
     search: (keyword: string) => void;
     toggleTab: (enable: boolean) => void;
     stack: Stack;
@@ -66,27 +69,62 @@ document.addEventListener("visibilitychange", async () => {
   }
 });
 
+// main entry point
+class Main extends Component<{}, { dark: boolean }> {
+  constructor(props: {}) {
+    super(props);
+
+    this.state = {
+      dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+    };
+  }
+
+  componentDidMount(): void {
+    window.updateRoot = this.forceUpdate.bind(this);
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", ({ matches }) => {
+        this.setState({ dark: matches });
+      });
+  }
+
+  render(): ReactNode {
+    const useDarkMode =
+      window.BMA.settingsState.theme === Theme.Auto
+        ? this.state.dark
+        : window.BMA.settingsState.theme === Theme.Dark;
+
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: useDarkMode ? "#fff" : "#000",
+        },
+        secondary: {
+          main: useDarkMode ? "#373737" : "#000",
+        },
+      },
+    });
+
+    document.documentElement.setAttribute(
+      "data-theme",
+      useDarkMode ? "dark" : "light"
+    );
+
+    return (
+      <ThemeProvider theme={theme}>
+        <StackView />
+        <App />
+      </ThemeProvider>
+    );
+  }
+}
+
 // initialize the main UI
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#000",
-    },
-    secondary: {
-      main: "#006affaa",
-    },
-  },
-});
-
-root.render(
-  <ThemeProvider theme={theme}>
-    <StackView />
-    <App />
-  </ThemeProvider>
-);
+root.render(<Main />);
 
 serviceWorkerRegistration.register();

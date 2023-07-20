@@ -30,7 +30,8 @@
     }
 
     .createUserContent {
-      background-color: #f7f7f7;
+      background-color: var(--color-background);
+      color: var(--color-text);
       padding: 2rem;
       position: relative;
       z-index: 2;
@@ -43,6 +44,18 @@
       margin: 1rem;
       max-width: 400px;
       gap: 1rem;
+
+      .MuiFormLabel-root:not(.Mui-focused) {
+        color: var(--color-episodes-text);
+      }
+
+      :not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
+        border-color: var(--color-episodes-text);
+      }
+
+      .MuiInputBase-input {
+        color: var(--color-text);
+      }
 
       span {
         gap: 1rem;

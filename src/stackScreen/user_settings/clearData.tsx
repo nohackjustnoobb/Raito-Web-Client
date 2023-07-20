@@ -74,6 +74,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
                 <Button
                   variant="contained"
                   size="small"
+                  color="secondary"
                   fullWidth
                   onClick={() => this.close()}
                 >

@@ -25,11 +25,13 @@
   .selected {
     font-size: 2rem;
     transform: translateY(0.25rem);
+    color: var(--color-text);
   }
 
   .notSelected {
     font-size: 1rem;
-    color: #bebebe;
+    color: var(--color-text);
+    opacity: 0.5;
     cursor: pointer;
   }
 }

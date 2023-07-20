@@ -54,7 +54,8 @@ content-enter {
       display: flex;
       flex-direction: row;
       font-size: 1rem;
-      color: #888888;
+      color: var(--color-text);
+      opacity: 0.5;
 
       li {
         margin-right: 0.25rem;
@@ -69,6 +70,7 @@ content-enter {
       overflow: hidden;
       text-overflow: ellipsis;
       user-select: all;
+      color: var(--color-text);
       cursor: text;
     }
 
@@ -93,6 +95,7 @@ content-enter {
       margin-bottom: 0.5rem;
       overflow: scroll;
       scrollbar-width: none;
+      color: var(--color-text);
 
       &::-webkit-scrollbar {
         display: none;
@@ -110,12 +113,13 @@ content-enter {
       h2 {
         padding: 0;
         margin: 0;
+        color: var(--color-text);
       }
 
       .extra {
         font-weight: bold;
-        color: #b0b0b0;
-        background-color: #e6e6e6;
+        background-color: var(--color-episodes-background);
+        color: var(--color-episodes-text);
         padding: 1rem;
         font-size: 1rem;
         border-radius: 2rem;
@@ -148,8 +152,8 @@ content-enter {
 
       li {
         cursor: pointer;
-        background-color: #ececec;
-        color: #929292;
+        background-color: var(--color-episodes-background);
+        color: var(--color-episodes-text);
         font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
@@ -173,7 +177,7 @@ content-enter {
     cursor: pointer;
 
     div {
-      border: 0.125rem solid #575757;
+      border: 0.125rem solid var(--color-text);
       border-radius: 0.75rem;
       display: flex;
       justify-content: center;
@@ -181,17 +185,19 @@ content-enter {
       height: 2.5rem;
       padding-left: 1rem;
       padding-right: 1rem;
+      color: var(--color-text);
+      background-color: var(--color-background);
     }
 
     .notCollected {
       width: 20%;
-      color: #f7f7f7;
-      background-color: #575757;
+      color: var(--color-background);
+      background-color: var(--color-text);
     }
 
     .collected {
       width: 20%;
-      color: #575757;
+      color: var(--color-text);
     }
 
     .read {
@@ -256,7 +262,7 @@ content-enter {
       height: 65%;
       width: calc(100% - 2rem);
       bottom: 0;
-      background-color: #f7f7f7;
+      background-color: var(--color-background);
       border-radius: 1rem 1rem 0 0;
       box-shadow: 0 -5px 10px #00000044;
       padding: 1rem;
@@ -296,11 +302,12 @@ content-enter {
   }
 
   .horizontal {
+    background-color: var(--color-background);
+
     .close {
       top: 1rem;
     }
 
-    background-color: #f7f7f7;
     width: calc(100% - 2rem);
     height: 100%;
     padding: 1rem;

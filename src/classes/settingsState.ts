@@ -4,10 +4,17 @@ enum DisplayMode {
   TwoPages,
 }
 
+enum Theme {
+  Auto,
+  Dark,
+  Light,
+}
+
 class SettingsState {
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
   displayMode: DisplayMode = DisplayMode.Auto;
+  theme: Theme = Theme.Auto;
   overscrollToLoadPreviousEpisodes: boolean = true;
   debugMode: boolean = false;
   ignoreError: boolean = true;
@@ -56,6 +63,9 @@ class SettingsState {
         displayModeString !== null
           ? JSON.parse(displayModeString)
           : this.displayMode;
+
+      const themeString = localStorage.getItem("theme");
+      this.theme = themeString !== null ? JSON.parse(themeString) : this.theme;
     }
   }
 
@@ -63,6 +73,7 @@ class SettingsState {
     if (this.defaultDriver)
       localStorage.setItem("defaultDriver", this.defaultDriver);
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
+    localStorage.setItem("theme", JSON.stringify(this.theme));
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
@@ -108,4 +119,4 @@ class SettingsState {
 }
 
 export default SettingsState;
-export { DisplayMode };
+export { DisplayMode, Theme };

@@ -9,11 +9,13 @@
     display: flex;
     align-items: center;
     transform: translateY(0.25rem);
+    color: var(--color-text);
   }
 
   p {
     margin: 0;
-    color: #cbcbcb;
+    color: var(--color-text);
+    opacity: 0.4;
   }
 }
 
@@ -54,6 +56,7 @@
     width: 100%;
     opacity: 0.5;
     font-size: 1.5rem;
+    color: var(--color-text);
   }
 
   .collection {
@@ -75,11 +78,13 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--color-text);
     }
 
     h5 {
       margin: 0;
-      color: #999;
+      color: var(--color-text);
+      opacity: 0.4;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

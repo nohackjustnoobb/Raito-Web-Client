@@ -52,7 +52,7 @@ class UserSettings extends Component<{}, { show: boolean }> {
                   <Button
                     variant="contained"
                     size="small"
-                    color="secondary"
+                    color="info"
                     fullWidth
                     onClick={() => window.stack.push(<CreateUser />)}
                   >
@@ -63,6 +63,7 @@ class UserSettings extends Component<{}, { show: boolean }> {
               <span>
                 <Button
                   variant="contained"
+                  color="secondary"
                   size="small"
                   fullWidth
                   onClick={() => window.stack.push(<ChangePassword />)}
@@ -72,6 +73,7 @@ class UserSettings extends Component<{}, { show: boolean }> {
                 <Button
                   variant="contained"
                   size="small"
+                  color="secondary"
                   fullWidth
                   onClick={async () => {
                     localStorage.removeItem("lastSync");

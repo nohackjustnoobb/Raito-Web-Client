@@ -1,6 +1,8 @@
 import { CSSTransition } from "react-transition-group";
 import { Button, TextField } from "@mui/material";
 import { Component, ReactNode } from "react";
+import { mdiBookshelf } from "@mdi/js";
+import Icon from "@mdi/react";
 
 import "./login.scss";
 
@@ -58,7 +60,7 @@ class Login extends Component<
           <div className="login">
             <div className="background" onClick={() => this.close()} />
             <div className="loginContent">
-              <img src="./icon-transparent.png" alt="" />
+              <Icon path={mdiBookshelf} size={6} />
               <h2>Better Manga App</h2>
               <div className="row">
                 <TextField
@@ -106,6 +108,7 @@ class Login extends Component<
                 <Button
                   variant="contained"
                   size="small"
+                  color="secondary"
                   fullWidth
                   onClick={() => this.login()}
                 >

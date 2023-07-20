@@ -30,7 +30,8 @@
     }
 
     .userSettingsContent {
-      background-color: #f7f7f7;
+      background-color: var(--color-background);
+      color: var(--color-text);
       padding: 2rem;
       position: relative;
       z-index: 2;

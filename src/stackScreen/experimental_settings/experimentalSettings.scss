@@ -30,7 +30,8 @@
     }
 
     .userSettingsContent {
-      background-color: #f7f7f7;
+      background-color: var(--color-background);
+      color: var(--color-text);
       padding: 2rem;
       position: relative;
       z-index: 2;
@@ -43,6 +44,10 @@
       width: 100%;
       margin: 1rem;
       max-width: 400px;
+
+      span {
+        color: var(--color-text);
+      }
 
       h5 {
         color: red;

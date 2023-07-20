@@ -9,7 +9,9 @@
   background-color: #00000022;
 
   div {
-    background-color: #ffffffcc;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    opacity: 0.8;
     backdrop-filter: blur(5px);
     aspect-ratio: 1;
     border-radius: 2rem;

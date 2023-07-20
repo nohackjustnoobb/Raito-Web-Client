@@ -45,7 +45,7 @@ class SettingsTab extends React.Component {
               </span>
               <span>
                 <Button
-                  variant={user.token ? "outlined" : "contained"}
+                  variant="outlined"
                   size="small"
                   onClick={() => {
                     if (user.token) {
@@ -58,6 +58,21 @@ class SettingsTab extends React.Component {
                   {user.token ? "帳戶設定" : "登錄"}
                 </Button>
               </span>
+            </div>
+            <div className="options">
+              <span>深色模式：</span>
+              <select
+                value={window.BMA.settingsState.theme}
+                onChange={(event) => {
+                  window.BMA.settingsState.theme = Number(event.target.value);
+                  window.BMA.settingsState.save();
+                  window.updateRoot();
+                }}
+              >
+                <option value={0}>自動</option>
+                <option value={1}>深色</option>
+                <option value={2}>淺色</option>
+              </select>
             </div>
             <div className="options">
               <span>預設來源：</span>

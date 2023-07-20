@@ -6,7 +6,7 @@ function pushLoader(): void {
   window.stack.push(
     <div className="loader">
       <div>
-        <InfinitySpin width="200" color="#000" />
+        <InfinitySpin width="200" color="var(--color-text)" />
         加載中
       </div>
     </div>

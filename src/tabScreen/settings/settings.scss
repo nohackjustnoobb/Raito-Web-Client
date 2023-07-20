@@ -3,6 +3,7 @@
   align-items: flex-end;
   font-size: 0.75rem;
   cursor: pointer;
+  color: var(--color-text);
 }
 
 #settings {
@@ -11,10 +12,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow-y: scroll;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   #content {
     margin: 1rem;
     margin-top: 0.5rem;
+    color: var(--color-text);
   }
 
   .options {
@@ -30,6 +38,7 @@
 
     span {
       display: flex;
+      color: var(--color-text);
     }
   }
 
@@ -37,10 +46,11 @@
     margin: 0;
     margin-bottom: 0.25rem;
     padding-left: 1rem;
+    color: var(--color-text);
   }
 
   .subSettings {
-    background-color: white;
+    background-color: var(--color-sub-background);
     border-radius: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -54,10 +64,11 @@
     padding-right: 5rem;
     margin-bottom: max(1rem, env(safe-area-inset-bottom));
     font-size: 0.75rem;
+    color: var(--color-text);
 
     a {
-      color: black;
       font-weight: bold;
+      color: var(--color-text);
       text-decoration: none;
       margin-left: 0.25rem;
       margin-right: 0.25rem;

@@ -403,7 +403,7 @@ class LibrariesTab extends React.Component<
             </div>
             {this.state.loading && (
               <div id="loader">
-                <InfinitySpin width="150" color="#000" />
+                <InfinitySpin width="150" color="var(--color-text)" />
               </div>
             )}
           </div>

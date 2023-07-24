@@ -4,6 +4,8 @@ import { virtualize } from "react-swipeable-views-utils";
 
 import TabScreen from "./tabScreen/tabScreen";
 import "./App.scss";
+import BetterMangaAppEvent from "./classes/event";
+import { dispatchEvent } from "./utils/utils";
 
 // Tabs
 import Collections from "./tabScreen/collections/collections";
@@ -43,7 +45,7 @@ class App extends Component<{}, { tabIndex: number; enable: boolean }> {
 
   componentDidUpdate(): void {
     window.tabIndex = this.state.tabIndex;
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.tabChanged);
   }
 
   render(): ReactNode {

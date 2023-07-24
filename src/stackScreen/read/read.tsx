@@ -3,11 +3,12 @@ import { CSSTransition } from "react-transition-group";
 
 import { Manga } from "../../classes/manga";
 import Warning from "./warning";
-import { pushLoader } from "../../utils/utils";
+import { listenToEvents, pushLoader } from "../../utils/utils";
 import { DisplayMode } from "../../classes/settingsState";
 
 import "./read.scss";
 import Menu from "./menu";
+import BetterMangaAppEvent from "../../classes/event";
 
 class Read extends Component<
   {
@@ -45,8 +46,6 @@ class Read extends Component<
   isHidden: boolean = false;
   // if overscolling the page
   isOverscolling: boolean = false;
-  // id of ForceUpdateManager
-  FUMID: number | null = null;
   // cache for index and page
   indexPageCache: Array<[index: number, page: number]> = [];
 
@@ -70,7 +69,7 @@ class Read extends Component<
 
   async componentDidMount() {
     // register for update events
-    this.FUMID = window.FUM.register(() => {
+    listenToEvents([BetterMangaAppEvent.screenChanged], () => {
       if (this.isHidden) return;
 
       // cache the page and index before updating
@@ -79,7 +78,7 @@ class Read extends Component<
         // restore it
         if (page !== null && index !== null) this.scrollToPage(index, page);
       });
-    }, true);
+    });
 
     // reset the prevHeight when the page hide or show
     document.addEventListener("visibilitychange", () => {
@@ -179,7 +178,6 @@ class Read extends Component<
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {

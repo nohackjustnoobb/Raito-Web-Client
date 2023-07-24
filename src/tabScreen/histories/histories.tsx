@@ -5,17 +5,24 @@ import { mdiCloudSync, mdiBookArrowRight } from "@mdi/js";
 import { liveQuery } from "dexie";
 
 import db, { history } from "../../classes/db";
-import "./histories.scss";
-import { convertRemToPixels, pushLoader } from "../../utils/utils";
+import {
+  convertRemToPixels,
+  listenToEvents,
+  pushLoader,
+} from "../../utils/utils";
 import { Manga } from "../../classes/manga";
+import BetterMangaAppEvent from "../../classes/event";
 
+import "./histories.scss";
 class HistoriesTabState extends React.Component {
   interval: NodeJS.Timeout | null = null;
-  FUMID: number | null = null;
 
   componentDidMount() {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+    listenToEvents(
+      [BetterMangaAppEvent.syncStateChanged],
+      this.forceUpdate.bind(this)
+    );
 
     // update every second
     this.interval = setInterval(() => this.forceUpdate(), 1000);
@@ -23,7 +30,6 @@ class HistoriesTabState extends React.Component {
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   render(): React.ReactNode {
@@ -61,7 +67,6 @@ class HistoriesTab extends React.Component<
 > {
   interval: NodeJS.Timeout | null = null;
   content: HTMLDivElement | null = null;
-  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -75,7 +80,14 @@ class HistoriesTab extends React.Component<
 
   componentDidMount() {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+    listenToEvents(
+      [
+        BetterMangaAppEvent.settingsChanged,
+        BetterMangaAppEvent.tabChanged,
+        BetterMangaAppEvent.screenChanged,
+      ],
+      this.forceUpdate.bind(this)
+    );
 
     // trace for histories changes
     liveQuery(() =>
@@ -88,7 +100,6 @@ class HistoriesTab extends React.Component<
 
   componentWillUnmount() {
     if (this.interval) clearInterval(this.interval);
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   componentDidUpdate(): void {

@@ -4,9 +4,12 @@ import Icon from "@mdi/react";
 import { mdiCogSync } from "@mdi/js";
 
 import TabScreen from "../tabScreen";
-import "./settings.scss";
 import UserSettings from "../../stackScreen/user_settings/userSettings";
 import ExperimentalSettings from "../../stackScreen/experimental_settings/experimentalSettings";
+import { listenToEvents } from "../../utils/utils";
+import BetterMangaAppEvent from "../../classes/event";
+
+import "./settings.scss";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -20,15 +23,12 @@ class SettingsTabState extends React.Component {
 }
 
 class SettingsTab extends React.Component {
-  FUMID: number | null = null;
-
   componentDidMount(): void {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
-  }
-
-  componentWillUnmount() {
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
+    listenToEvents(
+      [BetterMangaAppEvent.settingsChanged, BetterMangaAppEvent.screenChanged],
+      this.forceUpdate.bind(this)
+    );
   }
 
   render(): React.ReactNode {

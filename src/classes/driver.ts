@@ -1,5 +1,7 @@
 import db from "./db";
 import { Manga, SimpleManga } from "./manga";
+import { dispatchEvent } from "../utils/utils";
+import BetterMangaAppEvent from "./event";
 
 class Driver {
   supportSuggestion: boolean | null = null;
@@ -25,7 +27,7 @@ class Driver {
     this.recommendedChunkSize = result.recommendedChunkSize;
 
     // update the screens
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.driverChanged);
   }
 
   async loadList(category: string = "", page: number = 1): Promise<boolean> {

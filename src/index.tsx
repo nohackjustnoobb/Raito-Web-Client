@@ -1,16 +1,17 @@
 import ReactDOM from "react-dom/client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Component, ReactNode } from "react";
 
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from "./App";
 import BetterMangaApp from "./classes/betterMangaApp";
 import StackView, { Stack } from "./stackScreen/stack";
-import ForceUpdateManager from "./classes/forceUpdateManager";
+import { Manga } from "./classes/manga";
+import { Theme } from "./classes/settingsState";
+import { dispatchEvent } from "./utils/utils";
+import BetterMangaAppEvent from "./classes/event";
 
 import "./index.css";
-import { Manga } from "./classes/manga";
-import { Component, ReactNode } from "react";
-import { Theme } from "./classes/settingsState";
 
 // declare global variables
 declare global {
@@ -22,7 +23,6 @@ declare global {
     toggleTab: (enable: boolean) => void;
     stack: Stack;
     BMA: BetterMangaApp;
-    FUM: ForceUpdateManager;
     tabIndex: number;
   }
 }
@@ -47,12 +47,13 @@ window.BMA.initialize().then(async () => {
   }
 });
 
-// initialize the helper class
-window.FUM = new ForceUpdateManager();
-
 // update the screen when screen rotate or resize
-window.addEventListener("resize", () => window.forceUpdate(true));
-window.addEventListener("orientationchange", () => window.forceUpdate(true));
+window.addEventListener("resize", () =>
+  dispatchEvent(BetterMangaAppEvent.screenChanged)
+);
+window.addEventListener("orientationchange", () =>
+  dispatchEvent(BetterMangaAppEvent.screenChanged)
+);
 
 // reset the update and sync state when site is minimized
 document.addEventListener("visibilitychange", async () => {

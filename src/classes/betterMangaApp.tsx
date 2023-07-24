@@ -5,6 +5,8 @@ import Driver from "./driver";
 import User from "./user";
 import SettingsState from "./settingsState";
 import db from "./db";
+import { dispatchEvent } from "../utils/utils";
+import BetterMangaAppEvent from "./event";
 
 interface UpdateCollectionsState {
   isUpdating: boolean;
@@ -51,7 +53,7 @@ class BetterMangaApp {
     // function for updateing the state
     const updateState = () => {
       this.updateCollectionsState.currentState = `${counter} / ${collections.length}`;
-      window.forceUpdate();
+      dispatchEvent(BetterMangaAppEvent.updateCollectionsStateChanged);
     };
     updateState();
 
@@ -70,7 +72,7 @@ class BetterMangaApp {
     this.updateCollectionsState.lastUpdate = Date.now();
     this.updateCollectionsState.isUpdating = false;
     this.updateCollectionsState.currentState = undefined;
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.updateCollectionsStateChanged);
   }
 
   async fetchBatchManga(
@@ -207,14 +209,14 @@ class BetterMangaApp {
 
     // update state
     this.syncState.currentState = "同步歴史中";
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.syncStateChanged);
 
     // sync the histories
     await this.syncHistories();
 
     // update state
     this.syncState.currentState = "同步收藏中";
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.syncStateChanged);
 
     // sync the collections
     await this.syncCollections();
@@ -222,7 +224,7 @@ class BetterMangaApp {
     this.syncState.isSyncing = false;
     this.syncState.lastSync = Date.now();
     this.syncState.currentState = undefined;
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.syncStateChanged);
   }
 
   getDriver(id: string): Driver | undefined {
@@ -250,7 +252,7 @@ class BetterMangaApp {
     if (!this.selectedDriver.initialized)
       await this.selectedDriver.initialize();
 
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.driverChanged);
   }
 
   async fetch(

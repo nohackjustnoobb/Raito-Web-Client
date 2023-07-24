@@ -1,3 +1,6 @@
+import { dispatchEvent } from "../utils/utils";
+import BetterMangaAppEvent from "./event";
+
 enum DisplayMode {
   Auto,
   OnePage,
@@ -104,7 +107,7 @@ class SettingsState {
 
   update() {
     this.save();
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.settingsChanged);
   }
 
   async initialize() {

@@ -9,12 +9,13 @@ import {
 } from "@mdi/js";
 import { liveQuery } from "dexie";
 
-import "./details.scss";
-
-import { pushLoader } from "../../utils/utils";
+import { listenToEvents, pushLoader } from "../../utils/utils";
 import { categories } from "../../tabScreen/libraries/libraries";
 import db, { history } from "../../classes/db";
 import { SimpleManga, Manga } from "../../classes/manga";
+
+import "./details.scss";
+import BetterMangaAppEvent from "../../classes/event";
 
 class Details extends Component<
   { manga: SimpleManga },
@@ -31,7 +32,6 @@ class Details extends Component<
   startY: number | null = null;
   verticalContentRef: HTMLElement | null = null;
   verticalBackgroundRef: HTMLElement | null = null;
-  FUMID: number | null = null;
 
   constructor(props: { manga: SimpleManga }) {
     super(props);
@@ -48,7 +48,10 @@ class Details extends Component<
 
   async componentDidMount() {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+    listenToEvents(
+      [BetterMangaAppEvent.screenChanged],
+      this.forceUpdate.bind(this)
+    );
 
     // show loader
     pushLoader();
@@ -88,10 +91,6 @@ class Details extends Component<
     setTimeout(() => this.setState({ showBackground: true }), this.timeout / 2);
     // pop the loader
     window.stack.pop();
-  }
-
-  componentWillUnmount() {
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   close() {

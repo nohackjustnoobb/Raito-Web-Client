@@ -1,3 +1,5 @@
+import { dispatchEvent } from "../utils/utils";
+import BetterMangaAppEvent from "./event";
 import Login from "../stackScreen/login/login";
 import db from "./db";
 
@@ -41,7 +43,7 @@ class User {
       localStorage.setItem("token", this.token!);
       localStorage.setItem("email", this.email!);
 
-      window.forceUpdate();
+      dispatchEvent(BetterMangaAppEvent.settingsChanged);
     }
 
     return result;
@@ -57,7 +59,7 @@ class User {
     localStorage.removeItem("lastSync");
 
     // update the screens
-    window.forceUpdate();
+    dispatchEvent(BetterMangaAppEvent.settingsChanged);
   }
 
   async clear(password: string) {

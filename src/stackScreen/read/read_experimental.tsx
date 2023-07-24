@@ -2,12 +2,14 @@ import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import BetterScroll from "better-scroll";
 
-import "./read_experimental.scss";
 import { Manga } from "../../classes/manga";
 import Warning from "./warning";
-import { pushLoader } from "../../utils/utils";
+import { listenToEvents, pushLoader } from "../../utils/utils";
 import { DisplayMode } from "../../classes/settingsState";
 import Menu from "./menu";
+import BetterMangaAppEvent from "../../classes/event";
+
+import "./read_experimental.scss";
 
 class ReadExperimental extends Component<
   {
@@ -47,8 +49,6 @@ class ReadExperimental extends Component<
   isHidden: boolean = false;
   // check if transform should enabled
   startX: boolean = false;
-  // id of ForceUpdateManager
-  FUMID: number | null = null;
   // cache for index and page
   indexPageCache: Array<[index: number, page: number]> = [];
 
@@ -147,7 +147,7 @@ class ReadExperimental extends Component<
     });
 
     // register for update events
-    this.FUMID = window.FUM.register(() => {
+    listenToEvents([BetterMangaAppEvent.screenChanged], () => {
       if (this.isHidden) return;
 
       // cache the page and index before updating
@@ -156,7 +156,7 @@ class ReadExperimental extends Component<
         // restore it
         if (page && index) this.scrollToPage(index, page);
       });
-    }, true);
+    });
 
     // reset the prevHeight when the page hide or show
     document.addEventListener("visibilitychange", () => {
@@ -286,7 +286,6 @@ class ReadExperimental extends Component<
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   componentDidUpdate() {

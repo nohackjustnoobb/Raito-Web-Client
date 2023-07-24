@@ -1,11 +1,14 @@
 import { Component, ReactNode } from "react";
 import { Checkbox, Button } from "@mui/material";
 import { CSSTransition } from "react-transition-group";
+
+import { listenToEvents } from "../../utils/utils";
+import BetterMangaAppEvent from "../../classes/event";
+
 import "./experimentalSettings.scss";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
-  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -16,12 +19,12 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
   }
 
   componentDidMount() {
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
-    this.setState({ show: true });
-  }
+    listenToEvents(
+      [BetterMangaAppEvent.settingsChanged],
+      this.forceUpdate.bind(this)
+    );
 
-  componentWillUnmount() {
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
+    this.setState({ show: true });
   }
 
   close() {

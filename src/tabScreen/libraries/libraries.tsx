@@ -3,10 +3,12 @@ import Icon from "@mdi/react";
 import { mdiChevronDown, mdiDatabase, mdiMagnify } from "@mdi/js";
 
 import TabScreen from "../tabScreen";
-import "./libraries.scss";
 import { InfinitySpin } from "react-loader-spinner";
-import { convertRemToPixels } from "../../utils/utils";
+import { convertRemToPixels, listenToEvents } from "../../utils/utils";
 import { SimpleManga } from "../../classes/manga";
+import BetterMangaAppEvent from "../../classes/event";
+
+import "./libraries.scss";
 
 const categories: { [category: string]: string } = {
   Passionate: "熱血",
@@ -35,15 +37,12 @@ const categories: { [category: string]: string } = {
 };
 
 class LibrariesTabState extends React.Component {
-  FUMID: number | null = null;
-
   componentDidMount() {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
-  }
-
-  componentWillUnmount() {
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
+    listenToEvents(
+      [BetterMangaAppEvent.driverChanged],
+      this.forceUpdate.bind(this)
+    );
   }
 
   render(): React.ReactNode {
@@ -181,7 +180,6 @@ class LibrariesTab extends React.Component<
 > {
   driver: string | undefined = undefined;
   content: HTMLDivElement | null = null;
-  FUMID: number | null = null;
 
   constructor(props: {}) {
     super(props);
@@ -195,7 +193,15 @@ class LibrariesTab extends React.Component<
 
   componentDidMount(): void {
     // register for update events
-    this.FUMID = window.FUM.register(this.forceUpdate.bind(this));
+    listenToEvents(
+      [
+        BetterMangaAppEvent.driverChanged,
+        BetterMangaAppEvent.tabChanged,
+        BetterMangaAppEvent.settingsChanged,
+        BetterMangaAppEvent.screenChanged,
+      ],
+      this.forceUpdate.bind(this)
+    );
 
     // update the ui when the page hide or show
     document.addEventListener("visibilitychange", () =>
@@ -204,10 +210,6 @@ class LibrariesTab extends React.Component<
 
     // set global variable for searching
     window.search = (keyword: string) => this.setState({ keyword: keyword });
-  }
-
-  componentWillUnmount() {
-    if (this.FUMID) window.FUM.unregister(this.FUMID);
   }
 
   componentDidUpdate(): void {

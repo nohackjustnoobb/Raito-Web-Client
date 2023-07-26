@@ -8,7 +8,13 @@ Better Manga App is an open-source project aimed at simplifying the process of r
 
 The easiest way to get started with the server is by running it as a Docker container.
 
-1. Create `docker-compose.yml`
+1. Clone the project
+
+```bash
+git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git && cd Better-Manga-Web-Client
+```
+
+2. Create `docker-compose.yml`
 
 The following file is an example of what the files should resemble or look like.
 
@@ -19,6 +25,7 @@ version: "3.7"
 
 services:
   better-manga-web-client:
+    container_name: better-manga-web-client
     build:
       context: .
       args:
@@ -30,7 +37,7 @@ services:
       - ADDRESS=<backend-server-url (WAN/LAN)>
 ```
 
-2. Start the server
+3. Start the server
 
 The following command will pull the docker image and start the server.
 

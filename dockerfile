@@ -6,6 +6,9 @@ COPY . .
 
 # build web page
 RUN yarn install
+
+ARG ADDRESS
+ENV ADDRESS $ADDRESS
 RUN yarn build
 
 FROM node:18-alpine as final

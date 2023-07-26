@@ -28,7 +28,7 @@ const start = () => {
       if (!driver || !id) throw Error();
 
       const response = await fetch(
-        `${process.env.REACT_APP_ADDRESS}details?${new URLSearchParams({
+        `${process.env.ADDRESS}details?${new URLSearchParams({
           driver: driver,
           ids: id,
           "show-all": "1",
@@ -66,9 +66,13 @@ if (cluster.isPrimary) {
   let dotenvPaths: Array<string> = [];
 
   if (process.env.NODE_ENV === "production") {
-    dotenvPaths.push("../../.env.production.local", "../../.env.local");
+    dotenvPaths.push(
+      "../../.env.production.local",
+      "../../.env.local",
+      "../../.env"
+    );
   } else {
-    dotenvPaths.push("../.env.development.local", "../.env.local");
+    dotenvPaths.push("../.env.development.local", "../.env.local", "../.env");
   }
 
   dotenvPaths.forEach((location) =>
@@ -76,8 +80,6 @@ if (cluster.isPrimary) {
       path: path.resolve(__dirname, location),
     })
   );
-
-  console.log(process.env.REACT_APP_ADDRESS);
 
   console.log(`Total cores: ${cores}`);
   console.log(`Primary process ${process.pid} is running`);

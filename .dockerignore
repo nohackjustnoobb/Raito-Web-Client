@@ -25,3 +25,4 @@ yarn.lock
 
 dockerfile
 docker-compose.yml
+/server/public

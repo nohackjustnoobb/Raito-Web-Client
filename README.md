@@ -4,15 +4,6 @@ Better Manga App is an open-source project aimed at simplifying the process of r
 
 ## Quick Start
 
-In order to build or develop the project, it is essential to create a `.env` file that includes the IP address of the backend server. An example of the `.env` file is shown below:
-
-`.env`
-
-```
-REACT_APP_VERSION=$npm_package_version
-REACT_APP_ADDRESS=http://<backend-server-ip-address>/
-```
-
 ### Running with Docker
 
 The easiest way to get started with the server is by running it as a Docker container.
@@ -28,13 +19,15 @@ version: "3.7"
 
 services:
   better-manga-web-client:
-    image: nohackjustnoobb/better-manga-web-client
-    container_name: better-manga-web-client
+    build:
+      context: .
+      args:
+        - ADDRESS=<backend-server-url (WAN)>
     restart: unless-stopped
     ports:
       - "8080:8080"
-    env_file:
-      - .env
+    environment:
+      - ADDRESS=<backend-server-url (WAN/LAN)>
 ```
 
 2. Start the server
@@ -47,69 +40,41 @@ sudo docker-compose up -d
 
 ### Manual Setup
 
-1. Clone the project
-
-```
+```bash
+# 1. Clone the project
+# 2. CD into the project and install the dependencies
 git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git
-```
-
-2. CD into the project and install the dependencies
-
-```
 cd Better-Manga-Web-Client && yarn install
-```
 
-3. Build the project
+# 3. create .env.local
+touch .env.local
+# replace <backend-server-url> with the url of the backend server
+echo "ADDRESS=<backend-server-url>" > file3.txt
 
-```
+# 4. Build the project
+# 5. move build into server
 yarn build
-```
-
-The compiled webpage should be under the `build` folder.
-
-4. move build into server
-
-```
 mv build server/public
-```
 
-5. CD into server and install the dependencies
-
-```
+# 6. CD into server and install the dependencies
+# 7. Build the express server
+# 8. Start the server
 cd server && yarn install
-```
-
-6. Build the express server
-
-```
 yarn build
-```
-
-7. Start the server
-
-```
 yarn start:prod
+
 ```
 
 By default, the server is running on port 8080.
 
 ### Starting the development server
 
-1. Clone the project
-
-```
+```bash
+# 1. Clone the project
+# 2. CD into the project and install the dependencies
+# 3. Start the server
 git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git
-```
-
-2. CD into the project and install the dependencies
-
-```
 cd Better-Manga-Web-Client && yarn install
-```
-
-3. Start the server
-
-```
 yarn start
 ```
 

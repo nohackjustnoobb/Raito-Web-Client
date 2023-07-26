@@ -43,12 +43,9 @@ const start = () => {
       const title = chinese.s2t(manga.title);
       const thumbnail = manga.thumbnail;
       const description = chinese.s2t(manga.description);
-      const isSecured = new URL(thumbnail).protocol === "https:";
 
       // generate the meta tag
-      const metaTag = `<meta property="og:title" content="${title}"/><meta property="og:image${
-        isSecured ? ":secure_url" : ""
-      }" content="${thumbnail}"/><meta property="og:description" content="${description}"/>`;
+      const metaTag = `<meta property="og:title" content="${title}"/><meta property="og:image" content="${thumbnail}"/><meta property="og:description" content="${description}"/><meta property="og:type" content="website" />`;
 
       // insert meta tag
       const startIndex = data.indexOf("</head>");

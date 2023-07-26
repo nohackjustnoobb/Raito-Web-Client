@@ -4,16 +4,48 @@ Better Manga App is an open-source project aimed at simplifying the process of r
 
 ## Quick Start
 
-In order to build or develop the project, it is essential to create a `.env.local` file that includes the IP address of the backend server. An example of the `.env.local` file is shown below:
+In order to build or develop the project, it is essential to create a `.env` file that includes the IP address of the backend server. An example of the `.env` file is shown below:
 
-`.env.local`
+`.env`
 
 ```
 REACT_APP_VERSION=$npm_package_version
 REACT_APP_ADDRESS=http://<backend-server-ip-address>/
 ```
 
-### Build the project
+### Running with Docker
+
+The easiest way to get started with the server is by running it as a Docker container.
+
+1. Create `docker-compose.yml`
+
+The following file is an example of what the files should resemble or look like.
+
+`docker-compose.yml`
+
+```
+version: "3.7"
+
+services:
+  better-manga-web-client:
+    image: nohackjustnoobb/better-manga-web-client
+    container_name: better-manga-web-client
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+```
+
+2. Start the server
+
+The following command will pull the docker image and start the server.
+
+```
+sudo docker-compose up -d
+```
+
+### Manual Setup
 
 1. Clone the project
 
@@ -33,7 +65,33 @@ cd Better-Manga-Web-Client && yarn install
 yarn build
 ```
 
-The compiled project should be under the `build` folder.
+The compiled webpage should be under the `build` folder.
+
+4. move build into server
+
+```
+mv build server/public
+```
+
+5. CD into server and install the dependencies
+
+```
+cd server && yarn install
+```
+
+6. Build the express server
+
+```
+yarn build
+```
+
+7. Start the server
+
+```
+yarn start:prod
+```
+
+By default, the server is running on port 8080.
 
 ### Starting the development server
 

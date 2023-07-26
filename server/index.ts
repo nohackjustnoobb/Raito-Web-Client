@@ -63,9 +63,21 @@ const start = () => {
 };
 
 if (cluster.isPrimary) {
-  dotenv.config({
-    path: path.resolve(__dirname, `${process.env.ENV_LOCATION}`),
-  });
+  let dotenvPaths: Array<string> = [];
+
+  if (process.env.NODE_ENV === "production") {
+    dotenvPaths.push("../../.env.production.local", "../../.env.local");
+  } else {
+    dotenvPaths.push("../.env.development.local", "../.env.local");
+  }
+
+  dotenvPaths.forEach((location) =>
+    dotenv.config({
+      path: path.resolve(__dirname, location),
+    })
+  );
+
+  console.log(process.env.REACT_APP_ADDRESS);
 
   console.log(`Total cores: ${cores}`);
   console.log(`Primary process ${process.pid} is running`);

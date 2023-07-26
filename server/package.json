@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ENV_LOCATION=../.env.development.local nodemon index.ts",
-    "build": "ENV_LOCATION=../../.env.production.local tsc && cp -R public build/public",
-    "start:prod": "ENV_LOCATION=../../.env.production.local node build/index.js"
+    "start": "NODE_ENV=development nodemon index.ts",
+    "build": "NODE_ENV=production tsc && cp -R public build/public",
+    "start:prod": "NODE_ENV=production node build/index.js"
   },
   "keywords": [],
   "author": "",

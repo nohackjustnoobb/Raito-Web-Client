@@ -146,7 +146,7 @@ class Details extends Component<
         onClick={async () => {
           // construct the url
           let shareUrl = new URL(window.location.href);
-          shareUrl.pathname = "/details";
+          shareUrl.pathname = "/share";
           shareUrl.searchParams.append(
             "driver",
             this.state.manga!.driver.identifier

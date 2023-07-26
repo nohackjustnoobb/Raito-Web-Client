@@ -29,10 +29,11 @@ declare global {
 
 // initialize the main engine
 window.BMA = new BetterMangaApp();
+// check if url path is share
 window.BMA.initialize().then(async () => {
   if (
-    window.location.pathname === "/details" ||
-    window.location.pathname === "/details/"
+    window.location.pathname === "/share" ||
+    window.location.pathname === "/share/"
   ) {
     // driver and id
     const params = new URLSearchParams(window.location.search);
@@ -40,7 +41,7 @@ window.BMA.initialize().then(async () => {
     const id = params.get("id");
 
     if (driver && id) {
-      // show details and reset url
+      // show share and reset url
       (await Manga.fromID(id, driver)).pushDetails();
       window.history.replaceState({}, "", "/");
     }

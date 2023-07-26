@@ -1,6 +1,6 @@
 {
   "name": "better-manga-web-client",
-  "version": "Beta v0.5.35",
+  "version": "Beta v0.5.36",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -21,7 +21,6 @@
     "react-dom": "^18.2.0",
     "react-loader-spinner": "^5.3.4",
     "react-scripts": "5.0.1",
-    "react-spring-bottom-sheet": "^3.4.1",
     "react-swipeable-views": "^0.14.0",
     "react-transition-group": "^4.4.5",
     "s2t-chinese": "^0.0.5",

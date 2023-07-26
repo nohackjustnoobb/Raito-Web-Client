@@ -137,7 +137,6 @@ class BetterMangaApp {
 
     // save the time
     const now = Date.now();
-    localStorage.setItem("lastSync", `${now}`);
 
     (
       await this.post(
@@ -161,6 +160,8 @@ class BetterMangaApp {
           new: v.new,
         })
     );
+
+    localStorage.setItem("lastSync", `${now}`);
   }
 
   async syncCollections() {

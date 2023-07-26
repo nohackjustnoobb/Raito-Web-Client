@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 yarn.lock
 
+dockerfile
 docker-compose.yml

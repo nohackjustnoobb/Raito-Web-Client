@@ -1,12 +1,12 @@
 # Better-Manga-Web-Client
 
-Better Manga App is an open-source project aimed at simplifying the process of reading manga. The project comprises two parts: front-end and back-end. This repository contains the front-end component of the project, which requires a back-end server to operate. The back-end server can be found in the following repository: [Better-Manga-Server](https://github.com/nohackjustnoobb/Better-Manga-Server).
+Better Manga App is an open-source project aimed at simplifying the reading process. The project comprises two parts: front-end and back-end. This repository contains the front-end component of the project, which requires a back-end server to operate. The back-end server can be found in the following repository: [Better-Manga-Server](https://github.com/nohackjustnoobb/Better-Manga-Server).
 
 ## Quick Start
 
 ### Running with Docker
 
-The easiest way to get started with the server is by running it as a Docker container.
+The easiest way to start with the server is by running it as a Docker container.
 
 1. Clone the project
 
@@ -53,17 +53,17 @@ sudo docker-compose up -d
 git clone https://github.com/nohackjustnoobb/Better-Manga-Web-Client.git
 cd Better-Manga-Web-Client && yarn install
 
-# 3. create .env.local
+# 3. Create .env.local
 touch .env.local
-# replace <backend-server-url> with the url of the backend server
-echo "ADDRESS=<backend-server-url>" > file3.txt
+# replace <backend-server-url> with the URL of the backend server
+echo "ADDRESS=<backend-server-url>" > .env.local
 
 # 4. Build the project
 # 5. move build into server
 yarn build
 mv build server/public
 
-# 6. CD into server and install the dependencies
+# 6. CD into the server and install the dependencies
 # 7. Build the express server
 # 8. Start the server
 cd server && yarn install

@@ -223,7 +223,9 @@ class LibrariesTab extends React.Component<
       }
 
       if (
-        !window.BMA.selectedDriver?.categories.includes(this.state.catergory)
+        !window.BMA.selectedDriver?.supportedCategories.includes(
+          this.state.catergory
+        )
       ) {
         this.setState({ catergory: "" });
       }
@@ -357,7 +359,7 @@ class LibrariesTab extends React.Component<
               </li>
               {Object.keys(categories)
                 .filter((v) =>
-                  window.BMA.selectedDriver?.categories.includes(v)
+                  window.BMA.selectedDriver?.supportedCategories.includes(v)
                 )
                 .map((v) => (
                   <li

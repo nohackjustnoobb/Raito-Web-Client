@@ -5,7 +5,7 @@ import BetterMangaAppEvent from "./event";
 
 class Driver {
   supportSuggestion: boolean | null = null;
-  categories: Array<string> = [];
+  supportedCategories: Array<string> = [];
   list: { [category: string]: { [page: number]: Array<string> } } = {};
   search: { [keyword: string]: { [page: number]: Array<string> } } = {};
   simpleManga: { [id: string]: SimpleManga } = {};
@@ -22,8 +22,8 @@ class Driver {
     const result = await window.BMA.get("driver", {
       driver: this.identifier,
     });
-    this.categories = result.categories;
-    this.supportSuggestion = result.suggestion;
+    this.supportedCategories = result.supportedCategories;
+    this.supportSuggestion = result.supportSuggestion;
     this.recommendedChunkSize = result.recommendedChunkSize;
 
     // update the screens

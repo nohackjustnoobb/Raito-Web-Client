@@ -144,7 +144,7 @@ class CollectionsTab extends React.Component<
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>
                       {history &&
-                        window.BMA.translate(history?.episode ?? "未看")}
+                        window.BMA.translate(history?.chapter ?? "未看")}
                       {" / "}
                       {window.BMA.translate(manga.latest)}
                     </h5>

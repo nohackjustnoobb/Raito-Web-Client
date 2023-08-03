@@ -18,7 +18,7 @@ class SettingsState {
   forceTranslate: boolean = true;
   displayMode: DisplayMode = DisplayMode.Auto;
   theme: Theme = Theme.Auto;
-  overscrollToLoadPreviousEpisodes: boolean = true;
+  overscrollToLoadPreviousChapters: boolean = true;
   debugMode: boolean = false;
   ignoreError: boolean = true;
 
@@ -47,9 +47,9 @@ class SettingsState {
         this.loadBool("forceTranslate") ?? this.forceTranslate;
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
       this.ignoreError = this.loadBool("ignoreError") ?? this.ignoreError;
-      this.overscrollToLoadPreviousEpisodes =
-        this.loadBool("overscrollToLoadPreviousEpisodes") ??
-        this.overscrollToLoadPreviousEpisodes;
+      this.overscrollToLoadPreviousChapters =
+        this.loadBool("overscrollToLoadPreviousChapters") ??
+        this.overscrollToLoadPreviousChapters;
 
       // experimental functions
       this.experimentalSwipeDownToPopDetails =
@@ -81,8 +81,8 @@ class SettingsState {
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
     this.saveBool(
-      "overscrollToLoadPreviousEpisodes",
-      this.overscrollToLoadPreviousEpisodes
+      "overscrollToLoadPreviousChapters",
+      this.overscrollToLoadPreviousChapters
     );
 
     // experimental functions

@@ -13,7 +13,7 @@ import BetterMangaAppEvent from "../../classes/event";
 class Read extends Component<
   {
     manga: Manga;
-    episodesIndex: number;
+    chaptersIndex: number;
     isExtra: boolean;
     page?: number | null;
   },
@@ -23,7 +23,7 @@ class Read extends Component<
     page: number | null;
     index: number | null;
     pageOffset: boolean;
-    episodesUrls: { [index: number]: Array<string> };
+    chaptersUrls: { [index: number]: Array<string> };
   }
 > {
   // timeout of the transition
@@ -51,7 +51,7 @@ class Read extends Component<
 
   constructor(props: {
     manga: Manga;
-    episodesIndex: number;
+    chaptersIndex: number;
     isExtra: boolean;
     page?: number | null;
   }) {
@@ -59,7 +59,7 @@ class Read extends Component<
 
     this.state = {
       show: false,
-      episodesUrls: {},
+      chaptersUrls: {},
       menu: false,
       pageOffset: false,
       index: null,
@@ -136,8 +136,8 @@ class Read extends Component<
                 // save it to history
                 this.props.manga.save(
                   (this.props.isExtra
-                    ? this.props.manga.episodes.extra
-                    : this.props.manga.episodes.serial)[this.state.index!],
+                    ? this.props.manga.chapters.extra
+                    : this.props.manga.chapters.serial)[this.state.index!],
                   this.state.page!,
                   this.props.isExtra
                 )
@@ -154,7 +154,7 @@ class Read extends Component<
     if (this.props.page) {
       // use setTimeout to prevent it from blocking the code execution
       setTimeout(async () => {
-        const index = this.props.episodesIndex;
+        const index = this.props.chaptersIndex;
         const page = this.props.page;
 
         // check if the page is already loaded
@@ -187,10 +187,10 @@ class Read extends Component<
     // reset previous height data
     this.prevHeight = null;
 
-    // get next or previous episode
+    // get next or previous chapter
     var index =
-      this.props.episodesIndex +
-      (next ? -1 : 1) * Object.keys(this.state.episodesUrls).length;
+      this.props.chaptersIndex +
+      (next ? -1 : 1) * Object.keys(this.state.chaptersUrls).length;
 
     // check if out of range
     if (index < 0) return window.stack.push(<Warning noNextOne />);
@@ -198,8 +198,8 @@ class Read extends Component<
     if (
       index >=
       (this.props.isExtra
-        ? this.props.manga.episodes.extra
-        : this.props.manga.episodes.serial
+        ? this.props.manga.chapters.extra
+        : this.props.manga.chapters.serial
       ).length
     )
       return window.stack.push(<Warning noNextOne={false} />);
@@ -208,17 +208,17 @@ class Read extends Component<
     var urls = await this.props.manga.get(index, this.props.isExtra);
     this.setState(
       (prevState) => ({
-        episodesUrls: {
-          ...prevState.episodesUrls,
+        chaptersUrls: {
+          ...prevState.chaptersUrls,
           [index]: urls,
         },
         show: true,
       }),
       () => {
-        // load next episode if less there page
+        // load next chapter if less there page
         if (
           urls.length <= 1 &&
-          Object.keys(this.state.episodesUrls).length < 3
+          Object.keys(this.state.chaptersUrls).length < 3
         ) {
           this.lastLoad = null;
           this.loadMore();
@@ -281,7 +281,7 @@ class Read extends Component<
         // check if top is reached
         if (
           this.readRef &&
-          window.BMA.settingsState.overscrollToLoadPreviousEpisodes &&
+          window.BMA.settingsState.overscrollToLoadPreviousChapters &&
           !this.isOverscolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
@@ -324,14 +324,14 @@ class Read extends Component<
           }
           maxPage={
             this.state.index !== null
-              ? this.state.episodesUrls[this.state.index].length
+              ? this.state.chaptersUrls[this.state.index].length
               : null
           }
           title={
             this.state.index !== null
               ? (this.props.isExtra
-                  ? this.props.manga.episodes.extra
-                  : this.props.manga.episodes.serial)[this.state.index]
+                  ? this.props.manga.chapters.extra
+                  : this.props.manga.chapters.serial)[this.state.index]
               : null
           }
         />
@@ -389,12 +389,12 @@ class Read extends Component<
             }}
           >
             <div className="readContent">
-              {Object.keys(this.state.episodesUrls)
+              {Object.keys(this.state.chaptersUrls)
                 .reverse()
-                .map((episodesIndex: any) => (
-                  <div className="episodes" key={episodesIndex}>
-                    {this.state.episodesUrls[episodesIndex].map((url, page) => {
-                      const id = `${episodesIndex}_${page}`;
+                .map((chaptersIndex: any) => (
+                  <div className="chapters" key={chaptersIndex}>
+                    {this.state.chaptersUrls[chaptersIndex].map((url, page) => {
+                      const id = `${chaptersIndex}_${page}`;
 
                       return (
                         <Fragment key={id}>
@@ -404,7 +404,7 @@ class Read extends Component<
                           <div
                             id={id}
                             data-page={page}
-                            data-index={episodesIndex}
+                            data-index={chaptersIndex}
                             className="imgWrapper"
                             style={{
                               width:

@@ -125,10 +125,10 @@ class SettingsTab extends React.Component {
               <span>下拉加載上一話：</span>
               <Checkbox
                 checked={
-                  window.BMA.settingsState.overscrollToLoadPreviousEpisodes
+                  window.BMA.settingsState.overscrollToLoadPreviousChapters
                 }
                 onChange={(_, checked) => {
-                  window.BMA.settingsState.overscrollToLoadPreviousEpisodes =
+                  window.BMA.settingsState.overscrollToLoadPreviousChapters =
                     checked;
                   window.BMA.settingsState.update();
                 }}

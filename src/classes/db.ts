@@ -16,7 +16,7 @@ interface history {
   thumbnail: string;
   title: string;
   datetime: number;
-  episode: string | null;
+  chapter: string | null;
   page: number | null;
   latest: string;
   isExtra: boolean | null;
@@ -33,7 +33,7 @@ class BetterMangaAppDB extends Dexie {
     this.version(1).stores({
       collections: "[driver+id], title, isEnd, latest, thumbnail, author",
       histories:
-        "[driver+id], datetime, episode, page, latest, isExtra, thumbnail, title, new",
+        "[driver+id], datetime, chapter, page, latest, isExtra, thumbnail, title, new",
     });
   }
 }

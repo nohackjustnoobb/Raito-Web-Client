@@ -91,7 +91,7 @@ class SimpleManga {
         thumbnail: this.thumbnail,
         title: this.title,
         datetime: Date.now(),
-        episode: null,
+        chapter: null,
         page: null,
         latest: this.latest,
         isExtra: null,
@@ -124,7 +124,7 @@ class SimpleManga {
     return driver.manga[id];
   }
 
-  async save(episode: string, page: number, isExtra: boolean) {
+  async save(chapter: string, page: number, isExtra: boolean) {
     // update or create history
     await db.histories.put({
       driver: this.driver.identifier,
@@ -132,7 +132,7 @@ class SimpleManga {
       thumbnail: this.thumbnail,
       title: this.title,
       datetime: Date.now(),
-      episode: episode,
+      chapter: chapter,
       page: page,
       latest: this.latest,
       isExtra: isExtra,
@@ -145,7 +145,7 @@ class Manga extends SimpleManga {
   description: string;
   categories: Array<string>;
   driverData: string;
-  episodes: { serial: Array<string>; extra: Array<string> };
+  chapters: { serial: Array<string>; extra: Array<string> };
 
   constructor(data: any) {
     super(data);
@@ -159,27 +159,27 @@ class Manga extends SimpleManga {
     this.description = data.description;
     this.categories = data.categories;
     this.driverData = data.driverData;
-    this.episodes = data.episodes;
+    this.chapters = data.chapters;
     this.latest =
       data.latest ??
-      (this.episodes.serial.length === 0
-        ? this.episodes.extra[0]
-        : this.episodes.serial[0]);
+      (this.chapters.serial.length === 0
+        ? this.chapters.extra[0]
+        : this.chapters.serial[0]);
   }
 
-  read(episodesIndex: number, isExtra: boolean, page: number | null = null) {
+  read(chaptersIndex: number, isExtra: boolean, page: number | null = null) {
     window.stack.push(
       window.BMA.settingsState.experimentalUseZoomableComponent ? (
         <ReadExperimental
           manga={this}
-          episodesIndex={episodesIndex}
+          chaptersIndex={chaptersIndex}
           isExtra={isExtra}
           page={page}
         />
       ) : (
         <Read
           manga={this}
-          episodesIndex={episodesIndex}
+          chaptersIndex={chaptersIndex}
           isExtra={isExtra}
           page={page}
         />
@@ -191,30 +191,30 @@ class Manga extends SimpleManga {
     const history = await this.getHistory();
 
     // check if history
-    if (history && history.episode) {
+    if (history && history.chapter) {
       const index = (
-        history.isExtra ? this.episodes.extra : this.episodes.serial
-      ).findIndex((value) => value === history.episode);
+        history.isExtra ? this.chapters.extra : this.chapters.serial
+      ).findIndex((value) => value === history.chapter);
 
       if (index !== -1)
         return this.read(index, history.isExtra!, history.page!);
     }
 
-    // if no history read from first episode
-    const isExtra = this.episodes.serial.length === 0;
+    // if no history read from first chapter
+    const isExtra = this.chapters.serial.length === 0;
     this.read(
-      (isExtra ? this.episodes.extra : this.episodes.serial).length - 1,
+      (isExtra ? this.chapters.extra : this.chapters.serial).length - 1,
       isExtra
     );
   }
 
-  async get(episodeIndex: number, isExtra: boolean): Promise<Array<string>> {
+  async get(chapterIndex: number, isExtra: boolean): Promise<Array<string>> {
     return await window.BMA.post(
-      "episode",
+      "chapter",
       {
         "is-extra": isExtra ? "1" : "0",
         driver: this.driver.identifier,
-        episode: String(episodeIndex),
+        chapter: String(chapterIndex),
       },
       this.driverData
     );

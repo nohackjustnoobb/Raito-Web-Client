@@ -69,7 +69,7 @@ class Details extends Component<
       {
         manga: manga,
         show: true,
-        extra: !Boolean(manga.episodes.serial.length),
+        extra: !Boolean(manga.chapters.serial.length),
       },
       () => {
         // setup observers for current manga state
@@ -176,15 +176,15 @@ class Details extends Component<
       />
     );
 
-    const episodes = (
-      <div className="episodesWrapper">
+    const chapters = (
+      <div className="chaptersWrapper">
         <div className="status">
           <h2 className="isEnd">
             {this.state.manga?.isEnd ? "完結" : "連載中"}
           </h2>
           <div>
             {!isVertical && shareButton}
-            {Boolean(this.state.manga?.episodes.extra.length) && (
+            {Boolean(this.state.manga?.chapters.extra.length) && (
               <div
                 className={`extra ${this.state.extra ? "enable" : ""}`}
                 onClick={() => this.setState({ extra: !this.state.extra })}
@@ -194,11 +194,11 @@ class Details extends Component<
             )}
           </div>
         </div>
-        <ul className="episodes">
+        <ul className="chapters">
           {this.state.manga &&
             (this.state.extra
-              ? this.state.manga.episodes.extra
-              : this.state.manga.episodes.serial
+              ? this.state.manga.chapters.extra
+              : this.state.manga.chapters.serial
             ).map((name, index) => (
               <li
                 key={index}
@@ -230,8 +230,8 @@ class Details extends Component<
         </div>
         <div className="read" onClick={() => this.state.manga!.continue()}>
           <h3>
-            {this.state.history?.episode
-              ? `續看 ${window.BMA.translate(this.state.history.episode)}`
+            {this.state.history?.chapter
+              ? `續看 ${window.BMA.translate(this.state.history.chapter)}`
               : "開始閱讀"}
           </h3>
         </div>
@@ -351,7 +351,7 @@ class Details extends Component<
                     </>
                   )}
                   {baseInfo}
-                  {episodes}
+                  {chapters}
                   {options}
                 </div>
               </CSSTransition>
@@ -373,7 +373,7 @@ class Details extends Component<
                   {baseInfo}
                   {options}
                 </div>
-                {episodes}
+                {chapters}
               </div>
             </CSSTransition>
           </div>

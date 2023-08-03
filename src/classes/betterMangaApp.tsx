@@ -150,7 +150,7 @@ class BetterMangaApp {
         await db.histories.put({
           driver: v.driver,
           id: v.id,
-          episode: v.episode,
+          chapter: v.chapter,
           thumbnail: v.thumbnail,
           title: v.title,
           latest: v.latest,

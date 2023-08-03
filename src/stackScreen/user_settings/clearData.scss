@@ -37,11 +37,11 @@
       gap: 1rem;
 
       .MuiFormLabel-root:not(.Mui-focused) {
-        color: var(--color-episodes-text);
+        color: var(--color-chapters-text);
       }
 
       :not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
-        border-color: var(--color-episodes-text);
+        border-color: var(--color-chapters-text);
       }
 
       .MuiInputBase-input {

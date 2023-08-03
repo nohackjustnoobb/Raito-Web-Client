@@ -91,7 +91,7 @@ class HistoriesTab extends React.Component<
 
     // trace for histories changes
     liveQuery(() =>
-      db.histories.filter((history) => history.episode !== null).toArray()
+      db.histories.filter((history) => history.chapter !== null).toArray()
     ).subscribe((result) => this.setState({ histories: result }));
 
     // sync every minute
@@ -173,7 +173,7 @@ class HistoriesTab extends React.Component<
                   <div className="info">
                     <h3>{window.BMA.translate(history.title)}</h3>
                     <h4>
-                      上次看到 {window.BMA.translate(history.episode!)} 第
+                      上次看到 {window.BMA.translate(history.chapter!)} 第
                       {history.page}頁
                     </h4>
                     <h5>更新到 {window.BMA.translate(history.latest)}</h5>

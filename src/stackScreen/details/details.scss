@@ -103,7 +103,7 @@ content-enter {
     }
   }
 
-  .episodesWrapper {
+  .chaptersWrapper {
     .status {
       display: flex;
       flex-direction: row;
@@ -118,8 +118,8 @@ content-enter {
 
       .extra {
         font-weight: bold;
-        background-color: var(--color-episodes-background);
-        color: var(--color-episodes-text);
+        background-color: var(--color-chapters-background);
+        color: var(--color-chapters-text);
         padding: 1rem;
         font-size: 1rem;
         border-radius: 2rem;
@@ -138,7 +138,7 @@ content-enter {
       }
     }
 
-    .episodes {
+    .chapters {
       display: grid;
       list-style-type: none;
       padding: 0;
@@ -152,8 +152,8 @@ content-enter {
 
       li {
         cursor: pointer;
-        background-color: var(--color-episodes-background);
-        color: var(--color-episodes-text);
+        background-color: var(--color-chapters-background);
+        color: var(--color-chapters-text);
         font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
@@ -292,7 +292,7 @@ content-enter {
       max-height: 5rem;
     }
 
-    .content .episodesWrapper {
+    .content .chaptersWrapper {
       display: flex;
       flex-direction: column;
       padding-bottom: 0.5rem;
@@ -363,7 +363,7 @@ content-enter {
       height: 100%;
     }
 
-    .episodesWrapper {
+    .chaptersWrapper {
       margin-left: 1rem;
       height: calc(100% - 2rem);
       display: flex;

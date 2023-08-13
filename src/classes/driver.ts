@@ -31,7 +31,7 @@ class Driver {
   }
 
   async loadList(category: string = "", page: number = 1): Promise<boolean> {
-    // check if initializated
+    // check if initialized
     if (!this.initialized) await this.initialize();
 
     // check if the end is reached
@@ -185,6 +185,7 @@ class Driver {
           // remove the cached manga details
           if (this.manga[manga]) delete this.manga[manga];
 
+          window.BMA.isHistoryChanged = true;
           await db.histories.update([this.identifier, mangaObject.id], {
             datetime: Date.now(),
             new: true,

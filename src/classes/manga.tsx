@@ -73,7 +73,10 @@ class SimpleManga {
       author: this.author,
     });
 
+    if (!sync) return;
+
     // try get history
+    window.BMA.isHistoryChanged = true;
     const history = await db.histories.get([this.driver.identifier, this.id]);
     if (history) {
       // update only when latest is changed
@@ -126,6 +129,7 @@ class SimpleManga {
 
   async save(chapter: string, page: number, isExtra: boolean) {
     // update or create history
+    window.BMA.isHistoryChanged = true;
     await db.histories.put({
       driver: this.driver.identifier,
       id: this.id,

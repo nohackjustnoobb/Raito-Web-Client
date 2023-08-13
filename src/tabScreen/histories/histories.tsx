@@ -95,7 +95,7 @@ class HistoriesTab extends React.Component<
     ).subscribe((result) => this.setState({ histories: result }));
 
     // sync every minute
-    this.interval = setInterval(() => window.BMA.sync(), 30000);
+    this.interval = setInterval(() => this.shouldSync(), 5000);
   }
 
   componentWillUnmount() {
@@ -105,6 +105,16 @@ class HistoriesTab extends React.Component<
   componentDidUpdate(): void {
     if (window.tabIndex === 1 && !this.state.showImage) {
       this.setState({ showImage: true }, () => this.shouldLoadMore());
+    }
+  }
+
+  shouldSync() {
+    if (
+      window.BMA.isHistoryChanged ||
+      (window.BMA.syncState.lastSync &&
+        window.BMA.syncState.lastSync + 30000 <= Date.now())
+    ) {
+      window.BMA.sync();
     }
   }
 

@@ -235,7 +235,11 @@ class Read extends Component<
   toggleOffset() {
     // update the viewport
     this.prevHeight = null;
-    this.setState({ pageOffset: !this.state.pageOffset });
+
+    const [index, page] = this.indexPageCache[0];
+    this.setState({ pageOffset: !this.state.pageOffset }, () => {
+      if (page !== null && index !== null) this.scrollToPage(index, page);
+    });
   }
 
   scrollToPage(index: number, page: number) {

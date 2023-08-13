@@ -28,6 +28,7 @@ class BetterMangaApp {
   settingsState: SettingsState = new SettingsState();
   updateCollectionsState: UpdateCollectionsState = { isUpdating: false };
   syncState: SyncState = { isSyncing: false };
+  isHistoryChanged: boolean = false;
 
   async initialize() {
     await this.settingsState.initialize();
@@ -130,6 +131,7 @@ class BetterMangaApp {
 
   async syncHistories() {
     // get the time of the lasy sync
+
     const date = localStorage.getItem("lastSync");
     const history = (await db.histories.toArray()).filter(
       (v) => date === null || v.datetime >= Number(date)
@@ -161,6 +163,7 @@ class BetterMangaApp {
         })
     );
 
+    this.isHistoryChanged = false;
     localStorage.setItem("lastSync", `${now}`);
   }
 

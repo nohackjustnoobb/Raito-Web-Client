@@ -1,11 +1,13 @@
 import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
+import { Tooltip } from "react-tooltip";
 import {
   mdiClose,
   mdiStar,
   mdiStarOffOutline,
   mdiShareVariantOutline,
+  mdiInformationSlabSymbol,
 } from "@mdi/js";
 import { liveQuery } from "dexie";
 
@@ -140,7 +142,7 @@ class Details extends Component<
       </div>
     );
 
-    const shareButton = window.BMA.settingsState.experimentalShare ? (
+    const shareButton = (
       <div
         className="share"
         onClick={async () => {
@@ -164,8 +166,27 @@ class Details extends Component<
       >
         <Icon path={mdiShareVariantOutline} size={isVertical ? 1.25 : 1} />
       </div>
-    ) : (
-      <></>
+    );
+
+    const idInfo = (
+      <>
+        <div data-tooltip-id="idInfo" className="idInfo">
+          <Icon
+            path={mdiInformationSlabSymbol}
+            size={isVertical ? 1.25 : 1.5}
+          />
+        </div>
+        <Tooltip
+          id="idInfo"
+          render={() => (
+            <div className="idInfoContent">
+              <b>{this.state.manga?.driver.identifier}</b>
+              <span />
+              {this.state.manga?.id}
+            </div>
+          )}
+        />
+      </>
     );
 
     const thumbnail = (
@@ -183,6 +204,7 @@ class Details extends Component<
             {this.state.manga?.isEnd ? "完結" : "連載中"}
           </h2>
           <div>
+            {!isVertical && idInfo}
             {!isVertical && shareButton}
             {Boolean(this.state.manga?.chapters.extra.length) && (
               <div
@@ -255,7 +277,10 @@ class Details extends Component<
                   ref={(ref) => (this.verticalBackgroundRef = ref)}
                 >
                   {closeButton}
-                  {shareButton}
+                  <div className="leftItems">
+                    {idInfo}
+                    {shareButton}
+                  </div>
                   {thumbnail}
                 </div>
               </CSSTransition>

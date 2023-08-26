@@ -25,7 +25,6 @@ class SettingsState {
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
   experimentalUseZoomableComponent: boolean = false;
-  experimentalShare: boolean = false;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -58,8 +57,6 @@ class SettingsState {
       this.experimentalUseZoomableComponent =
         this.loadBool("experimentalUseZoomableComponent") ??
         this.experimentalUseZoomableComponent;
-      this.experimentalShare =
-        this.loadBool("experimentalShare") ?? this.experimentalShare;
 
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
@@ -94,7 +91,6 @@ class SettingsState {
       "experimentalUseZoomableComponent",
       this.experimentalUseZoomableComponent
     );
-    this.saveBool("experimentalShare", this.experimentalShare);
   }
 
   reset() {

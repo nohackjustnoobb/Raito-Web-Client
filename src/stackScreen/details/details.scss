@@ -30,6 +30,19 @@
   height: 100%;
   width: 100%;
 
+  .idInfoContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    span {
+      background-color: white;
+      width: 100%;
+      height: 1px;
+      margin: 0.5rem;
+    }
+  }
+
   .close {
     background-color: #00000077;
     position: absolute;
@@ -234,25 +247,41 @@
       }
 
       .close {
-        top: env(safe-area-inset-top);
+        top: max(env(safe-area-inset-top), 1rem);
+      }
+
+      .leftItems {
+        position: absolute;
+        right: 1rem;
+        top: max(env(safe-area-inset-top), 1rem);
+        display: flex;
+        gap: 0.5rem;
       }
 
       .share {
         background-color: #00000077;
         color: white;
-        position: absolute;
         padding: 0.5rem;
         border-radius: 50%;
-        top: env(safe-area-inset-top);
         display: flex;
         justify-content: center;
         align-items: center;
-        right: 1rem;
         cursor: pointer;
 
         svg {
           transform: translateX(-1px);
         }
+      }
+
+      .idInfo {
+        background-color: #00000077;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
       }
     }
 
@@ -333,13 +362,19 @@
 
         .share {
           color: #b0b0b0;
-          border-radius: 1rem;
-          top: env(safe-area-inset-top);
           display: flex;
           justify-content: center;
           align-items: center;
-          right: 1rem;
           margin-right: 0.5rem;
+          cursor: pointer;
+        }
+
+        .idInfo {
+          color: #b0b0b0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-right: 0.25rem;
           cursor: pointer;
         }
       }

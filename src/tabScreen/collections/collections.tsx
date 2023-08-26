@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "@mdi/react";
 import { mdiRefresh } from "@mdi/js";
 import { liveQuery } from "dexie";
+import { Img } from "react-image";
 
 import TabScreen from "../tabScreen";
 import db, { collection, history } from "../../classes/db";
@@ -140,7 +141,7 @@ class CollectionsTab extends React.Component<
                         <div className="mangaID">{manga.id}</div>
                       </>
                     )}
-                    <img src={manga.thumbnail} alt="" />
+                    <Img src={manga.thumbnail} />
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>
                       {history &&

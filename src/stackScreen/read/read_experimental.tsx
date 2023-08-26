@@ -1,6 +1,7 @@
 import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import BetterScroll from "better-scroll";
+import { Img } from "react-image";
 
 import { Manga } from "../../classes/manga";
 import Warning from "./warning";
@@ -429,9 +430,8 @@ class ReadExperimental extends Component<
                                   : "50%",
                             }}
                           >
-                            <img
+                            <Img
                               src={url}
-                              alt=""
                               onLoad={(event) => {
                                 // check if the image is horizontal
                                 const element =

@@ -3,6 +3,7 @@ import React from "react";
 import Icon from "@mdi/react";
 import { mdiCloudSync, mdiBookArrowRight } from "@mdi/js";
 import { liveQuery } from "dexie";
+import { Img } from "react-image";
 
 import db, { history } from "../../classes/db";
 import {
@@ -14,6 +15,7 @@ import { Manga } from "../../classes/manga";
 import BetterMangaAppEvent from "../../classes/event";
 
 import "./histories.scss";
+
 class HistoriesTabState extends React.Component {
   interval: NodeJS.Timeout | null = null;
 
@@ -162,9 +164,8 @@ class HistoriesTab extends React.Component<
                   key={`${history.id}_${history.driver}`}
                 >
                   {this.state.showImage && (
-                    <img
+                    <Img
                       src={history.thumbnail}
-                      alt=""
                       onClick={async () => {
                         pushLoader();
                         // load manga

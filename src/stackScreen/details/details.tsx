@@ -2,6 +2,7 @@ import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
 import { Tooltip } from "react-tooltip";
+import { Img } from "react-image";
 import {
   mdiClose,
   mdiStar,
@@ -189,12 +190,8 @@ class Details extends Component<
       </>
     );
 
-    const thumbnail = (
-      <img
-        src={this.state.manga ? this.state.manga.thumbnail : undefined}
-        alt=""
-        className="thumbnail"
-      />
+    const thumbnail = this.state.manga && (
+      <Img src={this.state.manga.thumbnail} className="thumbnail" />
     );
 
     const chapters = (

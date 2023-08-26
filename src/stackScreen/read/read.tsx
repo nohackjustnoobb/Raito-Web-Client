@@ -1,5 +1,6 @@
 import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
+import { Img } from "react-image";
 
 import { Manga } from "../../classes/manga";
 import Warning from "./warning";
@@ -163,7 +164,11 @@ class Read extends Component<
           loaded = true;
           for (let i = 0; i < page!; i++) {
             const element = document.getElementById(`${index}_${i}`);
-            if (!element || !(element.children[0] as HTMLImageElement).complete)
+            if (
+              !element ||
+              !element.children.length ||
+              !(element.children[0] as HTMLImageElement).complete
+            )
               loaded = false;
           }
 
@@ -417,9 +422,8 @@ class Read extends Component<
                                   : "50%",
                             }}
                           >
-                            <img
+                            <Img
                               src={url}
-                              alt=""
                               onLoad={(event) => {
                                 // check if the image is horizontal
                                 const element =
@@ -435,6 +439,7 @@ class Read extends Component<
 
                                 this.restorePosition();
                               }}
+                              unloader={<div>Failed</div>}
                             />
                           </div>
                         </Fragment>

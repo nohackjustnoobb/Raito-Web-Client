@@ -1,6 +1,7 @@
 import React from "react";
 import Icon from "@mdi/react";
 import { mdiChevronDown, mdiDatabase, mdiMagnify } from "@mdi/js";
+import { Img } from "react-image";
 
 import TabScreen from "../tabScreen";
 import { InfinitySpin } from "react-loader-spinner";
@@ -397,7 +398,7 @@ class LibrariesTab extends React.Component<
                       <div className="mangaID">{manga.id}</div>
                     </>
                   )}
-                  <img src={manga.thumbnail} alt={manga.thumbnail} />
+                  <Img src={manga.thumbnail} />
                   <p>{window.BMA.translate(manga.title)}</p>
                   <p className="latest">
                     更新至 {window.BMA.translate(manga.latest)}

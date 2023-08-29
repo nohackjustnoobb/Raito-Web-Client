@@ -219,6 +219,7 @@ class Manga extends SimpleManga {
         "is-extra": isExtra ? "1" : "0",
         driver: this.driver.identifier,
         chapter: String(chapterIndex),
+        proxy: window.BMA.settingsState.useProxy ? "1" : "0",
       },
       this.driverData
     );

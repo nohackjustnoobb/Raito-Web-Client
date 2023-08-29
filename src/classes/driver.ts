@@ -45,6 +45,7 @@ class Driver {
       driver: this.identifier,
       ...(category !== "" && { category: category }),
       page: String(page),
+      proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
     // check if the object is already initialized
@@ -86,6 +87,7 @@ class Driver {
       driver: this.identifier,
       keyword: keyword,
       page: String(page),
+      proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
     // check if the object is already initialized
@@ -138,6 +140,7 @@ class Driver {
       driver: this.identifier,
       ids: filtered.join(","),
       "show-all": showAll ? "1" : "0",
+      proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
     // cache the results

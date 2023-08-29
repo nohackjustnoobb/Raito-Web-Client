@@ -65,7 +65,7 @@ class SettingsTab extends React.Component {
                 value={window.BMA.settingsState.theme}
                 onChange={(event) => {
                   window.BMA.settingsState.theme = Number(event.target.value);
-                  window.BMA.settingsState.save();
+                  window.BMA.settingsState.update();
                   window.updateRoot();
                 }}
               >
@@ -97,6 +97,17 @@ class SettingsTab extends React.Component {
                 checked={window.BMA.settingsState.forceTranslate}
                 onChange={(_, checked) => {
                   window.BMA.settingsState.forceTranslate = checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
+
+            <div className="options">
+              <span>使用代理伺服器（如有）：</span>
+              <Checkbox
+                checked={window.BMA.settingsState.useProxy}
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.useProxy = checked;
                   window.BMA.settingsState.update();
                 }}
               />

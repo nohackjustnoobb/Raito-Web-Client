@@ -21,6 +21,7 @@ class SettingsState {
   overscrollToLoadPreviousChapters: boolean = true;
   debugMode: boolean = false;
   ignoreError: boolean = true;
+  useProxy: boolean = false;
 
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
@@ -46,6 +47,7 @@ class SettingsState {
         this.loadBool("forceTranslate") ?? this.forceTranslate;
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
       this.ignoreError = this.loadBool("ignoreError") ?? this.ignoreError;
+      this.useProxy = this.loadBool("useProxy") ?? this.useProxy;
       this.overscrollToLoadPreviousChapters =
         this.loadBool("overscrollToLoadPreviousChapters") ??
         this.overscrollToLoadPreviousChapters;
@@ -77,6 +79,7 @@ class SettingsState {
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
+    this.saveBool("useProxy", this.useProxy);
     this.saveBool(
       "overscrollToLoadPreviousChapters",
       this.overscrollToLoadPreviousChapters

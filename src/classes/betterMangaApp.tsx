@@ -306,11 +306,11 @@ class BetterMangaApp {
     }
 
     // handle the error if any
-    return (
-      handleError &&
+    handleError &&
       !this.settingsState.ignoreError &&
-      (await errorHandler(response))
-    );
+      (await errorHandler(response));
+
+    return false;
   }
 
   // helper function to GET and POST

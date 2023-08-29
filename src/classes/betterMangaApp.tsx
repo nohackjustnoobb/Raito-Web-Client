@@ -289,10 +289,12 @@ class BetterMangaApp {
     this.version = response.headers.get("Version");
 
     // get available drivers
-    response.headers
-      .get("Available-Drivers")!
-      .split(", ")
-      .forEach((v) => this.getDriver(v));
+    if (response.headers.get("Available-Drivers")) {
+      response.headers
+        .get("Available-Drivers")!
+        .split(", ")
+        .forEach((v) => this.getDriver(v));
+    }
 
     // check if the request is successful
     if (String(response.status)[0] === "2") {

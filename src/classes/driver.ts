@@ -144,16 +144,18 @@ class Driver {
     });
 
     // cache the results
-    body?.forEach((v: any) => {
-      // cache the manga by its type
-      if (showAll) {
-        const manga: Manga = new Manga(v);
-        this.manga[manga.id] = manga;
-      } else {
-        const manga: SimpleManga = new SimpleManga(v);
-        this.simpleManga[manga.id] = manga;
-      }
-    });
+    if (body) {
+      body?.forEach((v: any) => {
+        // cache the manga by its type
+        if (showAll) {
+          const manga: Manga = new Manga(v);
+          this.manga[manga.id] = manga;
+        } else {
+          const manga: SimpleManga = new SimpleManga(v);
+          this.simpleManga[manga.id] = manga;
+        }
+      });
+    }
   }
 
   async update() {

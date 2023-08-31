@@ -25,23 +25,6 @@
     color: var(--color-text);
   }
 
-  .options {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    align-items: center;
-    height: 1.75rem;
-
-    button {
-      margin-left: 0.5rem;
-    }
-
-    span {
-      display: flex;
-      color: var(--color-text);
-    }
-  }
-
   h3 {
     margin: 0;
     margin-bottom: 0.5rem;
@@ -54,6 +37,25 @@
     border-radius: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 1.75rem;
+
+      button {
+        margin-left: 0.5rem;
+      }
+
+      span {
+        display: flex;
+        color: var(--color-text);
+      }
+    }
   }
 
   #credit {

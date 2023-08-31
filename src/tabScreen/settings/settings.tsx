@@ -10,6 +10,7 @@ import { listenToEvents } from "../../utils/utils";
 import BetterMangaAppEvent from "../../classes/event";
 
 import "./settings.scss";
+import CreateUser from "../../stackScreen/user_settings/createUser";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -165,6 +166,17 @@ class SettingsTab extends React.Component {
             <>
               <h3>開發者設定</h3>
               <div className="subSettings">
+                <div className="options">
+                  <span>創建用戶：</span>
+                  <Button
+                    variant={"outlined"}
+                    size="small"
+                    onClick={() => window.stack.push(<CreateUser />)}
+                  >
+                    打開介面
+                  </Button>
+                </div>
+
                 <div className="options">
                   <span>實驗性功能：</span>
                   <Button

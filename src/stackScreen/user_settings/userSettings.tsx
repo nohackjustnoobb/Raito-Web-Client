@@ -7,7 +7,6 @@ import "./userSettings.scss";
 import db from "../../classes/db";
 import ChangePassword from "./changePassword";
 import ClearData from "./clearData";
-import CreateUser from "./createUser";
 
 class UserSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
@@ -47,19 +46,6 @@ class UserSettings extends Component<{}, { show: boolean }> {
               <span className="email">
                 帳戶：<b>{user.email}</b>
               </span>
-              {window.BMA.settingsState.debugMode && (
-                <span>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    color="info"
-                    fullWidth
-                    onClick={() => window.stack.push(<CreateUser />)}
-                  >
-                    創建用戶
-                  </Button>
-                </span>
-              )}
               <span>
                 <Button
                   variant="contained"

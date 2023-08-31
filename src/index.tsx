@@ -89,6 +89,10 @@ class Main extends Component<{}, { dark: boolean }> {
       .addEventListener("change", ({ matches }) => {
         this.setState({ dark: matches });
       });
+
+    setInterval(() => {
+      window.BMA.clearDriverCache();
+    }, 7200000);
   }
 
   render(): ReactNode {

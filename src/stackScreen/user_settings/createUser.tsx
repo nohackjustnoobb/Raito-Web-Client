@@ -6,7 +6,13 @@ import "./createUser.scss";
 
 class CreateUser extends Component<
   {},
-  { show: boolean; password: string; email: string; key: string }
+  {
+    show: boolean;
+    password: string;
+    confirmPassword: string;
+    email: string;
+    key: string;
+  }
 > {
   timeout: number = 500;
 
@@ -17,6 +23,7 @@ class CreateUser extends Component<
       show: false,
       password: "",
       email: "",
+      confirmPassword: "",
       key: "",
     };
   }
@@ -65,6 +72,7 @@ class CreateUser extends Component<
                 variant="outlined"
                 type="email"
                 fullWidth
+                autoComplete="username"
                 value={this.state.email}
                 onChange={(event) =>
                   this.setState({ email: event.target.value })
@@ -76,10 +84,24 @@ class CreateUser extends Component<
                 label="密碼"
                 variant="outlined"
                 type="password"
+                autoComplete="new-password"
                 fullWidth
                 value={this.state.password}
                 onChange={(event) =>
                   this.setState({ password: event.target.value })
+                }
+              />
+              <TextField
+                size="small"
+                id="outlined-basic"
+                label="重新輸入密碼"
+                variant="outlined"
+                type="password"
+                fullWidth
+                autoComplete="new-password"
+                value={this.state.confirmPassword}
+                onChange={(event) =>
+                  this.setState({ confirmPassword: event.target.value })
                 }
               />
               <TextField

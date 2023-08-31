@@ -326,6 +326,15 @@ class BetterMangaApp {
     return false;
   }
 
+  clearDriverCache() {
+    for (const driver of this.availableDrivers) {
+      driver.list = {};
+      driver.search = {};
+      driver.simpleManga = {};
+      driver.manga = {};
+    }
+  }
+
   // helper function to GET and POST
   get = async (
     action: string,

@@ -103,11 +103,11 @@ class SettingsTab extends React.Component {
             </div>
 
             <div className="options">
-              <span>使用代理伺服器（如有）：</span>
+              <span>顯示開發者設定：</span>
               <Checkbox
-                checked={window.BMA.settingsState.useProxy}
+                checked={window.BMA.settingsState.showDeveloperSettings}
                 onChange={(_, checked) => {
-                  window.BMA.settingsState.useProxy = checked;
+                  window.BMA.settingsState.showDeveloperSettings = checked;
                   window.BMA.settingsState.update();
                 }}
               />
@@ -146,41 +146,60 @@ class SettingsTab extends React.Component {
               />
             </div>
           </div>
-          <h3>其他設定</h3>
+
+          <h3>伺服器設定</h3>
           <div className="subSettings">
             <div className="options">
-              <span>實驗性功能：</span>
-              <Button
-                variant={"outlined"}
-                size="small"
-                onClick={() => window.stack.push(<ExperimentalSettings />)}
-              >
-                功能選單
-              </Button>
-            </div>
-
-            <div className="options">
-              <span>忽略錯誤：</span>
+              <span>使用代理伺服器（如有）：</span>
               <Checkbox
-                checked={window.BMA.settingsState.ignoreError}
+                checked={window.BMA.settingsState.useProxy}
                 onChange={(_, checked) => {
-                  window.BMA.settingsState.ignoreError = checked;
-                  window.BMA.settingsState.update();
-                }}
-              />
-            </div>
-
-            <div className="options">
-              <span>開發者模式：</span>
-              <Checkbox
-                checked={window.BMA.settingsState.debugMode}
-                onChange={(_, checked) => {
-                  window.BMA.settingsState.debugMode = checked;
+                  window.BMA.settingsState.useProxy = checked;
                   window.BMA.settingsState.update();
                 }}
               />
             </div>
           </div>
+
+          {window.BMA.settingsState.showDeveloperSettings && (
+            <>
+              <h3>開發者設定</h3>
+              <div className="subSettings">
+                <div className="options">
+                  <span>實驗性功能：</span>
+                  <Button
+                    variant={"outlined"}
+                    size="small"
+                    onClick={() => window.stack.push(<ExperimentalSettings />)}
+                  >
+                    功能選單
+                  </Button>
+                </div>
+
+                <div className="options">
+                  <span>忽略錯誤：</span>
+                  <Checkbox
+                    checked={window.BMA.settingsState.ignoreError}
+                    onChange={(_, checked) => {
+                      window.BMA.settingsState.ignoreError = checked;
+                      window.BMA.settingsState.update();
+                    }}
+                  />
+                </div>
+
+                <div className="options">
+                  <span>除錯模式：</span>
+                  <Checkbox
+                    checked={window.BMA.settingsState.debugMode}
+                    onChange={(_, checked) => {
+                      window.BMA.settingsState.debugMode = checked;
+                      window.BMA.settingsState.update();
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <h3>版本</h3>
           <div className="subSettings">
@@ -195,7 +214,7 @@ class SettingsTab extends React.Component {
           </div>
         </div>
         <p id="credit">
-          This application is released under the MIT license as open source. (
+          This application is released under the MIT license. (
           <a
             href="https://github.com/nohackjustnoobb/Better-Manga-Web-Client"
             target={"_blank"}
@@ -205,7 +224,7 @@ class SettingsTab extends React.Component {
           </a>
           )
           <br />
-          Develop By
+          Design & Develop By
           <a
             href="https://github.com/nohackjustnoobb"
             target={"_blank"}

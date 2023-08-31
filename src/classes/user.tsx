@@ -23,25 +23,27 @@ class User {
     );
 
     if (result) {
-      this.token = result.token;
-      this.email = email;
-
       // upload the collections
       const collections = (await db.collections.toArray()).map(
         (collection) => ({ id: collection.id, driver: collection.driver })
       );
-      await window.BMA.post(
+      const result = await window.BMA.post(
         "user/collections",
         {},
         JSON.stringify(collections),
         { "Content-Type": "application/json" }
       );
 
-      // sync the collections and histories
-      window.BMA.sync();
+      if (!result) return false;
+
+      this.token = result.token;
+      this.email = email;
 
       localStorage.setItem("token", this.token!);
       localStorage.setItem("email", this.email!);
+
+      // sync the collections and histories
+      window.BMA.sync();
 
       dispatchEvent(BetterMangaAppEvent.settingsChanged);
     }
@@ -62,24 +64,28 @@ class User {
     dispatchEvent(BetterMangaAppEvent.settingsChanged);
   }
 
-  async clear(password: string) {
-    localStorage.removeItem("lastSync");
-
-    // delete local data
-    await db.collections.clear();
-    await db.histories.clear();
-
+  async clear(password: string): Promise<boolean> {
     // delete remote data
-    return await window.BMA.post(
+    const result = await window.BMA.post(
       "user/clear",
       {},
       JSON.stringify({ password: password }),
       { "Content-Type": "application/json" },
       false
     );
+
+    if (result) {
+      localStorage.removeItem("lastSync");
+
+      // delete local data
+      await db.collections.clear();
+      await db.histories.clear();
+    }
+
+    return result;
   }
 
-  async create(email: string, password: string, key: string) {
+  async create(email: string, password: string, key: string): Promise<boolean> {
     return await window.BMA.post(
       "user/create",
       {},
@@ -89,7 +95,10 @@ class User {
     );
   }
 
-  async changePassword(newPassword: string, oldPassword: string) {
+  async changePassword(
+    newPassword: string,
+    oldPassword: string
+  ): Promise<boolean> {
     return await window.BMA.post(
       "user/me",
       {},

@@ -2,6 +2,7 @@ import { InfinitySpin } from "react-loader-spinner";
 
 import "./utils.scss";
 import BetterMangaAppEvent from "../classes/event";
+import Driver from "../classes/driver";
 
 const pushLoader = () => {
   window.stack.push(
@@ -17,7 +18,7 @@ const pushLoader = () => {
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-async function errorHandler(response: Response) {
+const errorHandler = async (response: Response) => {
   const status = response.status;
 
   switch (status) {
@@ -41,7 +42,7 @@ async function errorHandler(response: Response) {
         }`
       );
   }
-}
+};
 
 const dispatchEvent = (eventId: BetterMangaAppEvent) => {
   const event = new Event(eventId);
@@ -56,10 +57,25 @@ const listenToEvents = (
     window.addEventListener(eventId, () => action(), false)
   );
 
+const tryInitialize = async (driver: Driver): Promise<boolean> => {
+  if (driver.initialized) return true;
+
+  let counter = 0;
+  while (!driver.initialized) {
+    if (counter >= 5) return false;
+
+    await driver.initialize();
+    counter++;
+  }
+
+  return true;
+};
+
 export {
   pushLoader,
   errorHandler,
   convertRemToPixels,
   dispatchEvent,
   listenToEvents,
+  tryInitialize,
 };

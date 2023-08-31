@@ -213,7 +213,7 @@ class Manga extends SimpleManga {
   }
 
   async get(chapterIndex: number, isExtra: boolean): Promise<Array<string>> {
-    return await window.BMA.post(
+    const result = await window.BMA.post(
       "chapter",
       {
         "is-extra": isExtra ? "1" : "0",
@@ -223,6 +223,10 @@ class Manga extends SimpleManga {
       },
       this.driverData
     );
+
+    if (!result) return [];
+
+    return result;
   }
 }
 

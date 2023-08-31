@@ -38,7 +38,11 @@ class BetterMangaApp {
 
   async updateCollections() {
     // prevent multiple updating at the same time
-    if (this.updateCollectionsState.isUpdating) return;
+    if (
+      this.updateCollectionsState.isUpdating ||
+      !window.BMA.syncState.lastSync
+    )
+      return;
     this.updateCollectionsState.isUpdating = true;
 
     // get all the items that needed to update
@@ -140,14 +144,16 @@ class BetterMangaApp {
     // save the time
     const now = Date.now();
 
-    (
-      await this.post(
-        "user/histories",
-        date === null ? {} : { date: date },
-        JSON.stringify(history),
-        { "Content-Type": "application/json" }
-      )
-    ).forEach(
+    const result = await this.post(
+      "user/histories",
+      date === null ? {} : { date: date },
+      JSON.stringify(history),
+      { "Content-Type": "application/json" }
+    );
+
+    if (!result) return;
+
+    result.forEach(
       async (v: any) =>
         await db.histories.put({
           driver: v.driver,
@@ -171,6 +177,8 @@ class BetterMangaApp {
     // get both local and remote collections
     const remoteCollections: Array<{ id: string; driver: string }> =
       await this.get("user/collections");
+    if (!remoteCollections) return;
+
     let localCollections = await db.collections.toArray();
 
     for (const collection of localCollections) {
@@ -199,7 +207,7 @@ class BetterMangaApp {
 
     await this.fetchBatchManga(addedManga);
     addedManga.forEach((manga) => {
-      this.getDriver(manga.driver)?.simpleManga[manga.id].add(false);
+      this.getDriver(manga.driver)?.simpleManga[manga.id]?.add(false);
     });
   }
 
@@ -273,17 +281,22 @@ class BetterMangaApp {
     }
 
     // send the requests
-    const response = await fetch(
-      `${process.env.REACT_APP_ADDRESS}${action}${
-        Object.keys(params).length === 0 ? "" : "?"
-      }` + new URLSearchParams(params),
-      {
-        method: method,
-        headers: new Headers(headers),
-        body: body,
-        cache: "no-cache",
-      }
-    );
+    let response: Response;
+    try {
+      response = await fetch(
+        `${process.env.REACT_APP_ADDRESS}${action}${
+          Object.keys(params).length === 0 ? "" : "?"
+        }` + new URLSearchParams(params),
+        {
+          method: method,
+          headers: new Headers(headers),
+          body: body,
+          cache: "no-cache",
+        }
+      );
+    } catch {
+      return false;
+    }
 
     // get the server version
     this.version = response.headers.get("Version");

@@ -1,6 +1,6 @@
 import db from "./db";
 import { Manga, SimpleManga } from "./manga";
-import { dispatchEvent } from "../utils/utils";
+import { dispatchEvent, tryInitialize } from "../utils/utils";
 import BetterMangaAppEvent from "./event";
 
 class Driver {
@@ -16,15 +16,20 @@ class Driver {
   constructor(public identifier: string) {}
 
   async initialize() {
-    this.initialized = true;
+    if (this.initialized) return;
 
     // get the driver information
     const result = await window.BMA.get("driver", {
       driver: this.identifier,
     });
+
+    if (!result) return;
+
     this.supportedCategories = result.supportedCategories;
     this.supportSuggestion = result.supportSuggestion;
     this.recommendedChunkSize = result.recommendedChunkSize;
+
+    this.initialized = true;
 
     // update the screens
     dispatchEvent(BetterMangaAppEvent.driverChanged);
@@ -32,7 +37,7 @@ class Driver {
 
   async loadList(category: string = "", page: number = 1): Promise<boolean> {
     // check if initialized
-    if (!this.initialized) await this.initialize();
+    if (!tryInitialize(this)) return false;
 
     // check if the end is reached
     if (page > 1 && !this.list[category][page - 1].length) return false;
@@ -41,19 +46,21 @@ class Driver {
     if (this.list[category] && this.list[category][page]) return true;
 
     // get the list of manga
-    const body = await window.BMA.get("list", {
+    const result = await window.BMA.get("list", {
       driver: this.identifier,
       ...(category !== "" && { category: category }),
       page: String(page),
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
+    if (!result) return false;
+
     // check if the object is already initialized
     if (!this.list[category]) this.list[category] = {};
     this.list[category][page] = [];
 
     // convert the data to SimpleManga objects
-    body?.forEach((v: any) => {
+    result?.forEach((v: any) => {
       const manga: SimpleManga = new SimpleManga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
@@ -70,7 +77,7 @@ class Driver {
     if (!keyword) return false;
 
     // check if initializated
-    if (!this.initialized) await this.initialize();
+    if (!tryInitialize(this)) return false;
 
     // check if the end is reached or no results
     if (
@@ -83,19 +90,21 @@ class Driver {
     if (this.search[keyword] && this.search[keyword][page]) return true;
 
     // get the results
-    const body = await window.BMA.get("search", {
+    const result = await window.BMA.get("search", {
       driver: this.identifier,
       keyword: keyword,
       page: String(page),
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
+    if (!result) return false;
+
     // check if the object is already initialized
     if (!this.search[keyword]) this.search[keyword] = {};
     this.search[keyword][page] = [];
 
     // convert the data to SimpleManga objects
-    body?.forEach((v: any) => {
+    result?.forEach((v: any) => {
       const manga: SimpleManga = new SimpleManga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
@@ -109,14 +118,18 @@ class Driver {
 
   async getSuggestions(keyword: string): Promise<Array<string>> {
     // check if initializated
-    if (!this.initialized) await this.initialize();
+    if (!tryInitialize(this)) return [];
 
     if (!this.supportSuggestion || !keyword) return [];
 
-    return await window.BMA.get("suggestion", {
+    const result = await window.BMA.get("suggestion", {
       driver: this.identifier,
       keyword: keyword,
     });
+
+    if (!result) return [];
+
+    return result;
   }
 
   async getDetails(
@@ -136,26 +149,26 @@ class Driver {
     if (!filtered.length) return;
 
     // get the results
-    const body = await window.BMA.get("details", {
+    const result = await window.BMA.get("details", {
       driver: this.identifier,
       ids: filtered.join(","),
       "show-all": showAll ? "1" : "0",
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
+    if (!result) return;
+
     // cache the results
-    if (body) {
-      body?.forEach((v: any) => {
-        // cache the manga by its type
-        if (showAll) {
-          const manga: Manga = new Manga(v);
-          this.manga[manga.id] = manga;
-        } else {
-          const manga: SimpleManga = new SimpleManga(v);
-          this.simpleManga[manga.id] = manga;
-        }
-      });
-    }
+    result?.forEach((v: any) => {
+      // cache the manga by its type
+      if (showAll) {
+        const manga: Manga = new Manga(v);
+        this.manga[manga.id] = manga;
+      } else {
+        const manga: SimpleManga = new SimpleManga(v);
+        this.simpleManga[manga.id] = manga;
+      }
+    });
   }
 
   async update() {

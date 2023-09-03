@@ -11,6 +11,7 @@ import BetterMangaAppEvent from "../../classes/event";
 
 import "./settings.scss";
 import CreateUser from "../../stackScreen/user_settings/createUser";
+import OnlineStatus from "../../stackScreen/online_status/onlineStatus";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -151,6 +152,16 @@ class SettingsTab extends React.Component {
           <h3>伺服器設定</h3>
           <div className="subSettings">
             <div className="options">
+              <span>來源狀態：</span>
+              <Button
+                variant={"outlined"}
+                size="small"
+                onClick={() => window.stack.push(<OnlineStatus />)}
+              >
+                查看狀態
+              </Button>
+            </div>
+            <div className="options">
               <span>使用代理伺服器（如有）：</span>
               <Checkbox
                 checked={window.BMA.settingsState.useProxy}
@@ -173,7 +184,7 @@ class SettingsTab extends React.Component {
                     size="small"
                     onClick={() => window.stack.push(<CreateUser />)}
                   >
-                    打開介面
+                    創建介面
                   </Button>
                 </div>
 

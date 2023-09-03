@@ -71,6 +71,9 @@ const tryInitialize = async (driver: Driver): Promise<boolean> => {
   return true;
 };
 
+const sleep = async (duration: number): Promise<void> =>
+  new Promise((res) => setTimeout(res, duration));
+
 export {
   pushLoader,
   errorHandler,
@@ -78,4 +81,5 @@ export {
   dispatchEvent,
   listenToEvents,
   tryInitialize,
+  sleep,
 };

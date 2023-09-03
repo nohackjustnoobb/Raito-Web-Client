@@ -29,6 +29,7 @@ class BetterMangaApp {
   updateCollectionsState: UpdateCollectionsState = { isUpdating: false };
   syncState: SyncState = { isSyncing: false };
   isHistoryChanged: boolean = false;
+  lastCheckOnStatus: number | null = null;
 
   async initialize() {
     await this.settingsState.initialize();
@@ -258,7 +259,10 @@ class BetterMangaApp {
   }
 
   async selectDriver(id: string) {
-    this.selectedDriver = this.getDriver(id)!;
+    const driver = this.getDriver(id);
+    if (!driver || driver.disabled) return alert(`${id}來源不可用`);
+
+    this.selectedDriver = driver;
 
     // initialize the driver
     if (!this.selectedDriver.initialized)
@@ -333,6 +337,26 @@ class BetterMangaApp {
       driver.simpleManga = {};
       driver.manga = {};
     }
+  }
+
+  async checkOnlineStatus() {
+    let result = await this.get("driver/online");
+
+    if (!result) return;
+
+    for (let [key, value] of Object.entries(result as Map<string, any>)) {
+      const driver = this.getDriver(key);
+      if (!driver) continue;
+
+      driver.setOnlineStatus({
+        online: value["online"],
+        latency: value["latency"],
+      });
+    }
+
+    this.lastCheckOnStatus = Date.now();
+
+    dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
   }
 
   // helper function to GET and POST

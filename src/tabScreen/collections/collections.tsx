@@ -3,6 +3,7 @@ import Icon from "@mdi/react";
 import { mdiRefresh } from "@mdi/js";
 import { liveQuery } from "dexie";
 import { Img } from "react-image";
+import { TailSpin } from "react-loader-spinner";
 
 import TabScreen from "../tabScreen";
 import db, { collection, history } from "../../classes/db";
@@ -141,7 +142,20 @@ class CollectionsTab extends React.Component<
                         <div className="mangaID">{manga.id}</div>
                       </>
                     )}
-                    <Img src={manga.thumbnail} />
+                    <div className="imgWrapper">
+                      <Img
+                        src={manga.thumbnail}
+                        loader={
+                          <TailSpin
+                            height={60}
+                            width={60}
+                            color={"var(--color-chapters-text)"}
+                            wrapperClass="imgLoader"
+                            ariaLabel="tail-spin-loading"
+                          />
+                        }
+                      />
+                    </div>
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>
                       {history &&

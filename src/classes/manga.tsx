@@ -3,6 +3,8 @@ import ReadExperimental from "../stackScreen/read/read_experimental";
 import Read from "../stackScreen/read/read";
 import db, { history, collection } from "./db";
 import Driver from "./driver";
+import BetterMangaAppEvent from "./event";
+import { dispatchEvent } from "../utils/utils";
 
 class SimpleManga {
   driver: Driver;
@@ -46,6 +48,9 @@ class SimpleManga {
   }
 
   pushDetails() {
+    if (this.driver.disabled)
+      return alert(`${this.driver.identifier}來源不可用`);
+
     window.stack.push(<Details manga={this} />);
   }
 
@@ -118,13 +123,11 @@ class SimpleManga {
     await db.collections.delete([this.driver.identifier, this.id]);
   }
 
-  static async fromID(id: string, driverID: string): Promise<Manga> {
+  static async fromID(id: string, driverID: string): Promise<Manga | boolean> {
     // get driver
     const driver = window.BMA.getDriver(driverID)!;
     // get manga
-    await driver.getDetails([id]);
-
-    return driver.manga[id];
+    return (await driver.getDetails([id])) && driver.manga[id];
   }
 
   async save(chapter: string, page: number, isExtra: boolean) {
@@ -172,6 +175,9 @@ class Manga extends SimpleManga {
   }
 
   read(chaptersIndex: number, isExtra: boolean, page: number | null = null) {
+    if (this.driver.disabled)
+      return alert(`${this.driver.identifier}來源不可用`);
+
     window.stack.push(
       window.BMA.settingsState.experimentalUseZoomableComponent ? (
         <ReadExperimental
@@ -213,6 +219,11 @@ class Manga extends SimpleManga {
   }
 
   async get(chapterIndex: number, isExtra: boolean): Promise<Array<string>> {
+    if (this.driver.disabled) {
+      alert(`${this.driver.identifier}來源不可用`);
+      return [];
+    }
+
     const result = await window.BMA.post(
       "chapter",
       {
@@ -224,8 +235,12 @@ class Manga extends SimpleManga {
       this.driverData
     );
 
-    if (!result) return [];
+    if (!result) {
+      this.driver.disabled = true;
+      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
+      return [];
+    }
     return result;
   }
 }

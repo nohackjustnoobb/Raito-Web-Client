@@ -4,7 +4,7 @@ import { mdiChevronDown, mdiDatabase, mdiMagnify } from "@mdi/js";
 import { Img } from "react-image";
 
 import TabScreen from "../tabScreen";
-import { InfinitySpin } from "react-loader-spinner";
+import { InfinitySpin, TailSpin } from "react-loader-spinner";
 import { convertRemToPixels, listenToEvents } from "../../utils/utils";
 import { SimpleManga } from "../../classes/manga";
 import BetterMangaAppEvent from "../../classes/event";
@@ -55,7 +55,7 @@ class LibrariesTabState extends React.Component {
           style={{ transform: "translateX(2rem)" }}
         />
         <select
-          defaultValue={window.BMA.selectedDriver?.identifier}
+          value={window.BMA.selectedDriver?.identifier}
           onChange={async (event) => {
             // change the selected driver
             await window.BMA.selectDriver(event.target.value);
@@ -252,7 +252,12 @@ class LibrariesTab extends React.Component<
 
   // show loader when loading list
   async loadMore() {
-    if (!window.BMA.selectedDriver || this.state.loading || !this.content)
+    if (
+      !window.BMA.selectedDriver ||
+      window.BMA.selectedDriver.disabled ||
+      this.state.loading ||
+      !this.content
+    )
       return;
 
     // show the loader
@@ -398,7 +403,20 @@ class LibrariesTab extends React.Component<
                       <div className="mangaID">{manga.id}</div>
                     </>
                   )}
-                  <Img src={manga.thumbnail} />
+                  <div className="imgWrapper">
+                    <Img
+                      src={manga.thumbnail}
+                      loader={
+                        <TailSpin
+                          height={60}
+                          width={60}
+                          color={"var(--color-chapters-text)"}
+                          wrapperClass="imgLoader"
+                          ariaLabel="tail-spin-loading"
+                        />
+                      }
+                    />
+                  </div>
                   <p>{window.BMA.translate(manga.title)}</p>
                   <p className="latest">
                     更新至 {window.BMA.translate(manga.latest)}

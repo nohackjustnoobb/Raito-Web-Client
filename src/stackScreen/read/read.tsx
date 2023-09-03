@@ -6,10 +6,10 @@ import { Manga } from "../../classes/manga";
 import Warning from "./warning";
 import { listenToEvents, pushLoader } from "../../utils/utils";
 import { DisplayMode } from "../../classes/settingsState";
-
-import "./read.scss";
 import Menu from "./menu";
 import BetterMangaAppEvent from "../../classes/event";
+
+import "./read.scss";
 
 class Read extends Component<
   {
@@ -439,7 +439,6 @@ class Read extends Component<
 
                                 this.restorePosition();
                               }}
-                              unloader={<div>Failed</div>}
                             />
                           </div>
                         </Fragment>

@@ -8,10 +8,11 @@ import BetterMangaApp from "./classes/betterMangaApp";
 import StackView, { Stack } from "./stackScreen/stack";
 import { Manga } from "./classes/manga";
 import { Theme } from "./classes/settingsState";
-import { dispatchEvent } from "./utils/utils";
+import { dispatchEvent, listenToEvents, sleep } from "./utils/utils";
 import BetterMangaAppEvent from "./classes/event";
 
 import "./index.css";
+import Driver from "./classes/driver";
 
 // declare global variables
 declare global {
@@ -42,7 +43,9 @@ window.BMA.initialize().then(async () => {
 
     if (driver && id) {
       // show share and reset url
-      (await Manga.fromID(id, driver)).pushDetails();
+      const result = await Manga.fromID(id, driver);
+      if (result) (result as Manga).pushDetails();
+
       window.history.replaceState({}, "", "/");
     }
   }
@@ -73,6 +76,8 @@ document.addEventListener("visibilitychange", async () => {
 
 // main entry point
 class Main extends Component<{}, { dark: boolean }> {
+  isWaiting = false;
+
   constructor(props: {}) {
     super(props);
 
@@ -93,6 +98,22 @@ class Main extends Component<{}, { dark: boolean }> {
     setInterval(() => {
       window.BMA.clearDriverCache();
     }, 7200000);
+
+    listenToEvents(
+      [BetterMangaAppEvent.driverOnlineStatusChanged],
+      async () => {
+        let disabledDriver: Array<Driver> = window.BMA.availableDrivers.filter(
+          (driver) => driver.disabled
+        );
+        if (!disabledDriver.length || this.isWaiting) return;
+
+        this.isWaiting = true;
+        await sleep(5000);
+        this.isWaiting = false;
+
+        await window.BMA.checkOnlineStatus();
+      }
+    );
   }
 
   render(): ReactNode {

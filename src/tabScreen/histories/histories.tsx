@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { mdiCloudSync, mdiBookArrowRight } from "@mdi/js";
 import { liveQuery } from "dexie";
 import { Img } from "react-image";
+import { TailSpin } from "react-loader-spinner";
 
 import db, { history } from "../../classes/db";
 import {
@@ -163,24 +164,42 @@ class HistoriesTab extends React.Component<
                   className="history"
                   key={`${history.id}_${history.driver}`}
                 >
-                  {this.state.showImage && (
-                    <Img
-                      src={history.thumbnail}
-                      onClick={async () => {
-                        pushLoader();
-                        // load manga
-                        const manga = await Manga.fromID(
-                          history.id,
-                          history.driver
-                        );
+                  <div className="imgWrapper">
+                    {this.state.showImage && (
+                      <Img
+                        src={history.thumbnail}
+                        loader={
+                          <TailSpin
+                            height={60}
+                            width={60}
+                            color={"var(--color-chapters-text)"}
+                            wrapperClass="imgLoader"
+                            ariaLabel="tail-spin-loading"
+                          />
+                        }
+                        onClick={async () => {
+                          pushLoader();
+                          // load manga
+                          const result = await Manga.fromID(
+                            history.id,
+                            history.driver
+                          );
 
-                        // pop the loader
-                        window.stack.pop();
-                        // show details
-                        manga.pushDetails();
-                      }}
-                    />
-                  )}
+                          // pop the loader
+                          window.stack.pop();
+
+                          // show details
+                          if (result) {
+                            (result as Manga).pushDetails();
+                          } else {
+                            const driver = window.BMA.getDriver(history.driver);
+                            if (driver && driver.disabled)
+                              return alert(`${driver.identifier}來源不可用`);
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
                   <div className="info">
                     <h3>{window.BMA.translate(history.title)}</h3>
                     <h4>
@@ -203,7 +222,7 @@ class HistoriesTab extends React.Component<
                     onClick={async () => {
                       pushLoader();
                       // load manga
-                      const manga = await Manga.fromID(
+                      const result = await Manga.fromID(
                         history.id,
                         history.driver
                       );
@@ -211,7 +230,13 @@ class HistoriesTab extends React.Component<
                       // pop the loader
                       window.stack.pop();
                       // show details
-                      manga.continue();
+                      if (result) {
+                        (result as Manga).continue();
+                      } else {
+                        const driver = window.BMA.getDriver(history.driver);
+                        if (driver && driver.disabled)
+                          return alert(`${driver.identifier}來源不可用`);
+                      }
                     }}
                   >
                     <Icon path={mdiBookArrowRight} size={1.5} />

@@ -3,6 +3,11 @@ import { Manga, SimpleManga } from "./manga";
 import { dispatchEvent, tryInitialize } from "../utils/utils";
 import BetterMangaAppEvent from "./event";
 
+interface OnlineStatus {
+  online: boolean;
+  latency: number;
+}
+
 class Driver {
   supportSuggestion: boolean | null = null;
   supportedCategories: Array<string> = [];
@@ -11,7 +16,9 @@ class Driver {
   simpleManga: { [id: string]: SimpleManga } = {};
   manga: { [id: string]: Manga } = {};
   initialized: boolean = false;
+  disabled: boolean = false;
   recommendedChunkSize: number = 0;
+  onlineStatus: OnlineStatus | null = null;
 
   constructor(public identifier: string) {}
 
@@ -35,7 +42,15 @@ class Driver {
     dispatchEvent(BetterMangaAppEvent.driverChanged);
   }
 
+  async setOnlineStatus(onlineStatus: OnlineStatus) {
+    this.onlineStatus = onlineStatus;
+    this.disabled = !onlineStatus.online;
+  }
+
   async loadList(category: string = "", page: number = 1): Promise<boolean> {
+    // check if disabled
+    if (this.disabled) return false;
+
     // check if initialized
     if (!tryInitialize(this)) return false;
 
@@ -53,7 +68,12 @@ class Driver {
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
-    if (!result) return false;
+    if (!result) {
+      this.disabled = true;
+      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
+
+      return false;
+    }
 
     // check if the object is already initialized
     if (!this.list[category]) this.list[category] = {};
@@ -76,6 +96,9 @@ class Driver {
     // check if the keyword is empty
     if (!keyword) return false;
 
+    // check if disabled
+    if (this.disabled) return false;
+
     // check if initializated
     if (!tryInitialize(this)) return false;
 
@@ -97,7 +120,12 @@ class Driver {
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
-    if (!result) return false;
+    if (!result) {
+      this.disabled = true;
+      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
+
+      return false;
+    }
 
     // check if the object is already initialized
     if (!this.search[keyword]) this.search[keyword] = {};
@@ -117,6 +145,9 @@ class Driver {
   }
 
   async getSuggestions(keyword: string): Promise<Array<string>> {
+    // check if disabled
+    if (this.disabled) return [];
+
     // check if initializated
     if (!tryInitialize(this)) return [];
 
@@ -127,7 +158,12 @@ class Driver {
       keyword: keyword,
     });
 
-    if (!result) return [];
+    if (!result) {
+      this.disabled = true;
+      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
+
+      return [];
+    }
 
     return result;
   }
@@ -136,9 +172,12 @@ class Driver {
     ids: Array<string>,
     showAll: boolean = true,
     cache: boolean = true
-  ): Promise<void> {
+  ): Promise<boolean> {
+    // check if disabled
+    if (this.disabled) return false;
+
     // check if initializated
-    if (!this.initialized) await this.initialize();
+    if (!tryInitialize(this)) return false;
 
     // filter the cached ids
     const filtered = ids.filter(
@@ -146,7 +185,7 @@ class Driver {
         !Object.keys(showAll ? this.manga : this.simpleManga).includes(id) ||
         !cache
     );
-    if (!filtered.length) return;
+    if (!filtered.length) return true;
 
     // get the results
     const result = await window.BMA.get("details", {
@@ -156,7 +195,12 @@ class Driver {
       proxy: window.BMA.settingsState.useProxy ? "1" : "0",
     });
 
-    if (!result) return;
+    if (!result) {
+      this.disabled = true;
+      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
+
+      return false;
+    }
 
     // cache the results
     result?.forEach((v: any) => {
@@ -169,6 +213,8 @@ class Driver {
         this.simpleManga[manga.id] = manga;
       }
     });
+
+    return true;
   }
 
   async update() {
@@ -201,7 +247,7 @@ class Driver {
         const history = histories.find((value) => value.id === manga);
         if (mangaObject.latest && history?.latest !== mangaObject.latest) {
           // remove the cached manga details
-          if (this.manga[manga]) delete this.manga[manga];
+          if (this.manga[manga]) await this.getDetails([manga]);
 
           window.BMA.isHistoryChanged = true;
           await db.histories.update([this.identifier, mangaObject.id], {

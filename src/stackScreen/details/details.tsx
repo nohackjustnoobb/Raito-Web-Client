@@ -11,14 +11,15 @@ import {
   mdiInformationSlabSymbol,
 } from "@mdi/js";
 import { liveQuery } from "dexie";
+import { TailSpin } from "react-loader-spinner";
 
 import { listenToEvents, pushLoader } from "../../utils/utils";
 import { categories } from "../../tabScreen/libraries/libraries";
 import db, { history } from "../../classes/db";
 import { SimpleManga, Manga } from "../../classes/manga";
+import BetterMangaAppEvent from "../../classes/event";
 
 import "./details.scss";
-import BetterMangaAppEvent from "../../classes/event";
 
 class Details extends Component<
   { manga: SimpleManga },
@@ -191,7 +192,21 @@ class Details extends Component<
     );
 
     const thumbnail = this.state.manga && (
-      <Img src={this.state.manga.thumbnail} className="thumbnail" />
+      <div className="imgWrapper">
+        <Img
+          src={this.state.manga.thumbnail}
+          className="thumbnail"
+          loader={
+            <TailSpin
+              height={60}
+              width={60}
+              color={"var(--color-chapters-text)"}
+              wrapperClass="imgLoader"
+              ariaLabel="tail-spin-loading"
+            />
+          }
+        />
+      </div>
     );
 
     const chapters = (

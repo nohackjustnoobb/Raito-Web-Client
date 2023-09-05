@@ -23,21 +23,19 @@ class User {
     );
 
     if (result) {
+      this.token = result.token;
+      this.email = email;
+
       // upload the collections
       const collections = (await db.collections.toArray()).map(
         (collection) => ({ id: collection.id, driver: collection.driver })
       );
-      const result = await window.BMA.post(
+      await window.BMA.post(
         "user/collections",
         {},
         JSON.stringify(collections),
         { "Content-Type": "application/json" }
       );
-
-      if (!result) return false;
-
-      this.token = result.token;
-      this.email = email;
 
       localStorage.setItem("token", this.token!);
       localStorage.setItem("email", this.email!);

@@ -60,6 +60,19 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
                 />
               </div>
               <div className="options">
+                <span>UseZoomablePlugin:</span>
+                <Checkbox
+                  checked={
+                    window.BMA.settingsState.experimentalUseZoomablePlugin
+                  }
+                  onChange={(_, checked) => {
+                    window.BMA.settingsState.experimentalUseZoomablePlugin =
+                      checked;
+                    window.BMA.settingsState.update();
+                  }}
+                />
+              </div>
+              <div className="options">
                 <span>SwipeDownToPopDetails:</span>
                 <Checkbox
                   checked={

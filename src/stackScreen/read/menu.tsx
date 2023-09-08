@@ -1,18 +1,22 @@
 import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
-import { mdiChevronLeft } from "@mdi/js";
+import { mdiChevronLeft, mdiPlus, mdiMinus } from "@mdi/js";
 import { Checkbox, Slider } from "@mui/material";
 
 import "./menu.scss";
 
 class Menu extends Component<{
   show: boolean;
+  zoom: boolean;
+  scale?: number;
   title: string | null;
   page: number | null;
   maxPage: number | null;
   pageOffset: boolean;
   showOffset: boolean;
+  zoomIn?: () => void;
+  zoomOut?: () => void;
   toggleOffset: () => void;
   close: () => void;
   scrollToPage: (page: number) => void;
@@ -47,6 +51,30 @@ class Menu extends Component<{
             </div>
           </CSSTransition>
         </div>
+
+        {this.props.zoom && (
+          <div className="zoomControlWrapper">
+            <CSSTransition
+              in={this.props.show}
+              classNames="zoomControl"
+              timeout={this.timeout}
+              unmountOnExit
+              mountOnEnter
+            >
+              <div className="zoomControl">
+                <div onClick={() => this.props.zoomOut && this.props.zoomOut()}>
+                  <Icon path={mdiMinus} size={1} />
+                </div>
+                {this.props.scale && (
+                  <h3>{Math.round(this.props.scale * 100)}%</h3>
+                )}
+                <div onClick={() => this.props.zoomIn && this.props.zoomIn()}>
+                  <Icon path={mdiPlus} size={1} />
+                </div>
+              </div>
+            </CSSTransition>
+          </div>
+        )}
 
         <div className="lowerMenuWrapper">
           <CSSTransition

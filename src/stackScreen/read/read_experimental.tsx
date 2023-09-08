@@ -331,6 +331,7 @@ class ReadExperimental extends Component<
     return (
       <div className="readWrapper">
         <Menu
+          zoom={false}
           show={this.state.menu && this.state.show}
           close={this.close.bind(this)}
           page={this.state.page !== null ? this.state.page + 1 : null}

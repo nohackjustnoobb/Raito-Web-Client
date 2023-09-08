@@ -30,6 +30,13 @@
   height: 100%;
   width: 100%;
 
+  .imgWrapper {
+    aspect-ratio: 9/12;
+    height: 55vh;
+    overflow: hidden;
+    background-color: var(--color-search-background);
+  }
+
   .idInfoContent {
     display: flex;
     flex-direction: column;
@@ -361,10 +368,6 @@
 
       .imgWrapper {
         border-radius: 1rem;
-        aspect-ratio: 9/12;
-        height: 55vh;
-        overflow: hidden;
-        background-color: var(--color-search-background);
       }
 
       .imgLoader {

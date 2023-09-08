@@ -11,6 +11,12 @@ import BetterMangaAppEvent from "../../classes/event";
 
 import "./read.scss";
 
+enum ShouldLoad {
+  next,
+  previous,
+  none,
+}
+
 class Read extends Component<
   {
     manga: Manga;
@@ -24,6 +30,7 @@ class Read extends Component<
     page: number | null;
     index: number | null;
     pageOffset: boolean;
+    scale: number;
     chaptersUrls: { [index: number]: Array<string> };
   }
 > {
@@ -42,13 +49,18 @@ class Read extends Component<
   // timeout for preventing too frequently loading
   timeoutId: NodeJS.Timeout | null = null;
   // check if transform should enabled
-  startX: boolean = false;
+  isTouchOnEdge: boolean = false;
   // if the page is hidden
   isHidden: boolean = false;
   // if overscolling the page
   isOverscolling: boolean = false;
   // cache for index and page
   indexPageCache: Array<[index: number, page: number]> = [];
+  // mouse events data
+  mouseDownStartPosition: { x: number; y: number } | null = null;
+  mouseDownStartTime: number | null = null;
+  mouseUpShouldLoad: ShouldLoad = ShouldLoad.none;
+  doubleClickTimeoutId: NodeJS.Timeout | null = null;
 
   constructor(props: {
     manga: Manga;
@@ -65,6 +77,7 @@ class Read extends Component<
       pageOffset: false,
       index: null,
       page: null,
+      scale: 1,
     };
   }
 
@@ -95,7 +108,7 @@ class Read extends Component<
     window.addEventListener(
       "touchmove",
       (event) => {
-        if (this.startX) event.preventDefault();
+        if (this.isTouchOnEdge) event.preventDefault();
       },
       {
         passive: false,
@@ -313,6 +326,76 @@ class Read extends Component<
     }
   }
 
+  zoomTo(scale: number, offset?: { x: number; y: number }) {
+    if (!window.BMA.settingsState.experimentalUseZoomablePlugin) return;
+
+    // limit the scale
+    if (scale > 2) scale = 2;
+    if (scale < 1) scale = 1;
+
+    const originalScale = this.state.scale;
+    const changedScale = scale / originalScale;
+    if (changedScale === 1) return;
+
+    // save the position
+    var top: number, left: number;
+    if (this.readRef) {
+      top = this.readRef.scrollTop;
+      left = this.readRef.scrollLeft;
+    }
+
+    // set default offset
+    if (!offset) {
+      offset = this.readRef
+        ? {
+            x: this.readRef.clientWidth / 2,
+            y: this.readRef.clientHeight / 2,
+          }
+        : { x: 0, y: 0 };
+    }
+
+    this.setState({ scale: scale }, () => {
+      if (this.readRef) {
+        var newLeft = (offset!.x + left) * changedScale - offset!.x;
+
+        // TODO bugged
+        if (newLeft < 0) newLeft = 0;
+        const maxLeft = this.readRef.scrollWidth - this.readRef.clientWidth;
+        if (newLeft > maxLeft) newLeft = maxLeft;
+
+        this.readRef.scrollTop = (offset!.y + top) * changedScale - offset!.y;
+        this.readRef.scrollLeft = newLeft;
+      }
+    });
+  }
+
+  mouseUpAction() {
+    // check if it is click only
+    if (
+      this.mouseDownStartTime &&
+      this.mouseDownStartTime! + 100 > Date.now()
+    ) {
+      if (this.doubleClickTimeoutId) {
+        clearTimeout(this.doubleClickTimeoutId);
+        this.doubleClickTimeoutId = null;
+      }
+
+      this.doubleClickTimeoutId = setTimeout(
+        () => this.setState({ menu: !this.state.menu }),
+        window.BMA.settingsState.experimentalUseZoomablePlugin ? 250 : 0
+      );
+    }
+
+    if (this.mouseUpShouldLoad !== ShouldLoad.none) {
+      this.loadMore(this.mouseUpShouldLoad === ShouldLoad.next);
+    }
+
+    // reset state
+    this.mouseDownStartTime = null;
+    this.mouseDownStartPosition = null;
+    this.mouseUpShouldLoad = ShouldLoad.none;
+  }
+
   render(): ReactNode {
     const isVertical = window.innerWidth < window.innerHeight;
     const isOnePage: boolean =
@@ -324,6 +407,10 @@ class Read extends Component<
         <Menu
           show={this.state.menu && this.state.show}
           close={this.close.bind(this)}
+          zoomIn={() => this.zoomTo(this.state.scale + 0.5)}
+          zoomOut={() => this.zoomTo(this.state.scale - 0.5)}
+          zoom={window.BMA.settingsState.experimentalUseZoomablePlugin}
+          scale={this.state.scale}
           page={this.state.page !== null ? this.state.page + 1 : null}
           showOffset={!isOnePage}
           toggleOffset={this.toggleOffset.bind(this)}
@@ -354,25 +441,69 @@ class Read extends Component<
           <div
             ref={(ref) => (this.readRef = ref)}
             className="read"
-            onClick={() => this.setState({ menu: !this.state.menu })}
+            onDoubleClick={(event) => {
+              if (this.doubleClickTimeoutId) {
+                clearTimeout(this.doubleClickTimeoutId);
+                this.doubleClickTimeoutId = null;
+              }
+
+              if (this.state.scale >= 2) {
+                this.zoomTo(1);
+              } else {
+                this.zoomTo(this.state.scale + 0.5, {
+                  x: event.clientX,
+                  y: event.clientY,
+                });
+              }
+            }}
+            onMouseDown={(event) => {
+              if (this.readRef) {
+                this.mouseDownStartPosition = {
+                  x: event.clientX + this.readRef.scrollLeft,
+                  y: event.clientY + this.readRef.scrollTop,
+                };
+                this.mouseDownStartTime = Date.now();
+              }
+            }}
+            onMouseMove={(event) => {
+              if (this.mouseDownStartPosition && this.readRef) {
+                const newTop = this.mouseDownStartPosition.y - event.clientY;
+
+                this.readRef.scrollLeft =
+                  this.mouseDownStartPosition.x - event.clientX;
+                this.readRef.scrollTop = newTop;
+
+                // check whether it should load more
+                const maxTop =
+                  this.readRef.scrollHeight - this.readRef.clientHeight;
+                if (maxTop < newTop) {
+                  this.mouseUpShouldLoad = ShouldLoad.next;
+                }
+                if (newTop < 0) {
+                  this.mouseUpShouldLoad = ShouldLoad.previous;
+                }
+              }
+            }}
+            onMouseUp={() => this.mouseUpAction()}
+            onMouseLeave={() => this.mouseUpAction()}
             onScroll={() => this.shouldLoadMore()}
             onWheel={(event) => this.shouldLoadMore(event)}
             onTouchStart={(event) => {
               const startX = event.changedTouches[0].pageX;
               // check if swipe from edge
               if (startX < 20) {
-                this.startX = true;
+                this.isTouchOnEdge = true;
               }
             }}
             onTouchMove={(event) => {
               // follow the touches
-              if (this.startX && this.readRef) {
+              if (this.isTouchOnEdge && this.readRef) {
                 this.readRef.style.transform = `translateX(${event.changedTouches[0].pageX}px)`;
               }
             }}
             onTouchEnd={(event) => {
-              if (this.startX) {
-                this.startX = false;
+              if (this.isTouchOnEdge) {
+                this.isTouchOnEdge = false;
                 const shouldClose = event.changedTouches[0].pageX > 100;
 
                 // check if swiped 150 px
@@ -397,7 +528,10 @@ class Read extends Component<
               }
             }}
           >
-            <div className="readContent">
+            <div
+              className="readContent"
+              style={{ width: `${this.state.scale * 100}%` }}
+            >
               {Object.keys(this.state.chaptersUrls)
                 .reverse()
                 .map((chaptersIndex: any) => (

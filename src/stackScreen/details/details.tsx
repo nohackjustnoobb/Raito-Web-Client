@@ -197,13 +197,17 @@ class Details extends Component<
           src={this.state.manga.thumbnail}
           className="thumbnail"
           loader={
-            <TailSpin
-              height={60}
-              width={60}
-              color={"var(--color-chapters-text)"}
-              wrapperClass="imgLoader"
-              ariaLabel="tail-spin-loading"
-            />
+            isVertical ? (
+              <></>
+            ) : (
+              <TailSpin
+                height={60}
+                width={60}
+                color={"var(--color-chapters-text)"}
+                wrapperClass="imgLoader"
+                ariaLabel="tail-spin-loading"
+              />
+            )
           }
         />
       </div>

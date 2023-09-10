@@ -89,7 +89,16 @@ class Details extends Component<
             driver: this.state.manga!.driver.identifier,
             id: this.state.manga!.id,
           })
-        ).subscribe((result) => this.setState({ history: result ?? null }));
+        ).subscribe((result) => {
+          this.setState({ history: result ?? null }, () => {
+            const element = document.getElementsByClassName("highlighted")[0];
+            if (element)
+              element.scrollIntoView({
+                behavior: "instant" as ScrollBehavior,
+                block: "nearest",
+              });
+          });
+        });
       }
     );
     setTimeout(() => this.setState({ showBackground: true }), this.timeout / 2);

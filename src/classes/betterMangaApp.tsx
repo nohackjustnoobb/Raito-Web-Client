@@ -265,7 +265,7 @@ class BetterMangaApp {
 
     let match = result.match(/第([\d.]+(?:-[\d.]+)?)[話话回]/);
     if (match && match[1]) {
-      result = match[1].replace(/^0+/, "");
+      result = match[1].replace(/^0+/, "").padStart(1, "0");
     }
 
     match = result.match(/(?:周刊版?|週刊版?|連載版?|连载版?)\s?(\d+)/);

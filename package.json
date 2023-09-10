@@ -1,6 +1,6 @@
 {
   "name": "better-manga-web-client",
-  "version": "0.7.55-beta.0",
+  "version": "0.7.56-beta.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",

@@ -240,9 +240,12 @@ class Details extends Component<
             ).map((name, index) => (
               <li
                 key={index}
+                className={
+                  this.state.history?.chapter === name ? "highlighted" : ""
+                }
                 onClick={() => this.state.manga!.read(index, this.state.extra)}
               >
-                {window.BMA.translate(name)}
+                <p>{window.BMA.formatChapterTitle(name)}</p>
               </li>
             ))}
         </ul>

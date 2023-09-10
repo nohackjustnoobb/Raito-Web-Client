@@ -105,6 +105,17 @@ class SettingsTab extends React.Component {
             </div>
 
             <div className="options">
+              <span>格式化章節標題：</span>
+              <Checkbox
+                checked={window.BMA.settingsState.formatChapterTitle}
+                onChange={(_, checked) => {
+                  window.BMA.settingsState.formatChapterTitle = checked;
+                  window.BMA.settingsState.update();
+                }}
+              />
+            </div>
+
+            <div className="options">
               <span>顯示開發者設定：</span>
               <Checkbox
                 checked={window.BMA.settingsState.showDeveloperSettings}

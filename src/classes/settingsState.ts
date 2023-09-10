@@ -23,6 +23,7 @@ class SettingsState {
   ignoreError: boolean = true;
   useProxy: boolean = false;
   showDeveloperSettings: boolean = false;
+  formatChapterTitle: boolean = true;
 
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
@@ -55,6 +56,8 @@ class SettingsState {
       this.overscrollToLoadPreviousChapters =
         this.loadBool("overscrollToLoadPreviousChapters") ??
         this.overscrollToLoadPreviousChapters;
+      this.formatChapterTitle =
+        this.loadBool("formatChapterTitle") ?? this.formatChapterTitle;
 
       // experimental functions
       this.experimentalSwipeDownToPopDetails =
@@ -92,6 +95,7 @@ class SettingsState {
       "overscrollToLoadPreviousChapters",
       this.overscrollToLoadPreviousChapters
     );
+    this.saveBool("formatChapterTitle", this.formatChapterTitle);
 
     // experimental functions
     this.saveBool(

@@ -37,7 +37,9 @@ class Menu extends Component<{
             <div className="upperMenu">
               <div className="close" onClick={() => this.props.close()}>
                 <Icon path={mdiChevronLeft} size={1.5} />
-                <h2>{this.props.title}</h2>
+                <h2>
+                  {this.props.title && window.BMA.translate(this.props.title)}
+                </h2>
               </div>
               {this.props.showOffset && (
                 <div className="pageOffset">

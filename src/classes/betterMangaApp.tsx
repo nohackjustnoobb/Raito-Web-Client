@@ -258,6 +258,26 @@ class BetterMangaApp {
     return chinese.s2t(text);
   }
 
+  formatChapterTitle(title: string): string {
+    let result = this.translate(title);
+
+    if (!this.settingsState.formatChapterTitle) return result;
+
+    let match = result.match(/第([\d.]+(?:-[\d.]+)?)[話话回]/);
+    if (match && match[1]) {
+      result = match[1].replace(/^0+/, "");
+    }
+
+    match = result.match(/(?:周刊版?|週刊版?|連載版?|连载版?)\s?(\d+)/);
+    if (match && match[1]) {
+      result = "連載" + match[1].padStart(2, "0");
+    }
+
+    result = result.replace(/第0+(\d+)卷/g, "第$1卷");
+
+    return result;
+  }
+
   async selectDriver(id: string) {
     const driver = this.getDriver(id);
     if (!driver || driver.disabled) return alert(`${id}來源不可用`);

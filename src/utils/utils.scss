@@ -23,3 +23,17 @@
     transform: scale(0.75);
   }
 }
+
+.imgWrapper {
+  overflow: hidden;
+  background-color: var(--color-search-background);
+  flex-shrink: 0;
+
+  .imgLoader {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

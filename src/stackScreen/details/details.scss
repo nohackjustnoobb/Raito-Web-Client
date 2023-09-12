@@ -33,8 +33,6 @@
   .imgWrapper {
     aspect-ratio: 9/12;
     height: 55vh;
-    overflow: hidden;
-    background-color: var(--color-search-background);
   }
 
   .idInfoContent {
@@ -271,7 +269,6 @@
 
       .imgWrapper {
         width: 100%;
-        background-color: var(--color-search-background);
       }
 
       .close {

@@ -1,11 +1,14 @@
 import React from "react";
 import Icon from "@mdi/react";
 import { mdiChevronDown, mdiDatabase, mdiMagnify } from "@mdi/js";
-import { Img } from "react-image";
 
 import TabScreen from "../tabScreen";
-import { InfinitySpin, TailSpin } from "react-loader-spinner";
-import { convertRemToPixels, listenToEvents } from "../../utils/utils";
+import { InfinitySpin } from "react-loader-spinner";
+import {
+  LazyImage,
+  convertRemToPixels,
+  listenToEvents,
+} from "../../utils/utils";
 import { SimpleManga } from "../../classes/manga";
 import BetterMangaAppEvent from "../../classes/event";
 
@@ -403,20 +406,7 @@ class LibrariesTab extends React.Component<
                       <div className="mangaID">{manga.id}</div>
                     </>
                   )}
-                  <div className="imgWrapper">
-                    <Img
-                      src={manga.thumbnail}
-                      loader={
-                        <TailSpin
-                          height={60}
-                          width={60}
-                          color={"var(--color-chapters-text)"}
-                          wrapperClass="imgLoader"
-                          ariaLabel="tail-spin-loading"
-                        />
-                      }
-                    />
-                  </div>
+                  <LazyImage src={manga.thumbnail} />
                   <p>{window.BMA.translate(manga.title)}</p>
                   <p className="latest">
                     更新至 {window.BMA.translate(manga.latest)}

@@ -1,4 +1,6 @@
-import { InfinitySpin } from "react-loader-spinner";
+import { InfinitySpin, TailSpin } from "react-loader-spinner";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { Img } from "react-image";
 
 import "./utils.scss";
 import BetterMangaAppEvent from "../classes/event";
@@ -74,6 +76,58 @@ const tryInitialize = async (driver: Driver): Promise<boolean> => {
 const sleep = async (duration: number): Promise<void> =>
   new Promise((res) => setTimeout(res, duration));
 
+const isScrolledIntoView = (element: Element): boolean => {
+  var rect = element.getBoundingClientRect();
+  var elementTop = rect.top;
+  var elementBottom = rect.bottom;
+
+  return elementTop < window.innerHeight && elementBottom >= 0;
+};
+
+const LazyImage: FunctionComponent<{
+  src: string;
+  load?: boolean;
+  disableLoader?: boolean;
+  onClick?: React.MouseEventHandler<HTMLImageElement>;
+}> = ({ src, load = true, onClick, disableLoader = false }) => {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(() => {
+      if (ref.current && isScrolledIntoView(ref.current)) {
+        setIsVisible(true);
+      }
+    });
+
+    if (ref.current) observer.observe(ref.current);
+  }, [isVisible, ref]);
+
+  return (
+    <div className="imgWrapper" ref={ref}>
+      {load && isVisible && (
+        <Img
+          src={src}
+          loader={
+            disableLoader ? (
+              <></>
+            ) : (
+              <TailSpin
+                height={60}
+                width={60}
+                color={"var(--color-chapters-text)"}
+                wrapperClass="imgLoader"
+                ariaLabel="tail-spin-loading"
+              />
+            )
+          }
+          onClick={onClick}
+        />
+      )}
+    </div>
+  );
+};
+
 export {
   pushLoader,
   errorHandler,
@@ -82,4 +136,5 @@ export {
   listenToEvents,
   tryInitialize,
   sleep,
+  LazyImage,
 };

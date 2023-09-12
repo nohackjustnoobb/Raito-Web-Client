@@ -2,7 +2,6 @@ import { Component, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import Icon from "@mdi/react";
 import { Tooltip } from "react-tooltip";
-import { Img } from "react-image";
 import {
   mdiClose,
   mdiStar,
@@ -11,9 +10,8 @@ import {
   mdiInformationSlabSymbol,
 } from "@mdi/js";
 import { liveQuery } from "dexie";
-import { TailSpin } from "react-loader-spinner";
 
-import { listenToEvents, pushLoader } from "../../utils/utils";
+import { LazyImage, listenToEvents, pushLoader } from "../../utils/utils";
 import { categories } from "../../tabScreen/libraries/libraries";
 import db, { history } from "../../classes/db";
 import { SimpleManga, Manga } from "../../classes/manga";
@@ -201,25 +199,7 @@ class Details extends Component<
     );
 
     const thumbnail = this.state.manga && (
-      <div className="imgWrapper">
-        <Img
-          src={this.state.manga.thumbnail}
-          className="thumbnail"
-          loader={
-            isVertical ? (
-              <></>
-            ) : (
-              <TailSpin
-                height={60}
-                width={60}
-                color={"var(--color-chapters-text)"}
-                wrapperClass="imgLoader"
-                ariaLabel="tail-spin-loading"
-              />
-            )
-          }
-        />
-      </div>
+      <LazyImage src={this.state.manga.thumbnail} disableLoader={isVertical} />
     );
 
     const chapters = (

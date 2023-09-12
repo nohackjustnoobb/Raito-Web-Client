@@ -2,13 +2,11 @@ import React from "react";
 import Icon from "@mdi/react";
 import { mdiRefresh } from "@mdi/js";
 import { liveQuery } from "dexie";
-import { Img } from "react-image";
-import { TailSpin } from "react-loader-spinner";
 
 import TabScreen from "../tabScreen";
 import db, { collection, history } from "../../classes/db";
 import { SimpleManga } from "../../classes/manga";
-import { listenToEvents } from "../../utils/utils";
+import { LazyImage, listenToEvents } from "../../utils/utils";
 import BetterMangaAppEvent from "../../classes/event";
 
 import "./collections.scss";
@@ -142,20 +140,7 @@ class CollectionsTab extends React.Component<
                         <div className="mangaID">{manga.id}</div>
                       </>
                     )}
-                    <div className="imgWrapper">
-                      <Img
-                        src={manga.thumbnail}
-                        loader={
-                          <TailSpin
-                            height={60}
-                            width={60}
-                            color={"var(--color-chapters-text)"}
-                            wrapperClass="imgLoader"
-                            ariaLabel="tail-spin-loading"
-                          />
-                        }
-                      />
-                    </div>
+                    <LazyImage src={manga.thumbnail} />
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>
                       {history &&

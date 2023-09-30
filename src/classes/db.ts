@@ -7,7 +7,6 @@ interface collection {
   isEnd: boolean;
   latest: string;
   thumbnail: string;
-  author: Array<string>;
 }
 
 interface history {
@@ -31,7 +30,7 @@ class BetterMangaAppDB extends Dexie {
     super("BetterMangaAppDB");
 
     this.version(1).stores({
-      collections: "[driver+id], title, isEnd, latest, thumbnail, author",
+      collections: "[driver+id], title, isEnd, latest, thumbnail",
       histories:
         "[driver+id], datetime, chapter, page, latest, isExtra, thumbnail, title, new",
     });

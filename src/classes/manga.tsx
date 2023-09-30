@@ -10,7 +10,6 @@ class SimpleManga {
   driver: Driver;
   id: string;
   title: string;
-  author: Array<string>;
   latest: string;
   isEnd: boolean;
   thumbnail: string;
@@ -19,7 +18,6 @@ class SimpleManga {
     this.driver = window.BMA.getDriver(data.driver)!;
     this.id = data.id;
     this.title = data.title;
-    this.author = data.author;
     this.latest = data.latest;
     this.isEnd = data.isEnd;
     this.thumbnail = data.thumbnail;
@@ -40,7 +38,6 @@ class SimpleManga {
       driver: collection.driver,
       id: collection.id,
       title: collection.title,
-      author: collection.author,
       latest: collection.latest,
       is_end: collection.isEnd,
       thumbnail: collection.thumbnail,
@@ -75,7 +72,6 @@ class SimpleManga {
       isEnd: this.isEnd,
       latest: this.latest,
       thumbnail: this.thumbnail,
-      author: this.author,
     });
 
     if (!sync) return;
@@ -153,6 +149,7 @@ class Manga extends SimpleManga {
   categories: Array<string>;
   driverData: string;
   chapters: { serial: Array<string>; extra: Array<string> };
+  author: Array<string>;
 
   constructor(data: any) {
     super(data);

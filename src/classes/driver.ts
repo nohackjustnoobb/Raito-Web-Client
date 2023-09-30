@@ -240,7 +240,6 @@ class Driver {
           isEnd: mangaObject.isEnd,
           latest: mangaObject.latest,
           thumbnail: mangaObject.thumbnail,
-          author: mangaObject.author,
         });
 
         // update history is required

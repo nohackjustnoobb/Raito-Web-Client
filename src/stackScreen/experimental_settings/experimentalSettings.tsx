@@ -47,19 +47,6 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
             <div className="userSettingsContent">
               <h5>The functions below are buggy and not ready to use.</h5>
               <div className="options">
-                <span>UseZoomableComponent:</span>
-                <Checkbox
-                  checked={
-                    window.BMA.settingsState.experimentalUseZoomableComponent
-                  }
-                  onChange={(_, checked) => {
-                    window.BMA.settingsState.experimentalUseZoomableComponent =
-                      checked;
-                    window.BMA.settingsState.update();
-                  }}
-                />
-              </div>
-              <div className="options">
                 <span>UseZoomablePlugin:</span>
                 <Checkbox
                   checked={

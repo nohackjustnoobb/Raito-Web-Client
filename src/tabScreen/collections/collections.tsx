@@ -143,8 +143,9 @@ class CollectionsTab extends React.Component<
                     <LazyImage src={manga.thumbnail} />
                     <h3>{window.BMA.translate(manga.title)}</h3>
                     <h5>
-                      {history &&
-                        window.BMA.translate(history?.chapter ?? "未看")}
+                      {history && history.chapterTitle
+                        ? window.BMA.translate(history.chapterTitle)
+                        : "未看"}
                       {" / "}
                       {window.BMA.translate(manga.latest)}
                     </h5>

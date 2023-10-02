@@ -27,7 +27,6 @@ class SettingsState {
 
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
-  experimentalUseZoomableComponent: boolean = false;
   experimentalUseZoomablePlugin: boolean = false;
 
   saveBool(key: string, value: boolean) {
@@ -63,9 +62,7 @@ class SettingsState {
       this.experimentalSwipeDownToPopDetails =
         this.loadBool("experimentalSwipeDownToPopDetails") ??
         this.experimentalSwipeDownToPopDetails;
-      this.experimentalUseZoomableComponent =
-        this.loadBool("experimentalUseZoomableComponent") ??
-        this.experimentalUseZoomableComponent;
+
       this.experimentalUseZoomablePlugin =
         this.loadBool("experimentalUseZoomablePlugin") ??
         this.experimentalUseZoomablePlugin;
@@ -101,10 +98,6 @@ class SettingsState {
     this.saveBool(
       "experimentalSwipeDownToPopDetails",
       this.experimentalSwipeDownToPopDetails
-    );
-    this.saveBool(
-      "experimentalUseZoomableComponent",
-      this.experimentalUseZoomableComponent
     );
     this.saveBool(
       "experimentalUseZoomablePlugin",

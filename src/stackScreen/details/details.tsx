@@ -226,15 +226,17 @@ class Details extends Component<
             (this.state.extra
               ? this.state.manga.chapters.extra
               : this.state.manga.chapters.serial
-            ).map((name, index) => (
+            ).map((chapter) => (
               <li
-                key={index}
+                key={chapter.id}
                 className={
-                  this.state.history?.chapter === name ? "highlighted" : ""
+                  this.state.history?.chapterId === chapter.id
+                    ? "highlighted"
+                    : ""
                 }
-                onClick={() => this.state.manga!.read(index, this.state.extra)}
+                onClick={() => this.state.manga!.read(chapter.id)}
               >
-                <p>{window.BMA.formatChapterTitle(name)}</p>
+                <p>{window.BMA.formatChapterTitle(chapter.title)}</p>
               </li>
             ))}
         </ul>
@@ -260,8 +262,8 @@ class Details extends Component<
         </div>
         <div className="read" onClick={() => this.state.manga!.continue()}>
           <h3>
-            {this.state.history?.chapter
-              ? `續看 ${window.BMA.translate(this.state.history.chapter)}`
+            {this.state.history?.chapterTitle
+              ? `續看 ${window.BMA.translate(this.state.history.chapterTitle)}`
               : "開始閱讀"}
           </h3>
         </div>

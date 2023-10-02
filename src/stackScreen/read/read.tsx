@@ -2,7 +2,7 @@ import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 import { Img } from "react-image";
 
-import { Manga } from "../../classes/manga";
+import { Manga, Chapter } from "../../classes/manga";
 import Warning from "./warning";
 import { listenToEvents, pushLoader } from "../../utils/utils";
 import { DisplayMode } from "../../classes/settingsState";
@@ -20,18 +20,17 @@ enum ShouldLoad {
 class Read extends Component<
   {
     manga: Manga;
-    chaptersIndex: number;
-    isExtra: boolean;
+    chapterId: string;
     page?: number | null;
   },
   {
     show: boolean;
     menu: boolean;
     page: number | null;
-    index: number | null;
+    id: string | null;
     pageOffset: boolean;
     scale: number;
-    chaptersUrls: { [index: number]: Array<string> };
+    chaptersUrls: { [id: string]: Array<string> };
   }
 > {
   // timeout of the transition
@@ -54,8 +53,12 @@ class Read extends Component<
   isHidden: boolean = false;
   // if overscolling the page
   isOverscolling: boolean = false;
+  // if the chapter is extra
+  isExtra: boolean | null = null;
+  // the initial chapter index
+  initIndex: number | null = null;
   // cache for index and page
-  indexPageCache: Array<[index: number, page: number]> = [];
+  indexPageCache: Array<[id: string, page: number]> = [];
   // mouse events data
   mouseDownStartPosition: { x: number; y: number } | null = null;
   mouseDownStartTime: number | null = null;
@@ -64,8 +67,7 @@ class Read extends Component<
 
   constructor(props: {
     manga: Manga;
-    chaptersIndex: number;
-    isExtra: boolean;
+    chapterId: string;
     page?: number | null;
   }) {
     super(props);
@@ -75,7 +77,7 @@ class Read extends Component<
       chaptersUrls: {},
       menu: false,
       pageOffset: false,
-      index: null,
+      id: null,
       page: null,
       scale: 1,
     };
@@ -87,10 +89,10 @@ class Read extends Component<
       if (this.isHidden) return;
 
       // cache the page and index before updating
-      const [index, page] = this.indexPageCache[0];
+      const [id, page] = this.indexPageCache[0];
       this.forceUpdate(() => {
         // restore it
-        if (page !== null && index !== null) this.scrollToPage(index, page);
+        if (page !== null && id !== null) this.scrollToPage(id, page);
       });
     });
 
@@ -132,28 +134,24 @@ class Read extends Component<
       for (const element of elements) {
         if (element.className === "imgWrapper") {
           // get the data from the element
-          const rawIndex = element.getAttribute("data-index");
+          const id = element.getAttribute("data-id");
           const rawPage = element.getAttribute("data-page");
 
           // check if null or changed
-          if (rawIndex !== null && rawPage !== null) {
-            const index = Number(rawIndex);
+          if (id !== null && rawPage !== null) {
             const page = Number(rawPage);
 
             // cache the recent 10 index and page
             if (this.indexPageCache.length >= 10)
               this.indexPageCache.splice(0, 1);
-            this.indexPageCache.push([index, page]);
+            this.indexPageCache.push([id, page]);
 
-            if (index !== this.state.index || page !== this.state.page) {
-              this.setState({ index: index, page: page }, () =>
+            if (id !== this.state.id || page !== this.state.page) {
+              this.setState({ id: id, page: page }, () =>
                 // save it to history
                 this.props.manga.save(
-                  (this.props.isExtra
-                    ? this.props.manga.chapters.extra
-                    : this.props.manga.chapters.serial)[this.state.index!],
-                  this.state.page!,
-                  this.props.isExtra
+                  this.props.manga.getChapterById(id)!,
+                  this.state.page!
                 )
               );
             }
@@ -168,7 +166,7 @@ class Read extends Component<
     if (this.props.page) {
       // use setTimeout to prevent it from blocking the code execution
       setTimeout(async () => {
-        const index = this.props.chaptersIndex;
+        const chapterId = this.props.chapterId;
         const page = this.props.page;
 
         // check if the page is already loaded
@@ -176,7 +174,7 @@ class Read extends Component<
         do {
           loaded = true;
           for (let i = 0; i < page!; i++) {
-            const element = document.getElementById(`${index}_${i}`);
+            const element = document.getElementById(`${chapterId}_${i}`);
             if (
               !element ||
               !element.children.length ||
@@ -189,7 +187,7 @@ class Read extends Component<
           await new Promise((resolve) => setTimeout(resolve, 50));
         } while (!loaded);
 
-        this.scrollToPage(index, page!);
+        this.scrollToPage(chapterId, page!);
       });
     }
   }
@@ -206,29 +204,44 @@ class Read extends Component<
     this.prevHeight = null;
 
     // get next or previous chapter
-    var index =
-      this.props.chaptersIndex +
-      (next ? -1 : 1) * Object.keys(this.state.chaptersUrls).length;
+    if (this.isExtra === null) {
+      this.isExtra =
+        this.props.manga.chapters.extra.findIndex(
+          (ch) => ch.id === this.props.chapterId
+        ) !== -1;
+    }
 
-    // check if out of range
-    if (index < 0) return window.stack.push(<Warning noNextOne />);
+    if (this.initIndex === null) {
+      this.initIndex = (
+        this.isExtra
+          ? this.props.manga.chapters.extra
+          : this.props.manga.chapters.serial
+      ).findIndex((ch) => ch.id === this.props.chapterId);
 
-    if (
-      index >=
-      (this.props.isExtra
+      if (this.initIndex === -1) window.stack.pop();
+    }
+
+    const chapter: Chapter | undefined = (
+      this.isExtra
         ? this.props.manga.chapters.extra
         : this.props.manga.chapters.serial
-      ).length
-    )
-      return window.stack.push(<Warning noNextOne={false} />);
+    )[
+      this.initIndex +
+        (next ? -1 : 1) * Object.keys(this.state.chaptersUrls).length
+    ];
+
+    var id: string | null = chapter?.id ?? null;
+
+    // check if out of range
+    if (!id) return window.stack.push(<Warning noNextOne={next} />);
 
     // get the urls
-    var urls = await this.props.manga.get(index, this.props.isExtra);
+    var urls = await this.props.manga.get(id);
     this.setState(
       (prevState) => ({
         chaptersUrls: {
           ...prevState.chaptersUrls,
-          [index]: urls,
+          [id!]: urls,
         },
         show: true,
       }),
@@ -254,14 +267,14 @@ class Read extends Component<
     // update the viewport
     this.prevHeight = null;
 
-    const [index, page] = this.indexPageCache[0];
+    const [id, page] = this.indexPageCache[0];
     this.setState({ pageOffset: !this.state.pageOffset }, () => {
-      if (page !== null && index !== null) this.scrollToPage(index, page);
+      if (page !== null && id !== null) this.scrollToPage(id, page);
     });
   }
 
-  scrollToPage(index: number, page: number) {
-    const element = document.getElementById(`${index}_${page}`);
+  scrollToPage(id: string, page: number) {
+    const element = document.getElementById(`${id}_${page}`);
 
     if (element) {
       element.scrollIntoView({
@@ -416,18 +429,16 @@ class Read extends Component<
           toggleOffset={this.toggleOffset.bind(this)}
           pageOffset={this.state.pageOffset}
           scrollToPage={(page: number) =>
-            this.scrollToPage(this.state.index!, page)
+            this.scrollToPage(this.state.id!, page)
           }
           maxPage={
-            this.state.index !== null
-              ? this.state.chaptersUrls[this.state.index].length
+            this.state.id !== null
+              ? this.state.chaptersUrls[this.state.id].length
               : null
           }
           title={
-            this.state.index !== null
-              ? (this.props.isExtra
-                  ? this.props.manga.chapters.extra
-                  : this.props.manga.chapters.serial)[this.state.index]
+            this.state.id !== null
+              ? this.props.manga.getChapterById(this.state.id)!.title
               : null
           }
         />
@@ -532,54 +543,49 @@ class Read extends Component<
               className="readContent"
               style={{ width: `${this.state.scale * 100}%` }}
             >
-              {Object.keys(this.state.chaptersUrls)
-                .reverse()
-                .map((chaptersIndex: any) => (
-                  <div className="chapters" key={chaptersIndex}>
-                    {this.state.chaptersUrls[chaptersIndex].map((url, page) => {
-                      const id = `${chaptersIndex}_${page}`;
+              {Object.keys(this.state.chaptersUrls).map((chapterId: any) => (
+                <div className="chapters" key={chapterId}>
+                  {this.state.chaptersUrls[chapterId].map((url, page) => {
+                    const id = `${chapterId}_${page}`;
 
-                      return (
-                        <Fragment key={id}>
-                          {page === 0 &&
-                            this.state.pageOffset &&
-                            !isOnePage && <div className="spacer" />}
-                          <div
-                            id={id}
-                            data-page={page}
-                            data-index={chaptersIndex}
-                            className="imgWrapper"
-                            style={{
-                              width:
-                                this.wideImage.includes(id) || isOnePage
-                                  ? "100%"
-                                  : "50%",
+                    return (
+                      <Fragment key={id}>
+                        {page === 0 && this.state.pageOffset && !isOnePage && (
+                          <div className="spacer" />
+                        )}
+                        <div
+                          id={id}
+                          data-page={page}
+                          data-id={chapterId}
+                          className="imgWrapper"
+                          style={{
+                            width:
+                              this.wideImage.includes(id) || isOnePage
+                                ? "100%"
+                                : "50%",
+                          }}
+                        >
+                          <Img
+                            src={url}
+                            onLoad={(event) => {
+                              // check if the image is horizontal
+                              const element = event.target as HTMLImageElement;
+                              if (
+                                element.naturalWidth >= element.naturalHeight
+                              ) {
+                                this.wideImage.push(id);
+                                this.forceUpdate(() => this.restorePosition());
+                              }
+
+                              this.restorePosition();
                             }}
-                          >
-                            <Img
-                              src={url}
-                              onLoad={(event) => {
-                                // check if the image is horizontal
-                                const element =
-                                  event.target as HTMLImageElement;
-                                if (
-                                  element.naturalWidth >= element.naturalHeight
-                                ) {
-                                  this.wideImage.push(id);
-                                  this.forceUpdate(() =>
-                                    this.restorePosition()
-                                  );
-                                }
-
-                                this.restorePosition();
-                              }}
-                            />
-                          </div>
-                        </Fragment>
-                      );
-                    })}
-                  </div>
-                ))}
+                          />
+                        </div>
+                      </Fragment>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </div>
         </CSSTransition>

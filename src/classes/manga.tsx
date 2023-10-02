@@ -1,5 +1,4 @@
 import Details from "../stackScreen/details/details";
-import ReadExperimental from "../stackScreen/read/read_experimental";
 import Read from "../stackScreen/read/read";
 import db, { history, collection } from "./db";
 import Driver from "./driver";
@@ -95,10 +94,10 @@ class SimpleManga {
         thumbnail: this.thumbnail,
         title: this.title,
         datetime: Date.now(),
-        chapter: null,
+        chapterId: null,
+        chapterTitle: null,
         page: null,
         latest: this.latest,
-        isExtra: null,
         new: false,
       });
     }
@@ -126,7 +125,7 @@ class SimpleManga {
     return (await driver.getDetails([id])) && driver.manga[id];
   }
 
-  async save(chapter: string, page: number, isExtra: boolean) {
+  async save(chapter: Chapter, page: number) {
     // update or create history
     window.BMA.isHistoryChanged = true;
     await db.histories.put({
@@ -135,20 +134,29 @@ class SimpleManga {
       thumbnail: this.thumbnail,
       title: this.title,
       datetime: Date.now(),
-      chapter: chapter,
+      chapterId: chapter.id,
+      chapterTitle: chapter.title,
       page: page,
       latest: this.latest,
-      isExtra: isExtra,
       new: false,
     });
   }
+}
+
+interface Chapter {
+  title: string;
+  id: string;
 }
 
 class Manga extends SimpleManga {
   description: string;
   categories: Array<string>;
   driverData: string;
-  chapters: { serial: Array<string>; extra: Array<string> };
+  chapters: {
+    serial: Array<Chapter>;
+    extra: Array<Chapter>;
+    extraData: string;
+  };
   author: Array<string>;
 
   constructor(data: any) {
@@ -167,70 +175,43 @@ class Manga extends SimpleManga {
     this.latest =
       data.latest ??
       (this.chapters.serial.length === 0
-        ? this.chapters.extra[0]
-        : this.chapters.serial[0]);
+        ? this.chapters.extra[0].title
+        : this.chapters.serial[0].title);
   }
 
-  read(chaptersIndex: number, isExtra: boolean, page: number | null = null) {
+  read(chapterId: string, page: number | null = null) {
     if (this.driver.disabled)
       return alert(`${this.driver.identifier}來源不可用`);
 
-    window.stack.push(
-      window.BMA.settingsState.experimentalUseZoomableComponent ? (
-        <ReadExperimental
-          manga={this}
-          chaptersIndex={chaptersIndex}
-          isExtra={isExtra}
-          page={page}
-        />
-      ) : (
-        <Read
-          manga={this}
-          chaptersIndex={chaptersIndex}
-          isExtra={isExtra}
-          page={page}
-        />
-      )
-    );
+    window.stack.push(<Read manga={this} chapterId={chapterId} page={page} />);
   }
 
   async continue() {
     const history = await this.getHistory();
 
     // check if history
-    if (history && history.chapter) {
-      const index = (
-        history.isExtra ? this.chapters.extra : this.chapters.serial
-      ).findIndex((value) => value === history.chapter);
-
-      if (index !== -1)
-        return this.read(index, history.isExtra!, history.page!);
+    if (history && history.chapterId) {
+      return this.read(history.chapterId, history.page!);
     }
 
     // if no history read from first chapter
     const isExtra = this.chapters.serial.length === 0;
-    this.read(
-      (isExtra ? this.chapters.extra : this.chapters.serial).length - 1,
-      isExtra
-    );
+    const chapters = isExtra ? this.chapters.extra : this.chapters.serial;
+    this.read(chapters.at(chapters.length - 1)!.id);
   }
 
-  async get(chapterIndex: number, isExtra: boolean): Promise<Array<string>> {
+  async get(chapterId: string): Promise<Array<string>> {
     if (this.driver.disabled) {
       alert(`${this.driver.identifier}來源不可用`);
       return [];
     }
 
-    const result = await window.BMA.post(
-      "chapter",
-      {
-        "is-extra": isExtra ? "1" : "0",
-        driver: this.driver.identifier,
-        chapter: String(chapterIndex),
-        proxy: window.BMA.settingsState.useProxy ? "1" : "0",
-      },
-      this.driverData
-    );
+    const result = await window.BMA.get("chapter", {
+      driver: this.driver.identifier,
+      id: chapterId,
+      "extra-data": this.chapters.extraData,
+      proxy: window.BMA.settingsState.useProxy ? "1" : "0",
+    });
 
     if (!result) {
       this.driver.disabled = true;
@@ -240,6 +221,17 @@ class Manga extends SimpleManga {
     }
     return result;
   }
+
+  getChapterById(chapterId: string): Chapter | null {
+    for (const chapter of [...this.chapters.serial, ...this.chapters.extra]) {
+      if (chapter.id === chapterId) {
+        return chapter;
+      }
+    }
+
+    return null;
+  }
 }
 
 export { SimpleManga, Manga };
+export type { Chapter };

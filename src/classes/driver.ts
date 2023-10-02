@@ -204,6 +204,7 @@ class Driver {
 
     // cache the results
     result?.forEach((v: any) => {
+      console.log(v);
       // cache the manga by its type
       if (showAll) {
         const manga: Manga = new Manga(v);

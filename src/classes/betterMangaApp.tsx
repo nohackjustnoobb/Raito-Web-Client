@@ -159,12 +159,12 @@ class BetterMangaApp {
         await db.histories.put({
           driver: v.driver,
           id: v.id,
-          chapter: v.chapter,
+          chapterId: v.chapterId,
+          chapterTitle: v.chapterTitle,
           thumbnail: v.thumbnail,
           title: v.title,
           latest: v.latest,
           page: v.page,
-          isExtra: v.isExtra,
           datetime: v.datetime,
           new: v.new,
         })

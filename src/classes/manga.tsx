@@ -157,7 +157,7 @@ class Manga extends SimpleManga {
     extra: Array<Chapter>;
     extraData: string;
   };
-  author: Array<string>;
+  authors: Array<string>;
 
   constructor(data: any) {
     super(data);
@@ -165,7 +165,7 @@ class Manga extends SimpleManga {
     this.driver = window.BMA.getDriver(data.driver)!;
     this.id = data.id;
     this.title = data.title;
-    this.author = data.author;
+    this.authors = data.authors;
     this.isEnd = data.isEnd;
     this.thumbnail = data.thumbnail;
     this.description = data.description;

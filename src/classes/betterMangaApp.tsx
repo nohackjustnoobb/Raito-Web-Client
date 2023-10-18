@@ -329,7 +329,7 @@ class BetterMangaApp {
     if (response.headers.get("Available-Drivers")) {
       response.headers
         .get("Available-Drivers")!
-        .split(", ")
+        .split(",")
         .forEach((v) => this.getDriver(v));
     }
 

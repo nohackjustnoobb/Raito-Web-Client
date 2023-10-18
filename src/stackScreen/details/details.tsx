@@ -125,7 +125,7 @@ class Details extends Component<
         </h2>
         <ul className="author">
           {this.state.manga &&
-            this.state.manga.author.map((name) => (
+            this.state.manga.authors.map((name) => (
               <li
                 key={name}
                 onClick={() => {

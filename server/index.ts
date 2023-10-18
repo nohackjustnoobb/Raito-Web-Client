@@ -28,7 +28,7 @@ const start = () => {
       if (!driver || !id) throw Error();
 
       const response = await fetch(
-        `${process.env.ADDRESS}details?${new URLSearchParams({
+        `${process.env.ADDRESS}manga?${new URLSearchParams({
           driver: driver,
           ids: id,
           "show-all": "1",

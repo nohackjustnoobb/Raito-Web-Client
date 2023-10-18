@@ -28,7 +28,7 @@ class SimpleManga {
 
   async getDetails(): Promise<Manga> {
     // check if the manga has already cached
-    if (!this.driver.manga[this.id]) await this.driver.getDetails([this.id]);
+    if (!this.driver.manga[this.id]) await this.driver.getManga([this.id]);
     return this.driver.manga[this.id];
   }
 
@@ -122,7 +122,7 @@ class SimpleManga {
     // get driver
     const driver = window.BMA.getDriver(driverID)!;
     // get manga
-    return (await driver.getDetails([id])) && driver.manga[id];
+    return (await driver.getManga([id])) && driver.manga[id];
   }
 
   async save(chapter: Chapter, page: number) {

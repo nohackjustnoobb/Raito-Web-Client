@@ -120,7 +120,7 @@ class BetterMangaApp {
 
           for (const chunk of chunks) {
             // get the manga
-            await driver?.getDetails(chunk, false, false);
+            await driver?.getManga(chunk, false, false);
 
             // update the state
             if (actionsAfterEachFetch) actionsAfterEachFetch(chunk.length);

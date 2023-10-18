@@ -168,7 +168,7 @@ class Driver {
     return result;
   }
 
-  async getDetails(
+  async getManga(
     ids: Array<string>,
     showAll: boolean = true,
     cache: boolean = true
@@ -187,13 +187,29 @@ class Driver {
     );
     if (!filtered.length) return true;
 
-    // get the results
-    const result = await window.BMA.get("details", {
-      driver: this.identifier,
-      ids: filtered.join(","),
-      "show-all": showAll ? "1" : "0",
-      proxy: window.BMA.settingsState.useProxy ? "1" : "0",
-    });
+    let result: any;
+
+    if (filtered.length >= 10) {
+      // get the results
+      result = await window.BMA.post(
+        "manga",
+        {
+          driver: this.identifier,
+          "show-all": showAll ? "1" : "0",
+          proxy: window.BMA.settingsState.useProxy ? "1" : "0",
+        },
+        JSON.stringify({ ids: filtered }),
+        { "Content-Type": "application/json" }
+      );
+    } else {
+      // get the results
+      result = await window.BMA.get("manga", {
+        driver: this.identifier,
+        ids: filtered.join(","),
+        "show-all": showAll ? "1" : "0",
+        proxy: window.BMA.settingsState.useProxy ? "1" : "0",
+      });
+    }
 
     if (!result) {
       this.disabled = true;
@@ -204,7 +220,6 @@ class Driver {
 
     // cache the results
     result?.forEach((v: any) => {
-      console.log(v);
       // cache the manga by its type
       if (showAll) {
         const manga: Manga = new Manga(v);
@@ -247,7 +262,7 @@ class Driver {
         const history = histories.find((value) => value.id === manga);
         if (mangaObject.latest && history?.latest !== mangaObject.latest) {
           // remove the cached manga details
-          if (this.manga[manga]) await this.getDetails([manga]);
+          if (this.manga[manga]) await this.getManga([manga]);
 
           window.BMA.isHistoryChanged = true;
           await db.histories.update([this.identifier, mangaObject.id], {

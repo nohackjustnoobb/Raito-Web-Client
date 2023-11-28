@@ -87,7 +87,7 @@ class User {
     return await window.BMA.post(
       "user/create",
       {},
-      JSON.stringify({ username: email, password: password, key: key }),
+      JSON.stringify({ email: email, password: password, key: key }),
       { "Content-Type": "application/json" },
       false
     );

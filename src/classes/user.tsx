@@ -17,7 +17,7 @@ class User {
     var result = await window.BMA.post(
       "user/token",
       {},
-      JSON.stringify({ username: email, password: password }),
+      JSON.stringify({ email: email, password: password }),
       { "Content-Type": "application/json" },
       false
     );

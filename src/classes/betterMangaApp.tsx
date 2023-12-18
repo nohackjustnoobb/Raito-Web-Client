@@ -38,12 +38,19 @@ class BetterMangaApp {
   }
 
   async updateCollections() {
-    // prevent multiple updating at the same time
+    // prevent it updates the collections when it is not synced with the server for too long
     if (
-      this.updateCollectionsState.isUpdating ||
-      !window.BMA.syncState.lastSync
-    )
+      this.user.token &&
+      (!window.BMA.syncState.lastSync ||
+        window.BMA.syncState.lastSync + 30000 < Date.now())
+    ) {
+      await this.sync();
+      await this.updateCollections();
       return;
+    }
+
+    // prevent multiple updating at the same time
+    if (this.updateCollectionsState.isUpdating) return;
     this.updateCollectionsState.isUpdating = true;
 
     // get all the items that needed to update
@@ -268,7 +275,9 @@ class BetterMangaApp {
       result = match[1].replace(/^0+/, "").padStart(1, "0");
     }
 
-    match = result.match(/(?:周刊版?|週刊版?|連載版?|连载版?)\s?(\d+)/);
+    match = result.match(
+      /(?:周刊版?|週刊版?|連載版?|连载版?)\s?([\d.]+(?:-[\d.]+)?)/
+    );
     if (match && match[1]) {
       result = "連載" + match[1].padStart(2, "0");
     }

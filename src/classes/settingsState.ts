@@ -21,7 +21,7 @@ class SettingsState {
   overscrollToLoadPreviousChapters: boolean = true;
   debugMode: boolean = false;
   ignoreError: boolean = true;
-  useProxy: boolean = false;
+  useProxy: boolean = true;
   showDeveloperSettings: boolean = false;
   formatChapterTitle: boolean = true;
 

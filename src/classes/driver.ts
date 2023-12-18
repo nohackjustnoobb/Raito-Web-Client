@@ -258,7 +258,7 @@ class Driver {
           thumbnail: mangaObject.thumbnail,
         });
 
-        // update history is required
+        // update history if required
         const history = histories.find((value) => value.id === manga);
         if (mangaObject.latest && history?.latest !== mangaObject.latest) {
           // remove the cached manga details

@@ -91,9 +91,9 @@ class Main extends Component<{}, { dark: boolean }> {
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", ({ matches }) => {
-        this.setState({ dark: matches });
-      });
+      .addEventListener("change", ({ matches }) =>
+        this.setState({ dark: matches })
+      );
 
     setInterval(() => {
       window.BMA.clearDriverCache();

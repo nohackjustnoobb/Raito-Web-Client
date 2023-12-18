@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:21-alpine as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ ARG ADDRESS
 ENV ADDRESS $ADDRESS
 RUN yarn build
 
-FROM node:18-alpine as final
+FROM node:21-alpine as final
 USER node:node
 WORKDIR /app
 

@@ -20,7 +20,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-image": "^4.1.0",
-    "react-loader-spinner": "^5.3.4",
+    "react-loader-spinner": "^6.1.1-0",
     "react-scripts": "5.0.1",
     "react-swipeable-views": "^0.14.0",
     "react-tooltip": "^5.21.1",

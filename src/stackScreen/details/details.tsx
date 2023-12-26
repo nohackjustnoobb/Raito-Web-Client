@@ -271,7 +271,7 @@ class Details extends Component<
     );
 
     return (
-      <div className="details">
+      <div className="detailsWrapper">
         {isVertical ? (
           <div className="vertical">
             <div className="backgroundWrapper">

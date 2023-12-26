@@ -4,6 +4,7 @@ import db, { history, collection } from "./db";
 import Driver from "./driver";
 import BetterMangaAppEvent from "./event";
 import { dispatchEvent } from "../utils/utils";
+import ExperimentalDetails from "../stackScreen/details/experimentalDetails";
 
 class SimpleManga {
   driver: Driver;
@@ -47,7 +48,13 @@ class SimpleManga {
     if (this.driver.disabled)
       return alert(`${this.driver.identifier}來源不可用`);
 
-    window.stack.push(<Details manga={this} />);
+    window.stack.push(
+      window.BMA.settingsState.experimentalNewDetailsUI ? (
+        <ExperimentalDetails manga={this} />
+      ) : (
+        <Details manga={this} />
+      )
+    );
   }
 
   async add(sync: boolean = true) {

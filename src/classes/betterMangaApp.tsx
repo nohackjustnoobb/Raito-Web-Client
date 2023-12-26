@@ -1,6 +1,6 @@
 import chinese from "s2t-chinese";
 
-import { errorHandler } from "../utils/utils";
+import { errorHandler, sleep } from "../utils/utils";
 import Driver from "./driver";
 import User from "./user";
 import SettingsState from "./settingsState";
@@ -45,6 +45,9 @@ class BetterMangaApp {
         window.BMA.syncState.lastSync + 30000 < Date.now())
     ) {
       await this.sync();
+
+      while (this.syncState.isSyncing) sleep(200);
+
       await this.updateCollections();
       return;
     }

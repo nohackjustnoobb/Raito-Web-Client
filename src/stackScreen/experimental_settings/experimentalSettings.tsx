@@ -72,6 +72,16 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
                   }}
                 />
               </div>
+              <div className="options">
+                <span>NewDetailsUI:</span>
+                <Checkbox
+                  checked={window.BMA.settingsState.experimentalNewDetailsUI}
+                  onChange={(_, checked) => {
+                    window.BMA.settingsState.experimentalNewDetailsUI = checked;
+                    window.BMA.settingsState.update();
+                  }}
+                />
+              </div>
 
               <Button
                 variant={"outlined"}

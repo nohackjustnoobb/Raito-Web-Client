@@ -28,6 +28,7 @@ class SettingsState {
   // experimental functions
   experimentalSwipeDownToPopDetails: boolean = false;
   experimentalUseZoomablePlugin: boolean = false;
+  experimentalNewDetailsUI: boolean = false;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -67,6 +68,10 @@ class SettingsState {
         this.loadBool("experimentalUseZoomablePlugin") ??
         this.experimentalUseZoomablePlugin;
 
+      this.experimentalNewDetailsUI =
+        this.loadBool("experimentalNewDetailsUI") ??
+        this.experimentalNewDetailsUI;
+
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
         displayModeString !== null
@@ -103,6 +108,7 @@ class SettingsState {
       "experimentalUseZoomablePlugin",
       this.experimentalUseZoomablePlugin
     );
+    this.saveBool("experimentalNewDetailsUI", this.experimentalNewDetailsUI);
   }
 
   reset() {

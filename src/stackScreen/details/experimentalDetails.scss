@@ -46,7 +46,7 @@
 
     .rightContent {
       flex: 2;
-      margin-top: 1rem;
+      margin-top: max(1rem, env(safe-area-inset-top));
       overflow-y: scroll;
       scrollbar-width: none;
 

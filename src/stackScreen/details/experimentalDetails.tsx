@@ -197,7 +197,7 @@ class ExperimentalDetails extends Component<
           >
             <div
               className="leftContent"
-              style={isVertical ? {} : { maxWidth: "450px" }}
+              style={isVertical ? {} : { maxWidth: "400px" }}
             >
               <div className="topBar">
                 <div className="back" onClick={() => this.close()}>

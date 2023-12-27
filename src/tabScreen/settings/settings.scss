@@ -14,6 +14,7 @@
   justify-content: space-between;
   overflow-y: scroll;
   scrollbar-width: none;
+  margin-top: 1rem;
 
   &::-webkit-scrollbar {
     display: none;
@@ -21,7 +22,7 @@
 
   #content {
     margin: 1rem;
-    margin-top: 0.5rem;
+    margin-top: 0;
     color: var(--color-text);
   }
 
@@ -62,8 +63,8 @@
     text-align: center;
     padding: 0;
     margin: 0;
-    padding-left: 5rem;
-    padding-right: 5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
     margin-bottom: max(1rem, env(safe-area-inset-bottom));
     font-size: 0.75rem;
     color: var(--color-text);

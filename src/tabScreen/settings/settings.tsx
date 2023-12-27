@@ -39,7 +39,7 @@ class SettingsTab extends React.Component {
     return (
       <div id="settings">
         <div id="content">
-          <h3>一般設定</h3>
+          <h3 style={{ marginTop: 0 }}>一般設定</h3>
           <div className="subSettings">
             <div className="options">
               <span>

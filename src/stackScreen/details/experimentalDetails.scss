@@ -104,8 +104,7 @@
       list-style-type: none;
       padding: 0;
       margin: 0;
-      margin-bottom: 1rem;
-
+      margin-bottom: max(1rem, env(safe-area-inset-bottom));
       grid-template-columns: repeat(auto-fill, minmax(calc(75px), 1fr));
       column-gap: 0.75rem;
       row-gap: 0.75rem;
@@ -125,7 +124,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-
         padding: 0.5rem;
         border-radius: 1rem;
         font-size: 1rem;
@@ -179,7 +177,7 @@
         .imgWrapper {
           border-radius: 1rem;
           aspect-ratio: 9/12;
-          width: 90%;
+          width: 95%;
         }
       }
 

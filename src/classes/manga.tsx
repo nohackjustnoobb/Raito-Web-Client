@@ -222,7 +222,6 @@ class Manga extends SimpleManga {
 
     if (!result) {
       this.driver.disabled = true;
-      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
       return [];
     }

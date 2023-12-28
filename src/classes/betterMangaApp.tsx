@@ -387,8 +387,6 @@ class BetterMangaApp {
     }
 
     this.lastCheckOnStatus = Date.now();
-
-    dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
   }
 
   // helper function to GET and POST

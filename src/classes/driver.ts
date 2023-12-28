@@ -70,7 +70,6 @@ class Driver {
 
     if (!result) {
       this.disabled = true;
-      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
       return false;
     }
@@ -122,7 +121,6 @@ class Driver {
 
     if (!result) {
       this.disabled = true;
-      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
       return false;
     }
@@ -160,7 +158,6 @@ class Driver {
 
     if (!result) {
       this.disabled = true;
-      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
       return [];
     }
@@ -213,7 +210,6 @@ class Driver {
 
     if (!result) {
       this.disabled = true;
-      dispatchEvent(BetterMangaAppEvent.driverOnlineStatusChanged);
 
       return false;
     }

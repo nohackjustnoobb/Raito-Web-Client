@@ -76,7 +76,7 @@ document.addEventListener("visibilitychange", async () => {
 
 // main entry point
 class Main extends Component<{}, { dark: boolean }> {
-  isWaiting = false;
+  isLoading = false;
 
   constructor(props: {}) {
     super(props);
@@ -95,25 +95,18 @@ class Main extends Component<{}, { dark: boolean }> {
         this.setState({ dark: matches })
       );
 
-    setInterval(() => {
-      window.BMA.clearDriverCache();
-    }, 7200000);
+    setInterval(() => window.BMA.clearDriverCache(), 7200000);
 
-    listenToEvents(
-      [BetterMangaAppEvent.driverOnlineStatusChanged],
-      async () => {
-        let disabledDriver: Array<Driver> = window.BMA.availableDrivers.filter(
-          (driver) => driver.disabled
-        );
-        if (!disabledDriver.length || this.isWaiting) return;
+    setInterval(async () => {
+      let disabledDriver: Array<Driver> = window.BMA.availableDrivers.filter(
+        (driver) => driver.disabled
+      );
+      if (!disabledDriver.length || this.isLoading) return;
 
-        this.isWaiting = true;
-        await sleep(5000);
-        this.isWaiting = false;
-
-        await window.BMA.checkOnlineStatus();
-      }
-    );
+      this.isLoading = true;
+      await window.BMA.checkOnlineStatus();
+      this.isLoading = false;
+    }, 5000);
   }
 
   render(): ReactNode {

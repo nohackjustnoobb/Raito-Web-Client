@@ -8,7 +8,7 @@ import BetterMangaApp from "./classes/betterMangaApp";
 import StackView, { Stack } from "./stackScreen/stack";
 import { Manga } from "./classes/manga";
 import { Theme } from "./classes/settingsState";
-import { dispatchEvent, listenToEvents, sleep } from "./utils/utils";
+import { dispatchEvent } from "./utils/utils";
 import BetterMangaAppEvent from "./classes/event";
 
 import "./index.css";

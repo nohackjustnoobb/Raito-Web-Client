@@ -155,33 +155,51 @@ class BetterMangaApp {
     // save the time
     const now = Date.now();
 
-    const result = await this.post(
-      "user/histories",
-      date === null ? {} : { date: date },
-      JSON.stringify(history),
-      { "Content-Type": "application/json" }
-    );
+    let page = 1;
+    let query: { [key: string]: string } = {};
 
-    if (!result) return;
+    if (date) query["date"] = date;
 
-    result.forEach(
-      async (v: any) =>
-        await db.histories.put({
-          driver: v.driver,
-          id: v.id,
-          chapterId: v.chapterId,
-          chapterTitle: v.chapterTitle,
-          thumbnail: v.thumbnail,
-          title: v.title,
-          latest: v.latest,
-          page: v.page,
-          datetime: v.datetime,
-          new: v.new,
-        })
-    );
+    while (true) {
+      query["page"] = page.toString();
+
+      const result: Response | boolean = await this.post(
+        "user/histories",
+        query,
+        JSON.stringify(history),
+        { "Content-Type": "application/json" },
+        undefined,
+        true
+      );
+
+      // check if the request was successful
+      if (!result) return;
+
+      // save the results
+      (await (result as Response).json()).forEach(
+        async (v: any) =>
+          await db.histories.put({
+            driver: v.driver,
+            id: v.id,
+            chapterId: v.chapterId,
+            chapterTitle: v.chapterTitle,
+            thumbnail: v.thumbnail,
+            title: v.title,
+            latest: v.latest,
+            page: v.page,
+            datetime: v.datetime,
+            new: v.new,
+          })
+      );
+
+      // check if next page exists
+      if ((result as Response).headers.get("Is-Next") === "0") break;
+
+      page++;
+    }
 
     this.isHistoryChanged = false;
-    localStorage.setItem("lastSync", `${now}`);
+    localStorage.setItem("lastSync", now.toString());
   }
 
   async syncCollections() {
@@ -309,7 +327,8 @@ class BetterMangaApp {
     params: { [key: string]: string } = {},
     body: string | undefined = undefined,
     headers: { [key: string]: string } = {},
-    handleError: boolean = true
+    handleError: boolean = true,
+    returnResponse: boolean = false
   ): Promise<any> {
     // check if logged in
     if (this.user.token) {
@@ -348,7 +367,7 @@ class BetterMangaApp {
     // check if the request is successful
     if (String(response.status)[0] === "2") {
       try {
-        return await response.json();
+        return returnResponse ? response : await response.json();
       } catch {
         return true;
       }
@@ -394,15 +413,35 @@ class BetterMangaApp {
     action: string,
     params: { [key: string]: string } = {},
     headers: { [key: string]: string } = {},
-    handleError: boolean | undefined = undefined
-  ) => this.fetch("GET", action, params, undefined, headers, handleError);
+    handleError: boolean | undefined = undefined,
+    returnResponse: boolean | undefined = undefined
+  ) =>
+    this.fetch(
+      "GET",
+      action,
+      params,
+      undefined,
+      headers,
+      handleError,
+      returnResponse
+    );
   post = async (
     action: string,
     params: { [key: string]: string } = {},
     body: string | undefined = undefined,
     headers: { [key: string]: string } = {},
-    handleError: boolean | undefined = undefined
-  ) => this.fetch("POST", action, params, body, headers, handleError);
+    handleError: boolean | undefined = undefined,
+    returnResponse: boolean | undefined = undefined
+  ) =>
+    this.fetch(
+      "POST",
+      action,
+      params,
+      body,
+      headers,
+      handleError,
+      returnResponse
+    );
 }
 
 export default BetterMangaApp;

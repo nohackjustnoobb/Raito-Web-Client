@@ -2,8 +2,6 @@ import Details from "../stackScreen/details/details";
 import Read from "../stackScreen/read/read";
 import db, { history, collection } from "./db";
 import Driver from "./driver";
-import BetterMangaAppEvent from "./event";
-import { dispatchEvent } from "../utils/utils";
 import ExperimentalDetails from "../stackScreen/details/experimentalDetails";
 
 class SimpleManga {

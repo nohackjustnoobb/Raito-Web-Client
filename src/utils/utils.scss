@@ -1,0 +1,25 @@
+.loader {
+  position: fixed;
+  display: flex;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #00000022;
+
+  div {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    opacity: 0.8;
+    backdrop-filter: blur(5px);
+    aspect-ratio: 1;
+    border-radius: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5rem;
+    transform: scale(0.75);
+  }
+}

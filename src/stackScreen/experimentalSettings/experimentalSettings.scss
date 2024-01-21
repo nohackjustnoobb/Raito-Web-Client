@@ -1,0 +1,66 @@
+.experimentalSettings-enter {
+  opacity: 0;
+}
+
+.experimentalSettings-enter-active {
+  opacity: 1;
+  transition: opacity 250ms;
+}
+
+.experimentalSettings-exit-active {
+  opacity: 0;
+  transition: opacity 250ms;
+}
+
+.experimentalSettingsWrapper {
+  .experimentalSettings {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .background {
+      background-color: #00000044;
+      height: 100vh;
+      width: 100vw;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .userSettingsContent {
+      background-color: var(--color-background);
+      color: var(--color-text);
+      padding: 2rem;
+      position: relative;
+      z-index: 2;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      margin: 1rem;
+      max-width: 400px;
+
+      span {
+        color: var(--color-text);
+      }
+
+      h5 {
+        color: red;
+        margin: 0;
+        text-align: center;
+      }
+
+      .options {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+  }
+}

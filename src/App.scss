@@ -1,0 +1,42 @@
+#tabMenu {
+  list-style-type: none;
+  width: calc(100vw - 1.5rem);
+  display: flex;
+  margin: 0;
+  padding: 0;
+  margin-top: env(safe-area-inset-top);
+  margin-left: 0.5rem;
+  margin-right: 1rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 3rem;
+
+  div {
+    display: flex;
+    align-items: flex-end;
+
+    li {
+      margin-left: 0.5rem;
+      font-weight: bold;
+      transition: all 0.35s;
+    }
+  }
+
+  .selected {
+    font-size: 2rem;
+    transform: translateY(0.25rem);
+    color: var(--color-text);
+  }
+
+  .notSelected {
+    font-size: 1rem;
+    color: var(--color-text);
+    opacity: 0.5;
+    cursor: pointer;
+  }
+}
+
+.tab {
+  height: calc(100vh - 3rem - env(safe-area-inset-top));
+  width: 100vw;
+}

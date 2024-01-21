@@ -1,0 +1,139 @@
+#update {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  div {
+    display: flex;
+    align-items: center;
+    transform: translateY(0.25rem);
+    color: var(--color-text);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text);
+    opacity: 0.4;
+  }
+}
+
+#collections {
+  width: 100%;
+  height: 100%;
+  margin-top: 1rem;
+  overflow: hidden;
+
+  #collectionsWrapper {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    height: 100%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  #collectionsContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    column-gap: 1rem;
+    row-gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+
+  #empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-3rem);
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0.5;
+    font-size: 1.5rem;
+    color: var(--color-text);
+  }
+
+  .collection {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    cursor: pointer;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .imgWrapper {
+      width: 100%;
+      border-radius: 0.5rem;
+      aspect-ratio: 9/12;
+    }
+
+    h3 {
+      margin: 0;
+      font-weight: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--color-text);
+    }
+
+    h5 {
+      margin: 0;
+      color: var(--color-text);
+      opacity: 0.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @mixin overlay($theme: #ff0055aa) {
+      z-index: 2;
+      position: absolute;
+      background-color: $theme;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 0.125rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      backdrop-filter: blur(10px);
+      border-radius: 0.5rem 0 0.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 1.5rem;
+      white-space: nowrap;
+    }
+
+    .end {
+      @include overlay;
+    }
+
+    .new {
+      @include overlay(#00ff22aa);
+    }
+
+    .driverID {
+      @include overlay(#006affaa);
+      border-radius: 0.5rem 0 0 0.5rem;
+      right: 0;
+      bottom: 5.9rem;
+    }
+
+    .mangaID {
+      @include overlay(#006affaa);
+      border-radius: 0.5rem 0 0 0.5rem;
+      right: 0;
+      bottom: 4rem;
+    }
+  }
+}

@@ -1,0 +1,34 @@
+html,
+body {
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100vh;
+  scroll-behavior: smooth;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  background-color: var(--color-background);
+}
+
+#root {
+  position: fixed;
+}
+
+html[data-theme="light"] {
+  --color-text: black;
+  --color-background: #f7f7f7;
+  --color-search-background: #eaeaea;
+  --color-sub-background: white;
+  --color-chapters-background: #ececec;
+  --color-chapters-text: #929292;
+}
+
+html[data-theme="dark"] {
+  --color-text: #c3c3c3;
+  --color-background: #2b2b2b;
+  --color-search-background: #424242;
+  --color-sub-background: #373737;
+  --color-chapters-background: #373737;
+  --color-chapters-text: #7f7f7f;
+}

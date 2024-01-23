@@ -350,7 +350,7 @@ class RaitoManga {
     await Promise.all(serverPromises);
 
     const downedDriver: Driver[] = this.availableDrivers.filter(
-      (driver) => driver.isDown || all
+      (driver) => (driver.isDown && !driver.server?.isDown) || all
     );
 
     let driverPromises: Promise<void>[] = [];

@@ -99,7 +99,9 @@ class Main extends Component<{}, { dark: boolean }> {
 
     setInterval(async () => {
       const disabledDriver: Array<Driver> =
-        window.raito.availableDrivers.filter((driver) => driver.isDown);
+        window.raito.availableDrivers.filter(
+          (driver) => driver.isDown || driver.server?.isDown
+        );
       if (!disabledDriver.length || this.isLoading) return;
 
       this.isLoading = true;

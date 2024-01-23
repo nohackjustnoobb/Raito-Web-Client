@@ -56,7 +56,7 @@
     row-gap: 1rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
+    padding-bottom: max(env(safe-area-inset-bottom), 2rem);
   }
 
   .history {

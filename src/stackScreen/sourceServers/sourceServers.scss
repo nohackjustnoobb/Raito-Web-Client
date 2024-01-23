@@ -50,14 +50,15 @@
       padding-top: 0;
       padding-left: 1rem;
       padding-right: 1rem;
-      padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
+      padding-bottom: max(env(safe-area-inset-bottom), 2rem);
       margin: 0;
       margin-top: 1rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       column-gap: 1rem;
       row-gap: 1rem;
       overflow-y: scroll;
+      overflow: hidden;
       scrollbar-width: none;
 
       &::-webkit-scrollbar {

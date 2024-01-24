@@ -39,4 +39,5 @@
 .tab {
   height: calc(100vh - 3rem - env(safe-area-inset-top));
   width: 100vw;
+  overflow: hidden;
 }

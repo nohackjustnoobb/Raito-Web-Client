@@ -9,6 +9,8 @@ class Theme {
   }
 
   inject() {
+    Theme.reset();
+
     const style = document.createElement("style");
     style.id = "injectedStyle";
     style.textContent = this.style;

@@ -4,16 +4,16 @@ import Icon from "@mdi/react";
 import { mdiPlus, mdiChevronLeft } from "@mdi/js";
 import { Button } from "@mui/material";
 
-import "./sourceServers.scss";
+import "./manageServers.scss";
 import RaitoEvent from "../../models/event";
 import { listenToEvents } from "../../utils/utils";
 import AddServerConfig from "./addServerConfig";
 
-class SourceServers extends Component<{}, { show: boolean }> {
+class ManageServers extends Component<{}, { show: boolean }> {
   // timeout of the transition
   timeout: number = 500;
-  // reference for sourceServers
-  sourceServersRef: HTMLElement | null = null;
+  // reference for manageServers
+  manageServersRef: HTMLElement | null = null;
   // check if transform should enabled
   isTouchOnEdge: boolean = false;
 
@@ -39,17 +39,17 @@ class SourceServers extends Component<{}, { show: boolean }> {
 
   render(): ReactNode {
     return (
-      <div className="sourceServersWrapper">
+      <div className="manageServersWrapper">
         <CSSTransition
           in={this.state.show}
-          classNames="sourceServers"
+          classNames="manageServers"
           timeout={this.timeout}
           unmountOnExit
           mountOnEnter
         >
           <div
-            className="sourceServers"
-            ref={(ref) => (this.sourceServersRef = ref)}
+            className="manageServers"
+            ref={(ref) => (this.manageServersRef = ref)}
             onTouchStart={(event) => {
               const startX = event.changedTouches[0].pageX;
               // check if swipe from edge
@@ -59,8 +59,8 @@ class SourceServers extends Component<{}, { show: boolean }> {
             }}
             onTouchMove={(event) => {
               // follow the touches
-              if (this.isTouchOnEdge && this.sourceServersRef) {
-                this.sourceServersRef.style.transform = `translateX(${event.changedTouches[0].pageX}px)`;
+              if (this.isTouchOnEdge && this.manageServersRef) {
+                this.manageServersRef.style.transform = `translateX(${event.changedTouches[0].pageX}px)`;
               }
             }}
             onTouchEnd={(event) => {
@@ -76,13 +76,13 @@ class SourceServers extends Component<{}, { show: boolean }> {
                 // reset the transform
                 // DK why setTimeout is fixing the problem again
                 setTimeout(() => {
-                  this.sourceServersRef?.removeAttribute("style");
+                  this.manageServersRef?.removeAttribute("style");
 
                   // add transition if no need to close
-                  if (!shouldClose && this.sourceServersRef) {
-                    this.sourceServersRef.style.transition = "transform 500ms";
+                  if (!shouldClose && this.manageServersRef) {
+                    this.manageServersRef.style.transition = "transform 500ms";
                     setTimeout(
-                      () => this.sourceServersRef?.removeAttribute("style"),
+                      () => this.manageServersRef?.removeAttribute("style"),
                       500
                     );
                   }
@@ -161,4 +161,4 @@ class SourceServers extends Component<{}, { show: boolean }> {
   }
 }
 
-export default SourceServers;
+export default ManageServers;

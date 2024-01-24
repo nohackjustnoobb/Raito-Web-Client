@@ -55,33 +55,35 @@ class OnlineStatus extends Component<
               </h5>
 
               <table>
-                <tr>
-                  <th>來源</th>
-                  <th>版本</th>
-                  <th>在線</th>
-                  <th>延遲</th>
-                </tr>
-                {window.raito.availableDrivers.map((driver) => (
-                  <tr
-                    key={driver.identifier}
-                    className={driver.isDown ? "disabled" : ""}
-                  >
-                    <td>{driver.identifier}</td>
-                    <td>{driver.version || "?"}</td>
-                    <td>
-                      {driver.onlineStatus
-                        ? driver.onlineStatus.online
-                          ? "✓"
-                          : "✖"
-                        : "?"}
-                    </td>
-                    <td>
-                      {driver.onlineStatus
-                        ? `${driver.onlineStatus!.latency}ms`
-                        : "?"}
-                    </td>
+                <tbody>
+                  <tr>
+                    <th>來源</th>
+                    <th>版本</th>
+                    <th>在線</th>
+                    <th>延遲</th>
                   </tr>
-                ))}
+                  {window.raito.availableDrivers.map((driver) => (
+                    <tr
+                      key={driver.identifier}
+                      className={driver.isDown ? "disabled" : ""}
+                    >
+                      <td>{driver.identifier}</td>
+                      <td>{driver.version || "?"}</td>
+                      <td>
+                        {driver.onlineStatus
+                          ? driver.onlineStatus.online
+                            ? "✓"
+                            : "✖"
+                          : "?"}
+                      </td>
+                      <td>
+                        {driver.onlineStatus
+                          ? `${driver.onlineStatus!.latency}ms`
+                          : "?"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
 
               <span>

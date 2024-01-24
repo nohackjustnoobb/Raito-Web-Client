@@ -2,6 +2,7 @@ import { dispatchEvent } from "../utils/utils";
 import Driver from "./driver";
 import RaitoEvent from "./event";
 import Server from "./server";
+import Theme from "./theme";
 
 enum DisplayMode {
   Auto,
@@ -9,7 +10,7 @@ enum DisplayMode {
   TwoPages,
 }
 
-enum Theme {
+enum ThemeModel {
   Auto,
   Dark,
   Light,
@@ -17,7 +18,9 @@ enum Theme {
 
 class SettingsState {
   // general settings
-  theme: Theme = Theme.Auto;
+  themeModel: ThemeModel = ThemeModel.Auto;
+  themes: Theme[] = [];
+  currentTheme: string | null = null;
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
   formatChapterTitle: boolean = true;
@@ -72,8 +75,10 @@ class SettingsState {
           ? JSON.parse(displayModeString)
           : this.displayMode;
 
-      const themeString = localStorage.getItem("theme");
-      this.theme = themeString !== null ? JSON.parse(themeString) : this.theme;
+      const themeString = localStorage.getItem("themeModel");
+      this.themeModel =
+        themeString !== null ? JSON.parse(themeString) : this.themeModel;
+      this.currentTheme = localStorage.getItem("currentTheme");
 
       // experimental functions
       this.experimentalUseZoomablePlugin =
@@ -86,7 +91,10 @@ class SettingsState {
     if (this.defaultDriver)
       localStorage.setItem("defaultDriver", this.defaultDriver);
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
-    localStorage.setItem("theme", JSON.stringify(this.theme));
+    localStorage.setItem("themeModel", JSON.stringify(this.themeModel));
+    if (this.currentTheme)
+      localStorage.setItem("currentTheme", this.currentTheme);
+    else localStorage.removeItem("currentTheme");
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
@@ -117,6 +125,13 @@ class SettingsState {
     this.save();
     if (sync) this.saveSettings();
 
+    // update the theme
+    const theme = this.themes.find((v) => v.name === this.currentTheme);
+    if (this.currentTheme) {
+      if (theme) theme.inject();
+      else this.currentTheme = null;
+    } else Theme.reset();
+
     dispatchEvent(RaitoEvent.settingsChanged);
   }
 
@@ -132,6 +147,8 @@ class SettingsState {
           accessKey: config.accessKey,
         });
     }
+
+    settings["themes"] = this.themes;
 
     const encodedSettings = btoa(JSON.stringify(settings));
     if (window.raito.user.token && sync) {
@@ -159,6 +176,13 @@ class SettingsState {
           promises.push(Server.add(config.address, config.accessKey, false));
         await Promise.all(promises);
       }
+
+      if (settings["themes"])
+        for (const theme of settings["themes"])
+          if (!this.themes.find((v) => v.name === theme.name)) {
+            this.themes.push(new Theme(theme.name, theme.style));
+            if (theme.name === this.currentTheme) this.themes.at(-1)?.inject();
+          }
     }
   }
 
@@ -181,4 +205,4 @@ class SettingsState {
 }
 
 export default SettingsState;
-export { DisplayMode, Theme };
+export { DisplayMode, ThemeModel as Theme };

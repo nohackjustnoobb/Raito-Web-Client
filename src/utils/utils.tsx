@@ -18,6 +18,9 @@ const pushLoader = () => {
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
+const getCssVariable = (name: string): string =>
+  getComputedStyle(document.documentElement).getPropertyValue(name);
+
 const errorHandler = async (response: Response) => {
   const status = response.status;
 
@@ -79,4 +82,5 @@ export {
   listenToEvents,
   tryInitialize,
   sleep,
+  getCssVariable,
 };

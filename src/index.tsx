@@ -7,7 +7,7 @@ import App from "./App";
 import RaitoManga from "./models/raitoManga";
 import StackView, { Stack } from "./stackScreen/stack";
 import { Theme } from "./models/settingsState";
-import { dispatchEvent } from "./utils/utils";
+import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
 import RaitoEvent from "./models/event";
 
 import "./index.css";
@@ -89,14 +89,17 @@ class Main extends Component<{}, { dark: boolean }> {
   componentDidMount(): void {
     window.updateRoot = this.forceUpdate.bind(this);
 
+    // listem for theme changes
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", ({ matches }) =>
         this.setState({ dark: matches })
       );
 
+    // clear the cache
     setInterval(() => Driver.clearCache(), 7200000);
 
+    // check if any things is down
     setInterval(async () => {
       const disabledDriver: Array<Driver> =
         window.raito.availableDrivers.filter(
@@ -108,29 +111,38 @@ class Main extends Component<{}, { dark: boolean }> {
       await window.raito.checkOnlineStatus();
       this.isLoading = false;
     }, 5000);
+
+    const checkCssVariable = () => {
+      if (!getCssVariable("--color-primary")) {
+        sleep(50);
+        checkCssVariable();
+      } else this.forceUpdate();
+    };
+
+    checkCssVariable();
   }
 
   render(): ReactNode {
     const useDarkMode =
-      window.raito.settingsState.theme === Theme.Auto
+      window.raito.settingsState.themeModel === Theme.Auto
         ? this.state.dark
-        : window.raito.settingsState.theme === Theme.Dark;
-
-    const theme = createTheme({
-      palette: {
-        primary: {
-          main: useDarkMode ? "#fff" : "#000",
-        },
-        secondary: {
-          main: useDarkMode ? "#373737" : "#000",
-        },
-      },
-    });
+        : window.raito.settingsState.themeModel === Theme.Dark;
 
     document.documentElement.setAttribute(
       "data-theme",
       useDarkMode ? "dark" : "light"
     );
+
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: getCssVariable("--color-primary") || "#fff",
+        },
+        secondary: {
+          main: getCssVariable("--color-sub-background") || "#fff",
+        },
+      },
+    });
 
     return (
       <ThemeProvider theme={theme}>

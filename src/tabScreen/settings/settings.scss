@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-bottom: max(calc(env(safe-area-inset-bottom) + 1rem), 2rem);
   overflow-y: scroll;
   scrollbar-width: none;
   margin-top: 1rem;
@@ -65,7 +66,6 @@
     margin: 0;
     padding-left: 1rem;
     padding-right: 1rem;
-    margin-bottom: max(1rem, env(safe-area-inset-bottom));
     font-size: 0.75rem;
     color: var(--color-text);
 

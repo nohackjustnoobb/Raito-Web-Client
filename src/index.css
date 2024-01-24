@@ -16,15 +16,17 @@ body {
 }
 
 html[data-theme="light"] {
-  --color-text: black;
+  --color-primary: #000000;
+  --color-text: #000000;
   --color-background: #f7f7f7;
   --color-search-background: #eaeaea;
-  --color-sub-background: white;
+  --color-sub-background: #ffffff;
   --color-chapters-background: #ececec;
   --color-chapters-text: #929292;
 }
 
 html[data-theme="dark"] {
+  --color-primary: #ffffff;
   --color-text: #c3c3c3;
   --color-background: #2b2b2b;
   --color-search-background: #424242;

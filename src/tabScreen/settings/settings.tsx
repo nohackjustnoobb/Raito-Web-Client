@@ -12,7 +12,8 @@ import RaitoEvent from "../../models/event";
 import "./settings.scss";
 import CreateUser from "../../stackScreen/userSettings/createUser";
 import OnlineStatus from "../../stackScreen/onlineStatus/onlineStatus";
-import SourceServers from "../../stackScreen/sourceServers/sourceServers";
+import ManageServers from "../../stackScreen/manageServers/manageServers";
+import ManageThemes from "../../stackScreen/manageThemes/manageThemes";
 
 class SettingsTabState extends React.Component {
   render(): React.ReactNode {
@@ -62,21 +63,7 @@ class SettingsTab extends React.Component {
                 </Button>
               </span>
             </div>
-            <div className="options">
-              <span>深色模式：</span>
-              <select
-                value={window.raito.settingsState.theme}
-                onChange={(event) => {
-                  window.raito.settingsState.theme = Number(event.target.value);
-                  window.raito.settingsState.update();
-                  window.updateRoot();
-                }}
-              >
-                <option value={0}>自動</option>
-                <option value={1}>深色</option>
-                <option value={2}>淺色</option>
-              </select>
-            </div>
+
             <div className="options">
               <span>預設來源：</span>
               <select
@@ -125,6 +112,36 @@ class SettingsTab extends React.Component {
                   window.raito.settingsState.update();
                 }}
               />
+            </div>
+          </div>
+          <h3>外觀設定</h3>
+          <div className="subSettings">
+            <div className="options">
+              <span>主題：</span>
+              <Button
+                variant={"outlined"}
+                size="small"
+                onClick={() => window.stack.push(<ManageThemes />)}
+              >
+                管理界面
+              </Button>
+            </div>
+            <div className="options">
+              <span>深色模式：</span>
+              <select
+                value={window.raito.settingsState.themeModel}
+                onChange={(event) => {
+                  window.raito.settingsState.themeModel = Number(
+                    event.target.value
+                  );
+                  window.raito.settingsState.update();
+                  window.updateRoot();
+                }}
+              >
+                <option value={0}>自動</option>
+                <option value={1}>深色</option>
+                <option value={2}>淺色</option>
+              </select>
             </div>
           </div>
 
@@ -178,7 +195,7 @@ class SettingsTab extends React.Component {
               <Button
                 variant={"outlined"}
                 size="small"
-                onClick={() => window.stack.push(<SourceServers />)}
+                onClick={() => window.stack.push(<ManageServers />)}
               >
                 管理界面
               </Button>

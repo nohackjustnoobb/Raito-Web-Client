@@ -173,11 +173,15 @@ class Read extends Component<
         do {
           loaded = true;
           for (let i = 0; i < page!; i++) {
-            const element = document.getElementById(`${chapterId}_${i}`);
+            const element = document
+              .getElementById(`${chapterId}_${i}`)
+              ?.getElementsByTagName("img");
             if (
-              !element ||
-              !element.children.length ||
-              !(element.children[0] as HTMLImageElement).complete
+              !(
+                element &&
+                element.length &&
+                (element[0] as HTMLImageElement).complete
+              )
             )
               loaded = false;
           }
@@ -588,9 +592,9 @@ class Read extends Component<
                                 this.wideImage.push(id);
                                 this.forceUpdate(() => this.restorePosition());
                               }
-
                               this.restorePosition();
                             }}
+                            lazy={false}
                           />
                         </div>
                       </Fragment>

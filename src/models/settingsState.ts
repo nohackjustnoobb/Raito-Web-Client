@@ -32,6 +32,7 @@ class SettingsState {
 
   // server settings
   useProxy: boolean = true;
+  useBase64: boolean = true;
 
   // developer settings
   debugMode: boolean = false;
@@ -61,6 +62,7 @@ class SettingsState {
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
       this.ignoreError = this.loadBool("ignoreError") ?? this.ignoreError;
       this.useProxy = this.loadBool("useProxy") ?? this.useProxy;
+      this.useBase64 = this.loadBool("useBase64") ?? this.useBase64;
       this.showDeveloperSettings =
         this.loadBool("showDeveloperSettings") ?? this.showDeveloperSettings;
       this.overscrollToLoadPreviousChapters =
@@ -98,6 +100,7 @@ class SettingsState {
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
+    this.saveBool("useProxy", this.useProxy);
     this.saveBool("useProxy", this.useProxy);
     this.saveBool("showDeveloperSettings", this.showDeveloperSettings);
     this.saveBool(

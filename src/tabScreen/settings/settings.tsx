@@ -210,6 +210,18 @@ class SettingsTab extends React.Component {
                 }}
               />
             </div>
+            {window.raito.settingsState.useProxy && (
+              <div className="options">
+                <span>使用Base64：</span>
+                <Checkbox
+                  checked={window.raito.settingsState.useBase64}
+                  onChange={(_, checked) => {
+                    window.raito.settingsState.useBase64 = checked;
+                    window.raito.settingsState.update();
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {window.raito.settingsState.showDeveloperSettings && (

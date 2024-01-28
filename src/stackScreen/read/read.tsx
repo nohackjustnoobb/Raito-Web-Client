@@ -201,7 +201,7 @@ class Read extends Component<
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {
     if (this.lastLoad && Date.now() < this.lastLoad + 2500) return;
-    if (setLastLoad) this.lastLoad = Date.now();
+    this.lastLoad = Number.MAX_VALUE;
 
     // reset previous height data
     this.prevHeight = null;
@@ -249,10 +249,12 @@ class Read extends Component<
         show: true,
       }),
       () => {
+        this.lastLoad = setLastLoad ? Date.now() : null;
+
         // load next chapter if less there page
         if (
-          urls.length <= 1 &&
-          Object.keys(this.state.chaptersUrls).length < 3
+          urls.length <= 3 &&
+          Object.keys(this.state.chaptersUrls).length === 1
         ) {
           this.lastLoad = null;
           this.loadMore();
@@ -261,9 +263,7 @@ class Read extends Component<
     );
 
     // cache previous height
-    if (!next && this.readRef) {
-      this.prevHeight = this.readRef.scrollHeight;
-    }
+    if (!next && this.readRef) this.prevHeight = this.readRef.scrollHeight;
   }
 
   toggleOffset() {

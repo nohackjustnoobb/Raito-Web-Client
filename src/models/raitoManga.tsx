@@ -243,9 +243,8 @@ class RaitoManga {
         !remoteCollections.find(
           (v) => v.id === collection.id && v.driver === collection.driver
         )
-      ) {
+      )
         await db.collections.delete([collection.driver, collection.id]);
-      }
     }
 
     // update the local collections
@@ -257,15 +256,14 @@ class RaitoManga {
         !localCollections.find(
           (v) => v.id === manga.id && v.driver === manga.driver
         )
-      ) {
+      )
         addedManga.push({ driver: manga.driver, id: manga.id });
-      }
     }
 
     await Manga.getBatch(addedManga);
-    addedManga.forEach((manga) => {
-      Driver.getOrCreate(manga.driver)?.simpleManga[manga.id]?.add(false);
-    });
+    addedManga.forEach((manga) =>
+      Driver.getOrCreate(manga.driver)?.simpleManga[manga.id]?.add(false)
+    );
   }
 
   async sync() {

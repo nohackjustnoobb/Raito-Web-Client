@@ -206,7 +206,6 @@ class Read extends Component<
     // reset previous height data
     this.prevHeight = null;
 
-    // get next or previous chapter
     if (this.isExtra === null) {
       this.isExtra =
         this.props.manga.chapters.extra.findIndex(
@@ -224,6 +223,7 @@ class Read extends Component<
       if (this.initIndex === -1) window.stack.pop();
     }
 
+    // get next or previous chapter
     const chapter: Chapter | undefined = (
       this.isExtra
         ? this.props.manga.chapters.extra
@@ -236,7 +236,10 @@ class Read extends Component<
     var id: string | null = chapter?.id ?? null;
 
     // check if out of range
-    if (!id) return window.stack.push(<Warning noNextOne={next} />);
+    if (!id) {
+      this.lastLoad = setLastLoad ? Date.now() : null;
+      return window.stack.push(<Warning noNextOne={next} />);
+    }
 
     // get the urls
     var urls = await this.props.manga.getChapter(id);

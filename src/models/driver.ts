@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 import { dispatchEvent, tryInitialize } from "../utils/utils";
 import db from "./db";
 import RaitoEvent from "./event";
@@ -129,7 +131,7 @@ class Driver {
   static async select(id: string) {
     const driver = Driver.getOrCreate(id);
     if (!driver || driver.isDown || driver.server === null)
-      return alert(`${id}來源不可用`);
+      return alert(`${id}${i18next.t("isDown")}`);
 
     window.raito.selectedDriver = driver;
 
@@ -356,7 +358,10 @@ class Driver {
     cache: boolean = true
   ): Promise<boolean> {
     // check if disabled
-    if (this.isDown) return false;
+    if (this.isDown) {
+      alert(`${this.identifier}${i18next.t("isDown")}`);
+      return false;
+    }
 
     // check if initializated
     if (!tryInitialize(this)) return false;

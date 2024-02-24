@@ -123,30 +123,33 @@ class App extends Component<
               >
                 <Icon path={mdiClockOutline} size={1} />
               </li>
-              {filteredHistory.slice(0, 10).map((v) => (
-                <li
-                  key={`${v.driver}_${v.id}`}
-                  onClick={async () => {
-                    pushLoader();
-                    // load manga
-                    const result = await Manga.get(v.driver, v.id);
+              {filteredHistory
+                .sort((a, b) => b.datetime - a.datetime)
+                .slice(0, 10)
+                .map((v) => (
+                  <li
+                    key={`${v.driver}_${v.id}`}
+                    onClick={async () => {
+                      pushLoader();
+                      // load manga
+                      const result = await Manga.get(v.driver, v.id);
 
-                    // pop the loader
-                    window.stack.pop();
+                      // pop the loader
+                      window.stack.pop();
 
-                    // show details
-                    if (result) {
-                      (result as Manga).pushDetails();
-                    }
-                  }}
-                >
-                  <LazyImage src={v.thumbnail} />
-                  <h4>{window.raito.translate(v.title)}</h4>
-                  <p>
-                    {window.raito.translate(`${v.chapterTitle!} / ${v.latest}`)}
-                  </p>
-                </li>
-              ))}
+                      // show details
+                      if (result) (result as SimpleManga).pushDetails();
+                    }}
+                  >
+                    <LazyImage src={v.thumbnail} />
+                    <h4>{window.raito.translate(v.title)}</h4>
+                    <p>
+                      {window.raito.translate(
+                        `${v.chapterTitle!} / ${v.latest}`
+                      )}
+                    </p>
+                  </li>
+                ))}
               {this.state.history && (
                 <li
                   className="viewAll"

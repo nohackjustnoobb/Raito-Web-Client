@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 import Details from "../screen/details/details";
 import Read from "../screen/read/read";
 import db, { collection, history } from "./db";
@@ -157,7 +159,8 @@ class SimpleManga {
    * @returns
    */
   pushDetails() {
-    if (this.driver.isDown) return alert(`${this.driver.identifier}來源不可用`);
+    if (this.driver.isDown)
+      return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
     window.stack.push(<Details manga={this} />);
   }
@@ -350,7 +353,8 @@ class Manga extends SimpleManga {
    * @returns
    */
   read(chapterId: string, page: number | null = null) {
-    if (this.driver.isDown) return alert(`${this.driver.identifier}來源不可用`);
+    if (this.driver.isDown)
+      return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
     window.stack.push(<Read manga={this} chapterId={chapterId} page={page} />);
   }
@@ -384,7 +388,7 @@ class Manga extends SimpleManga {
    */
   async getChapter(chapterId: string): Promise<Array<string>> {
     if (this.driver.isDown) {
-      alert(`${this.driver.identifier}來源不可用`);
+      alert(`${this.driver.identifier}${i18next.t("isDown")}`);
       return [];
     }
 

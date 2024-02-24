@@ -106,7 +106,11 @@ class LazyImage extends Component<
             src={this.state.url}
             alt=""
             onLoad={this.props.onLoad}
-            loading="lazy"
+            loading={
+              this.props.lazy !== undefined && !this.props.lazy
+                ? "eager"
+                : "lazy"
+            }
           />
         ) : this.props.lazy === undefined || this.props.lazy ? (
           <TailSpin

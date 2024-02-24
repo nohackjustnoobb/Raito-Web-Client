@@ -101,7 +101,7 @@ class SettingsState {
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
     this.saveBool("useProxy", this.useProxy);
-    this.saveBool("useProxy", this.useProxy);
+    this.saveBool("useBase64", this.useBase64);
     this.saveBool("showDeveloperSettings", this.showDeveloperSettings);
     this.saveBool(
       "overscrollToLoadPreviousChapters",

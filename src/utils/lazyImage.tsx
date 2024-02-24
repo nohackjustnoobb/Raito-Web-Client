@@ -1,7 +1,9 @@
+import "./lazyImage.scss";
+
 import { Component, ReactNode } from "react";
+
 import { TailSpin } from "react-loader-spinner";
 
-import "./lazyImage.scss";
 import { sleep } from "./utils";
 
 type Props = {
@@ -17,7 +19,6 @@ class LazyImage extends Component<
   { isVisible: boolean; url: string | null }
 > {
   isLoading: boolean = false;
-
   ref: HTMLElement | null = null;
   observer = new IntersectionObserver(() => {
     if (this.ref && this.isScrolledIntoView(this.ref))
@@ -33,6 +34,10 @@ class LazyImage extends Component<
     };
   }
 
+  shouldComponentUpdate() {
+    return !this.state.url;
+  }
+
   componentDidMount() {
     if (this.props.lazy !== undefined && !this.props.lazy)
       this.setState({ isVisible: true });
@@ -46,29 +51,24 @@ class LazyImage extends Component<
       !this.state.url
     ) {
       this.isLoading = true;
-      if (window.raito.settingsState.useProxy) {
-        try {
-          const response = await fetch(
-            window.raito.settingsState.useBase64
-              ? `${this.props.src}?base64=1`
-              : this.props.src
-          );
+      try {
+        const response = await fetch(
+          window.raito.settingsState.useBase64
+            ? `${this.props.src}?base64=1`
+            : this.props.src
+        );
 
-          if (response.ok) {
-            this.setState({
-              url:
-                response.headers.get("content-type") === "text/plain"
-                  ? await response.text()
-                  : URL.createObjectURL(await response.blob()),
-            });
+        if (response.ok) {
+          this.setState({
+            url:
+              response.headers.get("content-type") === "text/plain"
+                ? await response.text()
+                : URL.createObjectURL(await response.blob()),
+          });
 
-            if (this.ref) this.observer.unobserve(this.ref);
-          }
-        } catch (e) {}
-      } else {
-        this.setState({ url: this.props.src });
-        if (this.ref) this.observer.unobserve(this.ref);
-      }
+          if (this.ref) this.observer.unobserve(this.ref);
+        }
+      } catch (e) {}
 
       sleep(250);
       this.isLoading = false;
@@ -92,13 +92,22 @@ class LazyImage extends Component<
         ref={(ref) => {
           this.ref = ref;
 
-          if (ref) this.observer.observe(ref);
+          if (!this.state.url) {
+            if (!window.raito.settingsState.useProxy)
+              this.setState({ url: this.props.src });
+            else if (ref) this.observer.observe(ref);
+          }
         }}
       >
         {(this.props.load === undefined || this.props.load) &&
         this.state.isVisible &&
         this.state.url ? (
-          <img src={this.state.url} alt="" onLoad={this.props.onLoad} />
+          <img
+            src={this.state.url}
+            alt=""
+            onLoad={this.props.onLoad}
+            loading="lazy"
+          />
         ) : this.props.lazy === undefined || this.props.lazy ? (
           <TailSpin
             height={60}

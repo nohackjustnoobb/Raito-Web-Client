@@ -61,6 +61,7 @@
     scrollbar-width: none;
     display: flex;
     flex-direction: column;
+    margin-top: 0.5rem;
 
     &::-webkit-scrollbar {
       display: none;
@@ -72,7 +73,6 @@
       height: 7rem;
       padding: 0;
       margin: 0;
-      margin-top: 0.5rem;
       list-style-type: none;
       gap: 1rem;
       flex-shrink: 0;
@@ -95,6 +95,10 @@
           width: 8rem;
           background-color: transparent;
           border-radius: 0.5rem;
+
+          img {
+            object-position: top;
+          }
         }
 
         h4 {

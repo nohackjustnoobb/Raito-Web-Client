@@ -358,10 +358,7 @@ class Driver {
     cache: boolean = true
   ): Promise<boolean> {
     // check if disabled
-    if (this.isDown) {
-      alert(`${this.identifier}${i18next.t("isDown")}`);
-      return false;
-    }
+    if (this.isDown) return false;
 
     // check if initializated
     if (!tryInitialize(this)) return false;

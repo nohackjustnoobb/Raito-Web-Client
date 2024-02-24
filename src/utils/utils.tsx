@@ -1,15 +1,18 @@
+import "./utils.scss";
+
+import { Translation } from "react-i18next";
 import { InfinitySpin } from "react-loader-spinner";
 
-import "./utils.scss";
-import RaitoEvent from "../models/event";
 import Driver from "../models/driver";
+import RaitoEvent from "../models/event";
+import { ReactComponent as Icon } from "./icon.svg";
 
 const pushLoader = () => {
   window.stack.push(
     <div className="loader">
       <div>
         <InfinitySpin width="200" color="var(--color-text)" />
-        加載中
+        <Translation>{(t) => <>{t("loading")}</>}</Translation>
       </div>
     </div>
   );
@@ -75,12 +78,13 @@ const sleep = async (duration: number): Promise<void> =>
   new Promise((res) => setTimeout(res, duration));
 
 export {
-  pushLoader,
-  errorHandler,
   convertRemToPixels,
   dispatchEvent,
-  listenToEvents,
-  tryInitialize,
-  sleep,
+  errorHandler,
   getCssVariable,
+  Icon as AppIcon,
+  listenToEvents,
+  pushLoader,
+  sleep,
+  tryInitialize,
 };

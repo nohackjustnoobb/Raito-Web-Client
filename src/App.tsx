@@ -1,93 +1,244 @@
-import { Component, ReactNode } from "react";
-import SwipeableViews from "react-swipeable-views";
-import { virtualize } from "react-swipeable-views-utils";
-
-import TabScreen from "./tabScreen/tabScreen";
 import "./App.scss";
+
+import { Component, ReactNode } from "react";
+
+import { liveQuery } from "dexie";
+import { withTranslation, WithTranslation } from "react-i18next";
+
+import {
+  mdiBookSearch,
+  mdiClockOutline,
+  mdiCog,
+  mdiDotsHorizontalCircleOutline,
+  mdiLibraryShelves,
+  mdiRefresh,
+} from "@mdi/js";
+import Icon from "@mdi/react";
+
+import db, { collection, history } from "./models/db";
 import RaitoEvent from "./models/event";
-import { dispatchEvent } from "./utils/utils";
+import { Manga, SimpleManga } from "./models/manga";
+import History from "./screen/history/history";
+import Library from "./screen/library/library";
+import Search from "./screen/search/search";
+import Settings from "./screen/settings/settings";
+import LazyImage from "./utils/lazyImage";
+import { AppIcon, listenToEvents, pushLoader } from "./utils/utils";
 
-// Tabs
-import Collections from "./tabScreen/collections/collections";
-import Histories from "./tabScreen/histories/histories";
-import Libraries from "./tabScreen/libraries/libraries";
-import Settings from "./tabScreen/settings/settings";
+const filters = ["all", "update", "end"];
 
-// declare SwipeableView for tabs
-const VirtualizeSwipeableViews = virtualize(SwipeableViews);
+class Status extends Component<WithTranslation> {
+  componentDidMount() {
+    // register for update events
+    listenToEvents(
+      [RaitoEvent.updateCollectionsStateChanged, RaitoEvent.syncStateChanged],
+      this.forceUpdate.bind(this)
+    );
+  }
 
-class App extends Component<{}, { tabIndex: number; enable: boolean }> {
-  // All the tabs are added here
-  static readonly tabs: Array<TabScreen> = [
-    Collections,
-    Histories,
-    Libraries,
-    Settings,
-  ];
+  render() {
+    const status = window.raito.syncState.isSyncing
+      ? this.props.t(window.raito.syncState.currentState!)
+      : window.raito.updateCollectionsState.isUpdating
+      ? `${this.props.t("updating")} ${
+          window.raito.updateCollectionsState.currentState
+        }`
+      : null;
 
-  constructor(props: {}) {
+    return <>{status && <h5>{status}</h5>}</>;
+  }
+}
+
+class App extends Component<
+  WithTranslation,
+  { history: Array<history>; collections: Array<collection>; filter: string }
+> {
+  constructor(props: WithTranslation) {
     super(props);
 
-    this.state = {
-      // Tabs Index
-      tabIndex: 0,
-      enable: true,
-    };
+    this.state = { history: [], collections: [], filter: "all" };
   }
 
-  componentDidMount(): void {
-    // set global variable for changing the tabs index
-    window.setTab = (index: number): void => this.setState({ tabIndex: index });
-    window.toggleTab = (enable: boolean): void =>
-      this.setState({ enable: enable });
-    this.forceUpdate();
-  }
+  componentDidMount() {
+    // trace for histories changes
+    liveQuery(() => db.history.toArray()).subscribe((result) =>
+      this.setState({ history: result })
+    );
 
-  componentDidUpdate(): void {
-    window.tabIndex = this.state.tabIndex;
-    dispatchEvent(RaitoEvent.tabChanged);
+    liveQuery(() => db.collections.toArray()).subscribe((result) =>
+      this.setState({ collections: result })
+    );
   }
 
   render(): ReactNode {
+    const filteredCollection = this.state.collections.filter((v) => {
+      switch (this.state.filter) {
+        case "update":
+          const record = this.state.history.find(
+            (h) => h.id === v.id && h.driver === v.driver
+          );
+          return record?.new;
+        case "end":
+          return v.isEnd;
+        default:
+          return true;
+      }
+    });
+    const filteredHistory = this.state.history.filter(
+      (v) => v.chapterId !== null
+    );
+
     return (
-      <>
-        <ul id="tabMenu">
+      <div id="main">
+        <div id="menuBar">
           <div>
-            {App.tabs.map((tabScreen, index) => (
-              <li
-                key={index}
-                onClick={
-                  index === this.state.tabIndex
-                    ? () => {}
-                    : () => window.setTab(index)
-                }
-                className={
-                  index === this.state.tabIndex ? "selected" : "notSelected"
-                }
-              >
-                {tabScreen.name}
-              </li>
-            ))}
+            <AppIcon />
+            <div className="appName">
+              <h2>Raito Manga</h2>
+              <Status
+                t={this.props.t}
+                i18n={this.props.i18n}
+                tReady={this.props.tReady}
+              />
+            </div>
           </div>
-          {App.tabs[this.state.tabIndex].tabState}
-        </ul>
-        <VirtualizeSwipeableViews
-          slideRenderer={({ key, index }) => (
-            <div key={key} className="tab">
-              {App.tabs[index].tab}
+          <div id="actions">
+            <div onClick={() => window.stack.push(<Library />)}>
+              <Icon path={mdiLibraryShelves} size={1.25} />
+            </div>
+            <div onClick={() => window.stack.push(<Search />)}>
+              <Icon path={mdiBookSearch} size={1.25} />
+            </div>
+            <div onClick={() => window.stack.push(<Settings />)}>
+              <Icon path={mdiCog} size={1.25} />
+            </div>
+          </div>
+        </div>
+        <div id="content">
+          {filteredHistory.length !== 0 && (
+            <ul id="historyPreview">
+              <li
+                className="viewAll"
+                onClick={() => window.stack.push(<History />)}
+              >
+                <Icon path={mdiClockOutline} size={1} />
+              </li>
+              {filteredHistory.slice(0, 10).map((v) => (
+                <li
+                  key={`${v.driver}_${v.id}`}
+                  onClick={async () => {
+                    pushLoader();
+                    // load manga
+                    const result = await Manga.get(v.driver, v.id);
+
+                    // pop the loader
+                    window.stack.pop();
+
+                    // show details
+                    if (result) {
+                      (result as Manga).pushDetails();
+                    }
+                  }}
+                >
+                  <LazyImage src={v.thumbnail} />
+                  <h4>{window.raito.translate(v.title)}</h4>
+                  <p>
+                    {window.raito.translate(`${v.chapterTitle!} / ${v.latest}`)}
+                  </p>
+                </li>
+              ))}
+              {this.state.history && (
+                <li
+                  className="viewAll"
+                  onClick={() => window.stack.push(<History />)}
+                >
+                  <Icon path={mdiDotsHorizontalCircleOutline} size={1} />
+                  <span>{this.props.t("more")}</span>
+                </li>
+              )}
+            </ul>
+          )}
+          <div id="subMenuBar">
+            <ul id="filters">
+              {filters.map((v) => (
+                <li
+                  key={v}
+                  className={this.state.filter === v ? "selected" : ""}
+                  onClick={() => this.setState({ filter: v })}
+                >
+                  {this.props.t(v)}
+                </li>
+              ))}
+            </ul>
+            <div onClick={() => window.raito.updateCollections()}>
+              <Icon path={mdiRefresh} size={1.25} />
+            </div>
+          </div>
+          {filteredCollection.length === 0 ? (
+            <div id="empty">
+              <p>{this.props.t("noFavorites")}</p>
+            </div>
+          ) : (
+            <div id="collectionsContent">
+              {filteredCollection
+                .sort((a, b) => {
+                  // get the both history
+                  const aHistory = this.state.history.find(
+                    (v) => v.id === a.id && v.driver === a.driver
+                  );
+                  const bHistory = this.state.history.find(
+                    (v) => v.id === b.id && v.driver === b.driver
+                  );
+
+                  // check if the history is existing
+                  if (!aHistory || !bHistory) return 0;
+
+                  return bHistory.datetime - aHistory.datetime;
+                })
+                .map((manga) => {
+                  // get the history of the manga
+                  const history = this.state.history.find(
+                    (h) => h.id === manga.id && h.driver === manga.driver
+                  );
+
+                  return (
+                    <div
+                      key={`${manga.id}_${manga.driver}`}
+                      className="collection"
+                      onClick={() =>
+                        SimpleManga.fromCollection(manga).pushDetails()
+                      }
+                    >
+                      {manga.isEnd && (
+                        <div className="end">{this.props.t("end")}</div>
+                      )}
+                      {history?.new && !manga.isEnd && (
+                        <div className="new">{this.props.t("update")}</div>
+                      )}
+                      {window.raito.settingsState.debugMode && (
+                        <>
+                          <div className="driverID">{manga.driver}</div>
+                          <div className="mangaID">{manga.id}</div>
+                        </>
+                      )}
+                      <LazyImage src={manga.thumbnail} />
+                      <h3>{window.raito.translate(manga.title)}</h3>
+                      <h5>
+                        {history && history.chapterTitle
+                          ? window.raito.translate(history.chapterTitle)
+                          : this.props.t("notRead")}
+                        {" / "}
+                        {window.raito.translate(manga.latest)}
+                      </h5>
+                    </div>
+                  );
+                })}
             </div>
           )}
-          slideCount={App.tabs.length}
-          index={this.state.tabIndex}
-          onChangeIndex={(index) => window.setTab(index)}
-          enableMouseEvents
-          resistance
-          disabled={!this.state.enable}
-          ignoreNativeScroll
-        />
-      </>
+        </div>
+      </div>
     );
   }
 }
 
-export default App;
+export default withTranslation()(App);

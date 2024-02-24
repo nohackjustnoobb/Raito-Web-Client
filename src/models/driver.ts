@@ -1,8 +1,14 @@
-import db from "./db";
-import { Manga, SimpleManga } from "./manga";
 import { dispatchEvent, tryInitialize } from "../utils/utils";
+import db from "./db";
 import RaitoEvent from "./event";
+import { Manga, SimpleManga } from "./manga";
 import Server from "./server";
+
+enum Status {
+  Any,
+  OnGoing,
+  Ended,
+}
 
 interface DriverStatus {
   online: boolean;
@@ -34,7 +40,7 @@ class Driver {
   /**
    * Cache for the list of mangas.
    */
-  list: { [category: string]: { [page: number]: Array<string> } } = {};
+  list: { [category: string]: Array<{ [page: number]: Array<string> }> } = {};
   /**
    * Cache for the seach results.
    */
@@ -188,7 +194,11 @@ class Driver {
    * @param page the page that wants to get (default: 1)
    * @returns
    */
-  async getList(category: string = "", page: number = 1): Promise<boolean> {
+  async getList(
+    category: string = "All",
+    status: Status = Status.Any,
+    page: number = 1
+  ): Promise<boolean> {
     // check if disabled
     if (this.isDown) return false;
 
@@ -196,15 +206,16 @@ class Driver {
     if (!tryInitialize(this)) return false;
 
     // check if the end is reached
-    if (page > 1 && !this.list[category][page - 1].length) return false;
+    if (page > 1 && !this.list[category][status][page - 1].length) return false;
 
     // check if cached
-    if (this.list[category] && this.list[category][page]) return true;
+    if (this.list[category] && this.list[category][status][page]) return true;
 
     // get the list of manga
     const result = await this.server!.get("list", {
       driver: this.identifier,
-      ...(category !== "" && { category: category }),
+      ...(category !== "All" && { category: category }),
+      status: String(status),
       page: String(page),
       proxy: window.raito.settingsState.useProxy ? "1" : "0",
     });
@@ -217,8 +228,8 @@ class Driver {
     const mangas = await result.json();
 
     // check if the object is already initialized
-    if (!this.list[category]) this.list[category] = {};
-    this.list[category][page] = [];
+    if (!this.list[category]) this.list[category] = [{}, {}, {}];
+    this.list[category][status][page] = [];
 
     // convert the data to SimpleManga objects
     mangas.forEach((v: any) => {
@@ -227,7 +238,7 @@ class Driver {
       this.simpleManga[manga.id] = manga;
 
       // push it to list
-      this.list[category][page].push(manga.id);
+      this.list[category][status][page].push(manga.id);
     });
 
     return true;
@@ -430,7 +441,7 @@ class Driver {
           driver: this.identifier,
           id: mangaObject.id,
           title: mangaObject.title,
-          isEnd: mangaObject.isEnd,
+          isEnd: mangaObject.isEnded,
           latest: mangaObject.latest,
           thumbnail: mangaObject.thumbnail,
         });
@@ -479,3 +490,4 @@ class Driver {
 }
 
 export default Driver;
+export { Status };

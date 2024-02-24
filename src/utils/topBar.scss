@@ -1,0 +1,23 @@
+.topBar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  position: relative;
+  align-items: center;
+  margin-top: max(0.5rem, env(safe-area-inset-top));
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+
+  .center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}

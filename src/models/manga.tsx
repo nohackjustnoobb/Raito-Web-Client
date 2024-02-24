@@ -1,7 +1,7 @@
-import Read from "../stackScreen/read/read";
-import db, { history, collection } from "./db";
+import Details from "../screen/details/details";
+import Read from "../screen/read/read";
+import db, { collection, history } from "./db";
 import Driver from "./driver";
-import Details from "../stackScreen/details/details";
 
 /**
  * A class for the base manga.
@@ -28,7 +28,7 @@ class SimpleManga {
   /**
    * Determines whether the manga is ended.
    */
-  isEnd: boolean;
+  isEnded: boolean;
   /**
    * The thumbnail address of the manga
    */
@@ -45,7 +45,7 @@ class SimpleManga {
     this.id = data.id;
     this.title = data.title;
     this.latest = data.latest;
-    this.isEnd = data.isEnd;
+    this.isEnded = data.isEnded;
     this.thumbnail = data.thumbnail;
   }
 
@@ -189,7 +189,7 @@ class SimpleManga {
       driver: this.driver.identifier,
       id: this.id,
       title: this.title,
-      isEnd: this.isEnd,
+      isEnd: this.isEnded,
       latest: this.latest,
       thumbnail: this.thumbnail,
     });
@@ -421,5 +421,5 @@ class Manga extends SimpleManga {
   }
 }
 
-export { SimpleManga, Manga };
+export { Manga, SimpleManga };
 export type { Chapter };

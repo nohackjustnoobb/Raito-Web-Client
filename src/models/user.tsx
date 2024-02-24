@@ -1,7 +1,7 @@
+import Login from "../screen/login/login";
 import { dispatchEvent } from "../utils/utils";
-import RaitoEvent from "./event";
-import Login from "../stackScreen/login/login";
 import db from "./db";
+import RaitoEvent from "./event";
 
 class User {
   token: string | null;

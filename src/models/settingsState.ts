@@ -18,13 +18,15 @@ enum ThemeModel {
 
 class SettingsState {
   // general settings
-  themeModel: ThemeModel = ThemeModel.Auto;
-  themes: Theme[] = [];
-  currentTheme: string | null = null;
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
-  formatChapterTitle: boolean = true;
   showDeveloperSettings: boolean = false;
+
+  // appearance settings
+  themeModel: ThemeModel = ThemeModel.Auto;
+  themes: Theme[] = [];
+  formatChapterTitle: boolean = true;
+  currentTheme: string | null = null;
 
   // reader settings
   displayMode: DisplayMode = DisplayMode.Auto;

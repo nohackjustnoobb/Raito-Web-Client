@@ -1,15 +1,14 @@
-import chinese from "s2t-chinese";
 import { md5 } from "js-md5";
+import chinese from "s2t-chinese";
 
-import { sleep } from "../utils/utils";
-import Driver from "./driver";
-import User from "./user";
-import SettingsState from "./settingsState";
+import { dispatchEvent, sleep } from "../utils/utils";
 import db from "./db";
-import { dispatchEvent } from "../utils/utils";
+import Driver from "./driver";
 import RaitoEvent from "./event";
-import Server from "./server";
 import { Manga } from "./manga";
+import Server from "./server";
+import SettingsState from "./settingsState";
+import User from "./user";
 
 interface UpdateCollectionsState {
   isUpdating: boolean;
@@ -94,6 +93,7 @@ class RaitoManga {
       while (this.syncState.isSyncing) sleep(200);
 
       await this.updateCollections();
+
       return;
     }
 
@@ -274,13 +274,17 @@ class RaitoManga {
     if (this.syncState.isSyncing) return;
     this.syncState.isSyncing = true;
 
+    this.syncState.currentState = "checkingHashes";
+    dispatchEvent(RaitoEvent.syncStateChanged);
+
     const hashes = await this.getHashes();
     const result = await this.syncServer.get("sync");
+
     if (result.ok) {
       const remoteHashes: SyncHashes = await result.json();
       if (remoteHashes.settings !== hashes.settings) {
         // update state
-        this.syncState.currentState = "同步設定中";
+        this.syncState.currentState = "syncingSettings";
         dispatchEvent(RaitoEvent.syncStateChanged);
 
         await this.syncSettings();
@@ -288,7 +292,7 @@ class RaitoManga {
 
       if (remoteHashes.history !== hashes.history) {
         // update state
-        this.syncState.currentState = "同步歴史中";
+        this.syncState.currentState = "syncingHistory";
         dispatchEvent(RaitoEvent.syncStateChanged);
 
         // sync the history
@@ -297,7 +301,7 @@ class RaitoManga {
 
       if (remoteHashes.collections !== hashes.collections) {
         // update state
-        this.syncState.currentState = "同步收藏中";
+        this.syncState.currentState = "syncingCollection";
         dispatchEvent(RaitoEvent.syncStateChanged);
 
         // sync the collections

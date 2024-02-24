@@ -1,30 +1,30 @@
-import ReactDOM from "react-dom/client";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import "./locales/i18n";
+import "./index.css";
+
 import { Component, ReactNode } from "react";
 
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import App from "./App";
-import RaitoManga from "./models/raitoManga";
-import StackView, { Stack } from "./stackScreen/stack";
-import { Theme } from "./models/settingsState";
-import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
-import RaitoEvent from "./models/event";
+import ReactDOM from "react-dom/client";
 
-import "./index.css";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+import App from "./App";
 import Driver from "./models/driver";
+import RaitoEvent from "./models/event";
 import { SimpleManga } from "./models/manga";
+import RaitoManga from "./models/raitoManga";
+import { Theme } from "./models/settingsState";
+import Search from "./screen/search/search";
+import StackView, { Stack } from "./screen/stack";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
 
 // declare global variables
 declare global {
   interface Window {
-    setTab: (index: number) => void;
-    forceUpdate: (screenEvent?: boolean) => void;
     updateRoot: () => void;
     search: (keyword: string) => void;
-    toggleTab: (enable: boolean) => void;
     stack: Stack;
     raito: RaitoManga;
-    tabIndex: number;
   }
 }
 
@@ -77,17 +77,14 @@ document.addEventListener("visibilitychange", async () => {
 // main entry point
 class Main extends Component<{}, { dark: boolean }> {
   isLoading = false;
+  state = {
+    dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
+  };
 
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
-    };
-  }
-
-  componentDidMount(): void {
+  componentDidMount() {
     window.updateRoot = this.forceUpdate.bind(this);
+    window.search = (keyword: string) =>
+      window.stack.push(<Search keyword={keyword} />);
 
     // listem for theme changes
     window
@@ -110,6 +107,16 @@ class Main extends Component<{}, { dark: boolean }> {
       this.isLoading = true;
       await window.raito.checkOnlineStatus();
       this.isLoading = false;
+    }, 5000);
+
+    // sync every minute
+    setInterval(() => {
+      if (
+        window.raito.isHistoryChanged ||
+        (window.raito.syncState.lastSync &&
+          window.raito.syncState.lastSync + 30000 <= Date.now())
+      )
+        window.raito.sync();
     }, 5000);
 
     const checkCssVariable = () => {

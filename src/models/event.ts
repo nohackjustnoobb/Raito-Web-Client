@@ -4,7 +4,6 @@ enum RaitoEvent {
   syncStateChanged = "syncStateChanged",
   updateCollectionsStateChanged = "updateCollectionsStateChanged",
   screenChanged = "screenChanged",
-  tabChanged = "tabChanged",
 }
 
 export default RaitoEvent;

@@ -29,6 +29,7 @@ class Details extends Component<
     extra: boolean;
     collected: boolean;
     history: history | null;
+    isVertical: boolean;
   }
 > {
   constructor(props: Props) {
@@ -39,12 +40,17 @@ class Details extends Component<
       extra: false,
       collected: false,
       history: null,
+      isVertical: window.innerWidth < window.innerHeight,
     };
   }
 
   async componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.screenChanged], this.forceUpdate.bind(this));
+    listenToEvents([RaitoEvent.screenChanged], () => {
+      const isVertical = window.innerWidth < window.innerHeight;
+      if (isVertical !== this.state.isVertical)
+        this.setState({ isVertical: isVertical });
+    });
 
     const manga = await this.props.manga.getDetails();
 
@@ -68,15 +74,14 @@ class Details extends Component<
             id: this.state.manga!.id,
           })
         ).subscribe((result) => {
-          this.setState({ history: result ?? null });
+          if (this.state.history?.chapterId !== result?.chapterId)
+            this.setState({ history: result ?? null });
         });
       }
     );
   }
 
   render(): ReactNode {
-    const isVertical = window.innerWidth < window.innerHeight;
-
     const chapters = (
       <>
         <ul className="serialSelector">
@@ -122,7 +127,7 @@ class Details extends Component<
       <div className="details">
         <div
           className="leftContent"
-          style={isVertical ? {} : { maxWidth: "400px" }}
+          style={this.state.isVertical ? {} : { maxWidth: "400px" }}
         >
           <TopBar
             close={this.props.close}
@@ -253,10 +258,12 @@ class Details extends Component<
               </li>
             </ul>
             <div className="divider" style={{ marginTop: "1rem" }} />
-            {isVertical && chapters}
+            {this.state.isVertical && chapters}
           </div>
         </div>
-        {!isVertical && <div className="rightContent">{chapters}</div>}
+        {!this.state.isVertical && (
+          <div className="rightContent">{chapters}</div>
+        )}
       </div>
     );
   }

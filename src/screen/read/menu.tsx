@@ -10,11 +10,11 @@ import Icon from "@mdi/react";
 import { Checkbox, Slider } from "@mui/material";
 
 interface Props extends WithTranslation {
+  subscribe: (action: (page: number | null) => void) => void;
   show: boolean;
   zoom: boolean;
   scale?: number;
   title: string | null;
-  page: number | null;
   maxPage: number | null;
   pageOffset: boolean;
   showOffset: boolean;
@@ -25,8 +25,19 @@ interface Props extends WithTranslation {
   scrollToPage: (page: number) => void;
 }
 
-class Menu extends Component<Props> {
+interface State {
+  page: number | null;
+}
+
+class Menu extends Component<Props, State> {
   timeout: number = 500;
+  state: State = {
+    page: null,
+  };
+
+  componentDidMount() {
+    this.props.subscribe((page) => this.setState({ page: page }));
+  }
 
   render(): ReactNode {
     return (
@@ -92,21 +103,23 @@ class Menu extends Component<Props> {
             mountOnEnter
           >
             <div className="lowerMenu">
-              <h3>
-                {this.props.page} / {this.props.maxPage}
-              </h3>
-              {this.props.page && (
-                <div className="sliderWrapper">
-                  <Slider
-                    value={this.props.page}
-                    max={this.props.maxPage!}
-                    min={1}
-                    step={1}
-                    onChange={(_, value) =>
-                      this.props.scrollToPage(value as number)
-                    }
-                  />
-                </div>
+              {this.state.page !== null && (
+                <>
+                  <h3>
+                    {this.state.page + 1} / {this.props.maxPage}
+                  </h3>
+                  <div className="sliderWrapper">
+                    <Slider
+                      value={this.state.page + 1}
+                      max={this.props.maxPage!}
+                      min={1}
+                      step={1}
+                      onChange={(_, value) =>
+                        this.props.scrollToPage(value as number)
+                      }
+                    />
+                  </div>
+                </>
               )}
             </div>
           </CSSTransition>

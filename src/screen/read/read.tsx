@@ -18,22 +18,23 @@ enum ShouldLoad {
   none,
 }
 
-class Read extends Component<
-  {
-    manga: Manga;
-    chapterId: string;
-    page?: number | null;
-  },
-  {
-    show: boolean;
-    menu: boolean;
-    page: number | null;
-    id: string | null;
-    pageOffset: boolean;
-    scale: number;
-    chaptersUrls: { [id: string]: Array<string> };
-  }
-> {
+interface Props {
+  manga: Manga;
+  chapterId: string;
+  page?: number | null;
+}
+
+interface State {
+  show: boolean;
+  menu: boolean;
+  page: number | null;
+  id: string | null;
+  pageOffset: boolean;
+  scale: number;
+  chaptersUrls: { [id: string]: Array<string> };
+}
+
+class Read extends Component<Props, State> {
   // timeout of the transition
   timeout: number = 500;
   // cache for previous height
@@ -65,6 +66,8 @@ class Read extends Component<
   mouseDownStartTime: number | null = null;
   mouseUpShouldLoad: ShouldLoad = ShouldLoad.none;
   doubleClickTimeoutId: NodeJS.Timeout | null = null;
+  // used to update the menu only
+  menuAction: ((page: number | null) => void) | null = null;
 
   constructor(props: {
     manga: Manga;
@@ -198,6 +201,13 @@ class Read extends Component<
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
+  }
+
+  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+    const shouldUpdate = nextState.page === this.state.page;
+    if (!shouldUpdate && this.menuAction) this.menuAction(nextState.page);
+
+    return shouldUpdate;
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {
@@ -418,6 +428,10 @@ class Read extends Component<
     this.mouseUpShouldLoad = ShouldLoad.none;
   }
 
+  subscribe(action: (page: number | null) => void) {
+    if (!this.menuAction) this.menuAction = action;
+  }
+
   render(): ReactNode {
     const isVertical = window.innerWidth < window.innerHeight;
     const isOnePage: boolean =
@@ -438,13 +452,13 @@ class Read extends Component<
     return (
       <div className="readWrapper">
         <Menu
+          subscribe={this.subscribe.bind(this)}
           show={this.state.menu && this.state.show}
           close={this.close.bind(this)}
           zoomIn={() => this.zoomTo(this.state.scale + 0.5)}
           zoomOut={() => this.zoomTo(this.state.scale - 0.5)}
           zoom={window.raito.settingsState.experimentalUseZoomablePlugin}
           scale={this.state.scale}
-          page={this.state.page !== null ? this.state.page + 1 : null}
           showOffset={!isOnePage}
           toggleOffset={this.toggleOffset.bind(this)}
           pageOffset={this.state.pageOffset}

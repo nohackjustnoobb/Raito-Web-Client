@@ -27,25 +27,75 @@ import { AppIcon, listenToEvents, pushLoader } from "./utils/utils";
 
 const filters = ["all", "update", "end"];
 
-class Status extends Component<WithTranslation> {
+enum StatusMode {
+  None,
+  Sync,
+  Update,
+}
+
+class Status extends Component<WithTranslation, { mode: StatusMode }> {
+  state = {
+    mode: StatusMode.None,
+  };
+
   componentDidMount() {
     // register for update events
     listenToEvents(
       [RaitoEvent.updateCollectionsStateChanged, RaitoEvent.syncStateChanged],
       this.forceUpdate.bind(this)
     );
+
+    setInterval(() => this.forceUpdate(), 1000);
   }
 
   render() {
-    const status = window.raito.syncState.isSyncing
-      ? this.props.t(window.raito.syncState.currentState!)
-      : window.raito.updateCollectionsState.isUpdating
-      ? `${this.props.t("updating")} ${
-          window.raito.updateCollectionsState.currentState
-        }`
-      : null;
+    let status = null;
 
-    return <>{status && <h5>{status}</h5>}</>;
+    if (window.raito.updateCollectionsState.isUpdating)
+      status = `${this.props.t("updating")} ${
+        window.raito.updateCollectionsState.currentState
+      }`;
+
+    if (window.raito.syncState.isSyncing && window.raito.syncState.currentState)
+      status = this.props.t(window.raito.syncState.currentState);
+
+    if (status === null) {
+      switch (this.state.mode) {
+        case StatusMode.Sync:
+          if (window.raito.syncState.lastSync)
+            status = `${this.props.t("synced")} 
+          ${Math.round((Date.now() - window.raito.syncState.lastSync) / 1000)} 
+          ${this.props.t("secondsAgo")}`;
+          break;
+        case StatusMode.Update:
+          if (window.raito.updateCollectionsState.lastUpdate)
+            status = `${this.props.t("updated")} 
+        ${Math.round(
+          (Date.now() - window.raito.updateCollectionsState.lastUpdate) / 60000
+        )} 
+        ${this.props.t("minutesAgo")}`;
+          break;
+      }
+    }
+
+    return (
+      <div>
+        <div
+          className="icon"
+          onClick={() =>
+            this.setState({
+              mode: this.state.mode === 2 ? 0 : this.state.mode + 1,
+            })
+          }
+        >
+          <AppIcon />
+        </div>
+        <div className="appName">
+          <h2>Raito Manga</h2>
+          {status && <h5>{status}</h5>}
+        </div>
+      </div>
+    );
   }
 }
 
@@ -91,17 +141,12 @@ class App extends Component<
     return (
       <div id="main">
         <div id="menuBar">
-          <div>
-            <AppIcon />
-            <div className="appName">
-              <h2>Raito Manga</h2>
-              <Status
-                t={this.props.t}
-                i18n={this.props.i18n}
-                tReady={this.props.tReady}
-              />
-            </div>
-          </div>
+          <Status
+            t={this.props.t}
+            i18n={this.props.i18n}
+            tReady={this.props.tReady}
+          />
+
           <div id="actions">
             <div onClick={() => window.stack.push(<Library />)}>
               <Icon path={mdiLibraryShelves} size={1.25} />

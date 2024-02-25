@@ -229,9 +229,7 @@ class Library extends Component<
                   <div className="end">{this.props.t("ended")}</div>
                 )}
                 {window.raito.settingsState.debugMode && (
-                  <>
-                    <div className="mangaID">{manga.id}</div>
-                  </>
+                  <div className="mangaID">{manga.id}</div>
                 )}
                 <LazyImage src={manga.thumbnail} />
                 <p>{window.raito.translate(manga.title)}</p>

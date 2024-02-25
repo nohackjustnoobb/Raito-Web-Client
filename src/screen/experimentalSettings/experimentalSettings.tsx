@@ -7,21 +7,20 @@ import { CSSTransition } from "react-transition-group";
 import { Button, Checkbox } from "@mui/material";
 
 import RaitoEvent from "../../models/event";
-import { listenToEvents } from "../../utils/utils";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
-
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      show: false,
-    };
-  }
+  raitoSubscription: RaitoSubscription | null = null;
+  state = {
+    show: false,
+  };
 
   componentDidMount() {
-    listenToEvents([RaitoEvent.settingsChanged], this.forceUpdate.bind(this));
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.settingsChanged],
+      this.forceUpdate.bind(this)
+    );
 
     this.setState({ show: true });
   }
@@ -29,6 +28,10 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
   close() {
     this.setState({ show: false });
     setTimeout(() => window.stack.pop(), this.timeout);
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   render(): ReactNode {

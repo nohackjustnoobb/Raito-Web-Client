@@ -10,7 +10,7 @@ import { Button, Checkbox } from "@mui/material";
 
 import RaitoEvent from "../../models/event";
 import TopBar from "../../utils/topBar";
-import { listenToEvents } from "../../utils/utils";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -19,9 +19,18 @@ import AddThemeConfig from "./addThemeConfig";
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
 class ManageThemes extends Component<Props> {
+  raitoSubscription: RaitoSubscription | null = null;
+
   componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.settingsChanged], this.forceUpdate.bind(this));
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.settingsChanged],
+      this.forceUpdate.bind(this)
+    );
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   render(): ReactNode {

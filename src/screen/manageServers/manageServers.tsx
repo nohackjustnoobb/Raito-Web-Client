@@ -1,33 +1,36 @@
-import './manageServers.scss';
+import "./manageServers.scss";
 
-import {
-  Component,
-  ReactNode,
-} from 'react';
+import { Component, ReactNode } from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
+import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button } from '@mui/material';
+import { mdiPlus } from "@mdi/js";
+import Icon from "@mdi/react";
+import { Button } from "@mui/material";
 
-import RaitoEvent from '../../models/event';
-import TopBar from '../../utils/topBar';
-import { listenToEvents } from '../../utils/utils';
+import RaitoEvent from "../../models/event";
+import TopBar from "../../utils/topBar";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from '../swipeableScreen/swipeableScreen';
-import AddServerConfig from './addServerConfig';
+} from "../swipeableScreen/swipeableScreen";
+import AddServerConfig from "./addServerConfig";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
 class ManageServers extends Component<Props> {
+  raitoSubscription: RaitoSubscription | null = null;
+
   componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.settingsChanged], this.forceUpdate.bind(this));
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.settingsChanged],
+      this.forceUpdate.bind(this)
+    );
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   render(): ReactNode {

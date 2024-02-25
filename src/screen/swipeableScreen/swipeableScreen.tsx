@@ -16,18 +16,14 @@ const makeSwipeable = <P extends InjectedSwipeableProps>(
     Omit<P, keyof InjectedSwipeableProps>,
     { show: boolean }
   > {
+    state = { show: false };
+
     // timeout of the transition
     timeout: number = 500;
     // reference for details
     ref: HTMLElement | null = null;
     // check if transform should enabled
     isTouchOnEdge: boolean = false;
-
-    constructor(props: P) {
-      super(props);
-
-      this.state = { show: false };
-    }
 
     close() {
       this.setState({ show: false });

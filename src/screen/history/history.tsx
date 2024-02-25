@@ -1,34 +1,28 @@
-import './history.scss';
+import "./history.scss";
 
-import React from 'react';
+import React from "react";
 
-import { liveQuery } from 'dexie';
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
+import { liveQuery, Subscription } from "dexie";
+import { withTranslation, WithTranslation } from "react-i18next";
 
-import {
-  mdiBookArrowRight,
-  mdiCloudSync,
-  mdiPlaylistEdit,
-} from '@mdi/js';
-import Icon from '@mdi/react';
+import { mdiBookArrowRight, mdiCloudSync, mdiPlaylistEdit } from "@mdi/js";
+import Icon from "@mdi/react";
 
-import db, { history } from '../../models/db';
-import Driver from '../../models/driver';
-import RaitoEvent from '../../models/event';
-import { Manga } from '../../models/manga';
-import LazyImage from '../../utils/lazyImage';
-import TopBar from '../../utils/topBar';
+import db, { history } from "../../models/db";
+import Driver from "../../models/driver";
+import RaitoEvent from "../../models/event";
+import { Manga } from "../../models/manga";
+import LazyImage from "../../utils/lazyImage";
+import TopBar from "../../utils/topBar";
 import {
   convertRemToPixels,
   listenToEvents,
   pushLoader,
-} from '../../utils/utils';
+  RaitoSubscription,
+} from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from '../swipeableScreen/swipeableScreen';
+} from "../swipeableScreen/swipeableScreen";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -36,8 +30,9 @@ class History extends React.Component<
   Props,
   { history: Array<history>; limit: number }
 > {
-  interval: NodeJS.Timeout | null = null;
   content: HTMLDivElement | null = null;
+  raitoSubscription: RaitoSubscription | null = null;
+  historySubscription: Subscription | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -50,32 +45,21 @@ class History extends React.Component<
 
   componentDidMount() {
     // register for update events
-    listenToEvents(
+    this.raitoSubscription = listenToEvents(
       [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
       this.forceUpdate.bind(this)
     );
 
     // trace for history changes
-    liveQuery(() =>
+    this.historySubscription = liveQuery(() =>
       db.history.filter((history) => history.chapterId !== null).toArray()
     ).subscribe((result) => this.setState({ history: result }));
-
-    // sync every minute
-    this.interval = setInterval(() => this.shouldSync(), 5000);
   }
 
   componentWillUnmount() {
-    if (this.interval) clearInterval(this.interval);
-  }
+    if (this.historySubscription) this.historySubscription.unsubscribe();
 
-  shouldSync() {
-    if (
-      window.raito.isHistoryChanged ||
-      (window.raito.syncState.lastSync &&
-        window.raito.syncState.lastSync + 30000 <= Date.now())
-    ) {
-      window.raito.sync();
-    }
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   shouldLoadMore() {

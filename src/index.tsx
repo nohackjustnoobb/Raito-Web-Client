@@ -109,7 +109,7 @@ class Main extends Component<{}, { dark: boolean }> {
       this.isLoading = false;
     }, 5000);
 
-    // sync every minute
+    // sync every 30 seconds
     setInterval(() => {
       if (
         window.raito.isHistoryChanged ||

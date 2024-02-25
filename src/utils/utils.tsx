@@ -55,10 +55,27 @@ const dispatchEvent = (eventId: RaitoEvent) => {
   window.dispatchEvent(event);
 };
 
-const listenToEvents = (eventIds: Array<RaitoEvent>, action: () => void) =>
-  eventIds.forEach((eventId) =>
-    window.addEventListener(eventId, () => action(), false)
-  );
+class RaitoSubscription {
+  constructor(public eventIds: Array<RaitoEvent>, public action: () => void) {}
+
+  subscribe() {
+    this.eventIds.forEach((event) =>
+      window.addEventListener(event, () => this.action(), false)
+    );
+  }
+
+  unsubscribe() {
+    this.eventIds.forEach((event) =>
+      window.removeEventListener(event, () => this.action(), false)
+    );
+  }
+}
+
+const listenToEvents = (eventIds: Array<RaitoEvent>, action: () => void) => {
+  const subscription = new RaitoSubscription(eventIds, action);
+  subscription.subscribe();
+  return subscription;
+};
 
 const tryInitialize = async (driver: Driver): Promise<boolean> => {
   if (driver.initialized) return true;
@@ -85,6 +102,7 @@ export {
   Icon as AppIcon,
   listenToEvents,
   pushLoader,
+  RaitoSubscription,
   sleep,
   tryInitialize,
 };

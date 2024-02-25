@@ -13,7 +13,11 @@ import RaitoEvent from "../../models/event";
 import { SimpleManga } from "../../models/manga";
 import LazyImage from "../../utils/lazyImage";
 import TopBar from "../../utils/topBar";
-import { convertRemToPixels, listenToEvents } from "../../utils/utils";
+import {
+  convertRemToPixels,
+  listenToEvents,
+  RaitoSubscription,
+} from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -41,10 +45,14 @@ class Search extends Component<Props, State> {
   content: HTMLDivElement | null = null;
   searchInput: HTMLInputElement | null = null;
   curSearch: string | null = null;
+  raitoSubscription: RaitoSubscription | null = null;
 
   componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.driverChanged], this.forceUpdate.bind(this));
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.driverChanged],
+      this.forceUpdate.bind(this)
+    );
 
     if (this.props.keyword) this.loadMore();
   }
@@ -59,6 +67,10 @@ class Search extends Component<Props, State> {
       if (this.curSearch && !window.raito.selectedDriver.search[this.curSearch])
         this.loadMore();
     }
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   // show loader when loading list

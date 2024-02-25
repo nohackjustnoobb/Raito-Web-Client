@@ -12,15 +12,20 @@ class OnlineStatus extends Component<
   { show: boolean; isLoading: boolean }
 > {
   timeout: number = 500;
+  interval: NodeJS.Timeout | null = null;
   state = {
     show: false,
     isLoading: false,
   };
 
   componentDidMount() {
-    setInterval(() => this.forceUpdate(), 1000);
+    this.interval = setInterval(() => this.forceUpdate(), 1000);
 
     this.setState({ show: true });
+  }
+
+  componentWillUnmount() {
+    if (this.interval) clearInterval(this.interval);
   }
 
   close() {

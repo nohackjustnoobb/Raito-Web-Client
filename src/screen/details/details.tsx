@@ -2,7 +2,7 @@ import "./details.scss";
 
 import { Component, ReactNode } from "react";
 
-import { liveQuery } from "dexie";
+import { liveQuery, Subscription } from "dexie";
 import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiBookmark, mdiBookmarkOffOutline, mdiExportVariant } from "@mdi/js";
@@ -13,7 +13,11 @@ import RaitoEvent from "../../models/event";
 import { Manga, SimpleManga } from "../../models/manga";
 import LazyImage from "../../utils/lazyImage";
 import TopBar from "../../utils/topBar";
-import { listenToEvents, pushLoader } from "../../utils/utils";
+import {
+  listenToEvents,
+  pushLoader,
+  RaitoSubscription,
+} from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -22,31 +26,29 @@ interface Props extends WithTranslation, InjectedSwipeableProps {
   manga: SimpleManga;
 }
 
-class Details extends Component<
-  Props,
-  {
-    manga: Manga | null;
-    extra: boolean;
-    collected: boolean;
-    history: history | null;
-    isVertical: boolean;
-  }
-> {
-  constructor(props: Props) {
-    super(props);
+interface State {
+  manga: Manga | null;
+  extra: boolean;
+  collected: boolean;
+  history: history | null;
+  isVertical: boolean;
+}
 
-    this.state = {
-      manga: null,
-      extra: false,
-      collected: false,
-      history: null,
-      isVertical: window.innerWidth < window.innerHeight,
-    };
-  }
+class Details extends Component<Props, State> {
+  state: State = {
+    manga: null,
+    extra: false,
+    collected: false,
+    history: null,
+    isVertical: window.innerWidth < window.innerHeight,
+  };
+  collectionsSubscription: Subscription | null = null;
+  historySubscription: Subscription | null = null;
+  raitoSubscription: RaitoSubscription | null = null;
 
   async componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.screenChanged], () => {
+    this.raitoSubscription = listenToEvents([RaitoEvent.screenChanged], () => {
       const isVertical = window.innerWidth < window.innerHeight;
       if (isVertical !== this.state.isVertical)
         this.setState({ isVertical: isVertical });
@@ -61,14 +63,14 @@ class Details extends Component<
       },
       () => {
         // setup observers for current manga state
-        liveQuery(() =>
+        this.collectionsSubscription = liveQuery(() =>
           db.collections.get({
             driver: this.state.manga!.driver.identifier,
             id: this.state.manga!.id,
           })
         ).subscribe((result) => this.setState({ collected: Boolean(result) }));
 
-        liveQuery(() =>
+        this.historySubscription = liveQuery(() =>
           db.history.get({
             driver: this.state.manga!.driver.identifier,
             id: this.state.manga!.id,
@@ -79,6 +81,15 @@ class Details extends Component<
         });
       }
     );
+  }
+
+  componentWillUnmount() {
+    if (this.collectionsSubscription)
+      this.collectionsSubscription.unsubscribe();
+
+    if (this.historySubscription) this.historySubscription.unsubscribe();
+
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   render(): ReactNode {

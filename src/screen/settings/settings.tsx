@@ -11,7 +11,7 @@ import { Button, Checkbox } from "@mui/material";
 import { lngName } from "../../locales/i18n";
 import RaitoEvent from "../../models/event";
 import TopBar from "../../utils/topBar";
-import { listenToEvents } from "../../utils/utils";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";
 import ManageThemes from "../manageThemes/manageThemes";
@@ -25,12 +25,18 @@ import UserSettings from "../userSettings/userSettings";
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
 class Settings extends React.Component<Props> {
-  componentDidMount(): void {
+  raitoSubscription: RaitoSubscription | null = null;
+
+  componentDidMount() {
     // register for update events
-    listenToEvents(
+    this.raitoSubscription = listenToEvents(
       [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
       this.forceUpdate.bind(this)
     );
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   render(): React.ReactNode {

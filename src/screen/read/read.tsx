@@ -8,7 +8,11 @@ import RaitoEvent from "../../models/event";
 import { Chapter, Manga } from "../../models/manga";
 import { DisplayMode } from "../../models/settingsState";
 import LazyImage from "../../utils/lazyImage";
-import { listenToEvents, pushLoader } from "../../utils/utils";
+import {
+  listenToEvents,
+  pushLoader,
+  RaitoSubscription,
+} from "../../utils/utils";
 import Menu from "./menu";
 import Warning from "./warning";
 
@@ -35,6 +39,16 @@ interface State {
 }
 
 class Read extends Component<Props, State> {
+  state: State = {
+    show: false,
+    chaptersUrls: {},
+    menu: false,
+    pageOffset: false,
+    id: null,
+    page: null,
+    scale: 1,
+  };
+
   // timeout of the transition
   timeout: number = 500;
   // cache for previous height
@@ -68,28 +82,22 @@ class Read extends Component<Props, State> {
   doubleClickTimeoutId: NodeJS.Timeout | null = null;
   // used to update the menu only
   menuAction: ((page: number | null) => void) | null = null;
+  raitoSubscription: RaitoSubscription | null = null;
 
-  constructor(props: {
-    manga: Manga;
-    chapterId: string;
-    page?: number | null;
-  }) {
-    super(props);
+  onVisibilityChange() {
+    this.prevHeight = null;
 
-    this.state = {
-      show: false,
-      chaptersUrls: {},
-      menu: false,
-      pageOffset: false,
-      id: null,
-      page: null,
-      scale: 1,
-    };
+    if (document.visibilityState !== "visible") this.isHidden = true;
+    else setTimeout(() => (this.isHidden = false), 500);
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (this.isTouchOnEdge) event.preventDefault();
   }
 
   async componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.screenChanged], () => {
+    this.raitoSubscription = listenToEvents([RaitoEvent.screenChanged], () => {
       if (this.isHidden) return;
 
       // cache the page and index before updating
@@ -103,22 +111,14 @@ class Read extends Component<Props, State> {
     });
 
     // reset the prevHeight when the page hide or show
-    document.addEventListener("visibilitychange", () => {
-      this.prevHeight = null;
-
-      if (document.visibilityState !== "visible") this.isHidden = true;
-      else setTimeout(() => (this.isHidden = false), 500);
-    });
-
-    window.addEventListener(
-      "touchmove",
-      (event) => {
-        if (this.isTouchOnEdge) event.preventDefault();
-      },
-      {
-        passive: false,
-      }
+    document.addEventListener(
+      "visibilitychange",
+      this.onVisibilityChange.bind(this)
     );
+
+    window.addEventListener("touchmove", this.onTouchMove.bind(this), {
+      passive: false,
+    });
 
     // show loader
     pushLoader();
@@ -201,6 +201,15 @@ class Read extends Component<Props, State> {
 
   componentWillUnmount() {
     if (this.statusUpdater) clearInterval(this.statusUpdater);
+
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
+
+    document.removeEventListener(
+      "visibilitychange",
+      this.onVisibilityChange.bind(this)
+    );
+
+    window.removeEventListener("touchmove", this.onTouchMove.bind(this));
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {

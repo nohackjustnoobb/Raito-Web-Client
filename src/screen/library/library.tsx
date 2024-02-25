@@ -13,7 +13,11 @@ import RaitoEvent from "../../models/event";
 import { SimpleManga } from "../../models/manga";
 import LazyImage from "../../utils/lazyImage";
 import TopBar from "../../utils/topBar";
-import { convertRemToPixels, listenToEvents } from "../../utils/utils";
+import {
+  convertRemToPixels,
+  listenToEvents,
+  RaitoSubscription,
+} from "../../utils/utils";
 import Search from "../search/search";
 import makeSwipeable, {
   InjectedSwipeableProps,
@@ -30,10 +34,14 @@ class Library extends Component<
   driver: string | undefined = undefined;
   state = { genre: "All", status: Status.Any, loading: false };
   content: HTMLDivElement | null = null;
+  raitoSubscription: RaitoSubscription | null = null;
 
   componentDidMount() {
     // register for update events
-    listenToEvents([RaitoEvent.driverChanged], this.forceUpdate.bind(this));
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.driverChanged],
+      this.forceUpdate.bind(this)
+    );
     this.forceUpdate();
   }
 
@@ -66,6 +74,10 @@ class Library extends Component<
         ).length)
     )
       this.loadMore();
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   // show loader when loading list

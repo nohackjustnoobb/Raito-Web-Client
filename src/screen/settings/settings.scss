@@ -43,12 +43,14 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      overflow: hidden;
 
       .options {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 1.75rem;
+        overflow: visible;
 
         button {
           margin-left: 0.5rem;

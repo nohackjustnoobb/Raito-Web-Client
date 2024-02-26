@@ -231,7 +231,7 @@ class Search extends Component<Props, State> {
                 className="manga"
               >
                 {manga.isEnded && (
-                  <div className="end">{this.props.t("ended")}</div>
+                  <div className="end">{this.props.t("end")}</div>
                 )}
                 {window.raito.settingsState.debugMode && (
                   <div className="mangaID">{manga.id}</div>

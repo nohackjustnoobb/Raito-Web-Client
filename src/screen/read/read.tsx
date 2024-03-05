@@ -497,7 +497,7 @@ class Read extends Component<Props, State> {
             className="read"
             style={
               window.raito.settingsState.snapToPage
-                ? { scrollSnapType: "y proximity" }
+                ? { scrollSnapType: "y mandatory" }
                 : {}
             }
             onDoubleClick={(event) => {

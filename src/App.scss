@@ -30,7 +30,9 @@
       flex-direction: column;
       align-items: start;
       justify-content: center;
+      flex: 1;
       gap: 0;
+      -webkit-transform: translate3d(0, 0, 0);
 
       h2,
       h5 {
@@ -104,6 +106,7 @@
 
           img {
             object-position: 50% 25%;
+            pointer-events: none;
           }
         }
 
@@ -176,6 +179,7 @@
         scrollbar-width: none;
         padding-right: 1rem;
         height: 2.25rem;
+        -webkit-transform: translate3d(0, 0, 0);
 
         &::-webkit-scrollbar {
           display: none;

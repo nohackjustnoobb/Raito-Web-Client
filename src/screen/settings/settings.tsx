@@ -212,6 +212,16 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
+              <div className="options">
+                <span>{this.props.t("snapToPage")}</span>
+                <Checkbox
+                  checked={window.raito.settingsState.snapToPage}
+                  onChange={(_, checked) => {
+                    window.raito.settingsState.snapToPage = checked;
+                    window.raito.settingsState.update();
+                  }}
+                />
+              </div>
             </div>
 
             <h3>{this.props.t("serverSettings")}</h3>

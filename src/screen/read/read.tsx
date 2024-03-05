@@ -495,6 +495,11 @@ class Read extends Component<Props, State> {
           <div
             ref={(ref) => (this.readRef = ref)}
             className="read"
+            style={
+              window.raito.settingsState.snapToPage
+                ? { scrollSnapType: "y proximity" }
+                : {}
+            }
             onDoubleClick={(event) => {
               if (this.doubleClickTimeoutId) {
                 clearTimeout(this.doubleClickTimeoutId);

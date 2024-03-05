@@ -31,6 +31,7 @@ class SettingsState {
   // reader settings
   displayMode: DisplayMode = DisplayMode.Auto;
   overscrollToLoadPreviousChapters: boolean = true;
+  snapToPage: boolean = false;
 
   // server settings
   useProxy: boolean = true;
@@ -59,6 +60,7 @@ class SettingsState {
       // getting from local storage and setting default values
       this.defaultDriver = localStorage.getItem("defaultDriver");
 
+      // boolean
       this.forceTranslate =
         this.loadBool("forceTranslate") ?? this.forceTranslate;
       this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
@@ -72,7 +74,9 @@ class SettingsState {
         this.overscrollToLoadPreviousChapters;
       this.formatChapterTitle =
         this.loadBool("formatChapterTitle") ?? this.formatChapterTitle;
+      this.snapToPage = this.loadBool("snapToPage") ?? this.snapToPage;
 
+      // special cases
       const displayModeString = localStorage.getItem("displayMode");
       this.displayMode =
         displayModeString !== null
@@ -94,11 +98,13 @@ class SettingsState {
   async save() {
     if (this.defaultDriver)
       localStorage.setItem("defaultDriver", this.defaultDriver);
-    localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
-    localStorage.setItem("themeModel", JSON.stringify(this.themeModel));
     if (this.currentTheme)
       localStorage.setItem("currentTheme", this.currentTheme);
     else localStorage.removeItem("currentTheme");
+    localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
+    localStorage.setItem("themeModel", JSON.stringify(this.themeModel));
+
+    // boolean
     this.saveBool("forceTranslate", this.forceTranslate);
     this.saveBool("debugMode", this.debugMode);
     this.saveBool("ignoreError", this.ignoreError);
@@ -110,6 +116,7 @@ class SettingsState {
       this.overscrollToLoadPreviousChapters
     );
     this.saveBool("formatChapterTitle", this.formatChapterTitle);
+    this.saveBool("snapToPage", this.snapToPage);
 
     // experimental functions
     this.saveBool(

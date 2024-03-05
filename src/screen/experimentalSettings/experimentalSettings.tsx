@@ -61,7 +61,6 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
                   }}
                 />
               </div>
-
               <Button
                 variant={"outlined"}
                 size="small"

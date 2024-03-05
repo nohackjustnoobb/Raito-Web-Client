@@ -50,6 +50,10 @@
         width: 50%;
       }
 
+      .pageWrapper {
+        scroll-snap-align: center;
+      }
+
       img {
         width: 100%;
         pointer-events: none;

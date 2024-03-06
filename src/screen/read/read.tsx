@@ -326,20 +326,14 @@ class Read extends Component<Props, State> {
         this.isOverscolling = false;
     }
 
-    if (!this.timeoutId) {
+    if (!this.timeoutId && this.readRef) {
       this.timeoutId = setTimeout(async () => {
         // check if bottom reached
         if (
-          this.readRef &&
-          (this.readRef.scrollTop + this.readRef.offsetHeight >
-            this.readRef.scrollHeight ||
-            (event &&
-              this.readRef.scrollTop + this.readRef.offsetHeight ===
-                this.readRef.scrollHeight &&
-              event.deltaY > 0))
-        ) {
+          Math.round(this.readRef!.scrollTop + this.readRef!.offsetHeight) >=
+          this.readRef!.scrollHeight
+        )
           await this.loadMore();
-        }
 
         // check if top is reached
         if (
@@ -351,9 +345,7 @@ class Read extends Component<Props, State> {
         ) {
           await this.loadMore(false);
 
-          if (this.readRef.scrollTop < 0) {
-            this.isOverscolling = true;
-          }
+          if (this.readRef.scrollTop < 0) this.isOverscolling = true;
         }
 
         this.timeoutId = null;
@@ -362,9 +354,8 @@ class Read extends Component<Props, State> {
   }
 
   restorePosition() {
-    if (this.prevHeight && this.readRef) {
+    if (this.prevHeight && this.readRef)
       this.readRef.scrollTop = this.readRef.scrollHeight - this.prevHeight;
-    }
   }
 
   zoomTo(scale: number, offset?: { x: number; y: number }) {
@@ -399,7 +390,7 @@ class Read extends Component<Props, State> {
       if (this.readRef) {
         var newLeft = (offset!.x + left) * changedScale - offset!.x;
 
-        // TODO bugged
+        // FIXME bugged
         if (newLeft < 0) newLeft = 0;
         const maxLeft = this.readRef.scrollWidth - this.readRef.clientWidth;
         if (newLeft > maxLeft) newLeft = maxLeft;
@@ -494,11 +485,8 @@ class Read extends Component<Props, State> {
         >
           <div
             ref={(ref) => (this.readRef = ref)}
-            className="read"
-            style={
-              window.raito.settingsState.snapToPage
-                ? { scrollSnapType: "y mandatory" }
-                : {}
+            className={
+              window.raito.settingsState.snapToPage ? "read snapToPage" : "read"
             }
             onDoubleClick={(event) => {
               if (this.doubleClickTimeoutId) {
@@ -561,25 +549,23 @@ class Read extends Component<Props, State> {
               }
             }}
             onTouchEnd={(event) => {
-              if (this.isTouchOnEdge) {
+              if (this.isTouchOnEdge && this.readRef) {
                 this.isTouchOnEdge = false;
                 const shouldClose = event.changedTouches[0].pageX > 100;
 
                 // check if swiped 150 px
-                if (shouldClose) {
-                  this.close();
-                }
+                if (shouldClose) this.close();
 
                 // reset the transform
                 // DK why setTimeout is fixing the problem again
                 setTimeout(() => {
-                  this.readRef?.removeAttribute("style");
+                  this.readRef!.removeAttribute("style");
 
                   // add transition if no need to close
-                  if (!shouldClose && this.readRef) {
-                    this.readRef.style.transition = "transform 500ms";
+                  if (!shouldClose) {
+                    this.readRef!.style.transition = "transform 500ms";
                     setTimeout(
-                      () => this.readRef?.removeAttribute("style"),
+                      () => this.readRef!.removeAttribute("style"),
                       500
                     );
                   }

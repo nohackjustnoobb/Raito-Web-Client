@@ -22,6 +22,10 @@
   transition: transform 500ms;
 }
 
+.snapToPage {
+  scroll-snap-type: y mandatory;
+}
+
 .read {
   height: 100vh;
   width: 100vw;

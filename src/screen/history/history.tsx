@@ -8,12 +8,12 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { mdiBookArrowRight, mdiCloudSync, mdiPlaylistEdit } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import LazyImage from "../../components/lazyImage/lazyImage";
+import TopBar from "../../components/topBar/topBar";
 import db, { history } from "../../models/db";
 import Driver from "../../models/driver";
 import RaitoEvent from "../../models/event";
 import { Manga } from "../../models/manga";
-import LazyImage from "../../utils/lazyImage";
-import TopBar from "../../utils/topBar";
 import {
   convertRemToPixels,
   listenToEvents,

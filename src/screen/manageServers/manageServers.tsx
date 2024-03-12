@@ -8,8 +8,8 @@ import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Button } from "@mui/material";
 
+import TopBar from "../../components/topBar/topBar";
 import RaitoEvent from "../../models/event";
-import TopBar from "../../utils/topBar";
 import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,

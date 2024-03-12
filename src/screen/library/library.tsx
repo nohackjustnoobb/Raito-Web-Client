@@ -8,11 +8,11 @@ import { InfinitySpin } from "react-loader-spinner";
 import { mdiChevronDown, mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import LazyImage from "../../components/lazyImage/lazyImage";
+import TopBar from "../../components/topBar/topBar";
 import Driver, { Status } from "../../models/driver";
 import RaitoEvent from "../../models/event";
 import { SimpleManga } from "../../models/manga";
-import LazyImage from "../../utils/lazyImage";
-import TopBar from "../../utils/topBar";
 import {
   convertRemToPixels,
   listenToEvents,

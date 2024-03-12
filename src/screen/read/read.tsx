@@ -4,10 +4,10 @@ import { Component, Fragment, ReactNode } from "react";
 
 import { CSSTransition } from "react-transition-group";
 
+import LazyImage from "../../components/lazyImage/lazyImage";
 import RaitoEvent from "../../models/event";
 import { Chapter, Manga } from "../../models/manga";
 import { DisplayMode } from "../../models/settingsState";
-import LazyImage from "../../utils/lazyImage";
 import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import Menu from "./menu";
 import Warning from "./warning";

@@ -1,32 +1,26 @@
-import './search.scss';
+import "./search.scss";
 
-import { Component } from 'react';
+import { Component } from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
-import { InfinitySpin } from 'react-loader-spinner';
+import { withTranslation, WithTranslation } from "react-i18next";
+import { InfinitySpin } from "react-loader-spinner";
 
-import {
-  mdiChevronDown,
-  mdiMagnify,
-} from '@mdi/js';
-import Icon from '@mdi/react';
+import { mdiChevronDown, mdiMagnify } from "@mdi/js";
+import Icon from "@mdi/react";
 
-import Driver from '../../models/driver';
-import RaitoEvent from '../../models/event';
-import { SimpleManga } from '../../models/manga';
-import LazyImage from '../../utils/lazyImage';
-import TopBar from '../../utils/topBar';
+import LazyImage from "../../components/lazyImage/lazyImage";
+import TopBar from "../../components/topBar/topBar";
+import Driver from "../../models/driver";
+import RaitoEvent from "../../models/event";
+import { SimpleManga } from "../../models/manga";
 import {
   convertRemToPixels,
   listenToEvents,
   RaitoSubscription,
-} from '../../utils/utils';
+} from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from '../swipeableScreen/swipeableScreen';
+} from "../swipeableScreen/swipeableScreen";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {
   keyword?: string;

@@ -4,7 +4,7 @@ import { Component, ReactNode } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
-import { sleep } from "./utils";
+import { sleep } from "../../utils/utils";
 
 type Props = {
   src: string;

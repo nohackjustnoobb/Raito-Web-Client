@@ -8,9 +8,9 @@ import { mdiCogSync } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Button, Checkbox } from "@mui/material";
 
+import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
 import RaitoEvent from "../../models/event";
-import TopBar from "../../utils/topBar";
 import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";

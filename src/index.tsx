@@ -8,6 +8,7 @@ import ReactDOM from "react-dom/client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import App from "./App";
+import Loader from "./components/loader/loader";
 import Driver from "./models/driver";
 import RaitoEvent from "./models/event";
 import { SimpleManga } from "./models/manga";
@@ -16,7 +17,6 @@ import { Theme } from "./models/settingsState";
 import Search from "./screen/search/search";
 import StackView, { Stack } from "./screen/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import Loader from "./utils/loader";
 import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
 
 // declare global variables

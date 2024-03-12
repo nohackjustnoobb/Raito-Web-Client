@@ -15,6 +15,7 @@ import {
 } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import LazyImage from "./components/lazyImage/lazyImage";
 import db, { collection, history } from "./models/db";
 import RaitoEvent from "./models/event";
 import { Manga, SimpleManga } from "./models/manga";
@@ -22,7 +23,6 @@ import History from "./screen/history/history";
 import Library from "./screen/library/library";
 import Search from "./screen/search/search";
 import Settings from "./screen/settings/settings";
-import LazyImage from "./utils/lazyImage";
 import { AppIcon, listenToEvents } from "./utils/utils";
 
 const filters = ["all", "update", "end"];

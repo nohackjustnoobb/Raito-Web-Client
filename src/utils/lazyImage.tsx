@@ -90,12 +90,13 @@ class LazyImage extends Component<
         className="imgWrapper"
         onClick={this.props.onClick}
         ref={(ref) => {
-          this.ref = ref;
-
           if (!this.state.url) {
             if (!window.raito.settingsState.useProxy)
               this.setState({ url: this.props.src });
-            else if (ref) this.observer.observe(ref);
+            else if (ref && !this.ref) {
+              this.ref = ref;
+              this.observer.observe(ref);
+            }
           }
         }}
       >

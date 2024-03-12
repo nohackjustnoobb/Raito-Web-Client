@@ -1,26 +1,32 @@
-import "./search.scss";
+import './search.scss';
 
-import { Component } from "react";
+import { Component } from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
-import { InfinitySpin } from "react-loader-spinner";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
+import { InfinitySpin } from 'react-loader-spinner';
 
-import { mdiChevronDown, mdiMagnify } from "@mdi/js";
-import Icon from "@mdi/react";
+import {
+  mdiChevronDown,
+  mdiMagnify,
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import Driver from "../../models/driver";
-import RaitoEvent from "../../models/event";
-import { SimpleManga } from "../../models/manga";
-import LazyImage from "../../utils/lazyImage";
-import TopBar from "../../utils/topBar";
+import Driver from '../../models/driver';
+import RaitoEvent from '../../models/event';
+import { SimpleManga } from '../../models/manga';
+import LazyImage from '../../utils/lazyImage';
+import TopBar from '../../utils/topBar';
 import {
   convertRemToPixels,
   listenToEvents,
   RaitoSubscription,
-} from "../../utils/utils";
+} from '../../utils/utils';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
 interface Props extends InjectedSwipeableProps, WithTranslation {
   keyword?: string;
@@ -184,7 +190,7 @@ class Search extends Component<Props, State> {
             <Icon path={mdiMagnify} size={1} color={"#999999"} />
           </div>
           {this.state.suggestions &&
-            this.state.suggestions.length &&
+            this.state.suggestions.length !== 0 &&
             this.state.focus && (
               <ul className="suggestions">
                 {this.state.suggestions!.map((suggestion) => (

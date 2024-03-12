@@ -1,5 +1,6 @@
-import { Component, ReactElement, ReactNode } from "react";
 import "./stack.css";
+
+import { Component, ReactElement, ReactNode } from "react";
 
 interface Stack {
   push(screen: ReactElement): void;
@@ -15,12 +16,23 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
     };
   }
 
-  componentDidMount(): void {
+  componentDidMount() {
     // set global variables to interact with the stack
     window.stack = {
       push: this.push.bind(this),
       pop: this.pop.bind(this),
     };
+  }
+
+  componentDidUpdate() {
+    // Lazy load the homepage
+    const homePage = document.getElementById("main");
+    if (!homePage) return;
+
+    if (this.state.stack.length >= 2 && homePage.style.display !== "none")
+      return (homePage.style.display = "none");
+
+    homePage.removeAttribute("style");
   }
 
   push(screen: ReactElement): void {
@@ -39,7 +51,10 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
         {this.state.stack.map((screen, index) => (
           <div
             key={index}
-            style={{ zIndex: index + 2 }}
+            style={{
+              zIndex: index + 2,
+              display: index < this.state.stack.length - 2 ? "none" : "block",
+            }}
             className="stackScreen"
           >
             {screen}

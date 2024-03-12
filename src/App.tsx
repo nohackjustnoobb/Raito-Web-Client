@@ -23,7 +23,7 @@ import Library from "./screen/library/library";
 import Search from "./screen/search/search";
 import Settings from "./screen/settings/settings";
 import LazyImage from "./utils/lazyImage";
-import { AppIcon, listenToEvents, pushLoader } from "./utils/utils";
+import { AppIcon, listenToEvents } from "./utils/utils";
 
 const filters = ["all", "update", "end"];
 
@@ -175,12 +175,12 @@ class App extends Component<
                   <li
                     key={`${v.driver}_${v.id}`}
                     onClick={async () => {
-                      pushLoader();
+                      window.showLoader();
                       // load manga
                       const result = await Manga.get(v.driver, v.id);
 
                       // pop the loader
-                      window.stack.pop();
+                      window.hideLoader();
 
                       // show details
                       if (result) (result as SimpleManga).pushDetails();

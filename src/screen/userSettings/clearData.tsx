@@ -6,8 +6,6 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
-import { pushLoader } from "../../utils/utils";
-
 class ClearData extends Component<{}, { show: boolean; password: string }> {
   timeout: number = 500;
 
@@ -31,9 +29,9 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
 
   async submit() {
     if (window.confirm("確定要刪除所有數據？")) {
-      pushLoader();
+      window.showLoader();
       const result = await window.raito.user.clear(this.state.password);
-      window.stack.pop();
+      window.hideLoader();
 
       if (result) {
         this.close();

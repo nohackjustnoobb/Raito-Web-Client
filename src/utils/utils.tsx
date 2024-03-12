@@ -1,22 +1,6 @@
-import "./utils.scss";
-
-import { Translation } from "react-i18next";
-import { InfinitySpin } from "react-loader-spinner";
-
 import Driver from "../models/driver";
 import RaitoEvent from "../models/event";
 import { ReactComponent as Icon } from "./icon.svg";
-
-const pushLoader = () => {
-  window.stack.push(
-    <div className="loader">
-      <div>
-        <InfinitySpin width="200" color="var(--color-text)" />
-        <Translation>{(t) => <>{t("loading")}</>}</Translation>
-      </div>
-    </div>
-  );
-};
 
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -101,7 +85,6 @@ export {
   getCssVariable,
   Icon as AppIcon,
   listenToEvents,
-  pushLoader,
   RaitoSubscription,
   sleep,
   tryInitialize,

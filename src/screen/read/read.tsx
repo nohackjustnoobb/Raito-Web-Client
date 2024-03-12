@@ -8,11 +8,7 @@ import RaitoEvent from "../../models/event";
 import { Chapter, Manga } from "../../models/manga";
 import { DisplayMode } from "../../models/settingsState";
 import LazyImage from "../../utils/lazyImage";
-import {
-  listenToEvents,
-  pushLoader,
-  RaitoSubscription,
-} from "../../utils/utils";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import Menu from "./menu";
 import Warning from "./warning";
 
@@ -121,11 +117,11 @@ class Read extends Component<Props, State> {
     });
 
     // show loader
-    pushLoader();
+    window.showLoader();
     // get the urls
     await this.loadMore(true, false);
     // pop the loader
-    window.stack.pop();
+    window.hideLoader();
 
     // update the status every 50 ms
     this.statusUpdater = setInterval(() => {

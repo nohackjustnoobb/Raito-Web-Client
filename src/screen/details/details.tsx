@@ -13,11 +13,7 @@ import RaitoEvent from "../../models/event";
 import { Manga, SimpleManga } from "../../models/manga";
 import LazyImage from "../../utils/lazyImage";
 import TopBar from "../../utils/topBar";
-import {
-  listenToEvents,
-  pushLoader,
-  RaitoSubscription,
-} from "../../utils/utils";
+import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -282,9 +278,9 @@ class Details extends Component<Props, State> {
 
 export default makeSwipeable(withTranslation()(Details), async (props: any) => {
   // load manga
-  pushLoader();
+  window.showLoader();
   const manga: boolean = await props.manga.getDetails();
-  window.stack.pop();
+  window.hideLoader();
 
   return manga;
 });

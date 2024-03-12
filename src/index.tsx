@@ -1,5 +1,5 @@
 import "./locales/i18n";
-import "./index.css";
+import "./index.scss";
 
 import { Component, ReactNode } from "react";
 
@@ -16,6 +16,7 @@ import { Theme } from "./models/settingsState";
 import Search from "./screen/search/search";
 import StackView, { Stack } from "./screen/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import Loader from "./utils/loader";
 import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
 
 // declare global variables
@@ -23,6 +24,8 @@ declare global {
   interface Window {
     updateRoot: () => void;
     search: (keyword: string) => void;
+    showLoader: () => void;
+    hideLoader: () => void;
     stack: Stack;
     raito: RaitoManga;
   }
@@ -153,6 +156,7 @@ class Main extends Component<{}, { dark: boolean }> {
 
     return (
       <ThemeProvider theme={theme}>
+        <Loader />
         <StackView />
         <App />
       </ThemeProvider>

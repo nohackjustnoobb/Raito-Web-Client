@@ -7,7 +7,6 @@ import { CSSTransition } from "react-transition-group";
 import { Button } from "@mui/material";
 
 import db from "../../models/db";
-import { pushLoader } from "../../utils/utils";
 import ChangePassword from "./changePassword";
 import ClearData from "./clearData";
 
@@ -68,9 +67,9 @@ class UserSettings extends Component<{}, { show: boolean }> {
                     localStorage.removeItem("lastSync");
 
                     // sync the data without timestamp
-                    pushLoader();
+                    window.showLoader();
                     await window.raito.sync();
-                    window.stack.pop();
+                    window.hideLoader();
                   }}
                 >
                   同步所有數據
@@ -89,12 +88,12 @@ class UserSettings extends Component<{}, { show: boolean }> {
                       )
                     ) {
                       // delete all data and sync the data
-                      pushLoader();
+                      window.showLoader();
                       localStorage.removeItem("lastSync");
                       await db.collections.clear();
                       await db.history.clear();
                       await window.raito.sync();
-                      window.stack.pop();
+                      window.hideLoader();
                     }
                   }}
                 >

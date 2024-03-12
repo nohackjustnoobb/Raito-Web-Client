@@ -8,7 +8,6 @@ import { CSSTransition } from "react-transition-group";
 import { Button, TextField } from "@mui/material";
 
 import Server from "../../models/server";
-import { pushLoader } from "../../utils/utils";
 
 class AddServerConfig extends Component<
   WithTranslation,
@@ -31,10 +30,10 @@ class AddServerConfig extends Component<
   }
 
   async submit() {
-    pushLoader();
+    window.showLoader();
     const accessKey = this.state.accessKey || null;
     const result = await Server.add(this.state.address, accessKey);
-    window.stack.pop();
+    window.hideLoader();
 
     if (result) {
       window.raito.settingsState.update(true);

@@ -17,7 +17,6 @@ import TopBar from "../../utils/topBar";
 import {
   convertRemToPixels,
   listenToEvents,
-  pushLoader,
   RaitoSubscription,
 } from "../../utils/utils";
 import makeSwipeable, {
@@ -123,7 +122,7 @@ class History extends React.Component<
                   <LazyImage
                     src={history.thumbnail}
                     onClick={async () => {
-                      pushLoader();
+                      window.showLoader();
                       // load manga
                       const result = await Manga.get(
                         history.driver,
@@ -131,7 +130,7 @@ class History extends React.Component<
                       );
 
                       // pop the loader
-                      window.stack.pop();
+                      window.hideLoader();
 
                       // show details
                       if (result) {
@@ -171,7 +170,7 @@ class History extends React.Component<
                   <div
                     className="continue"
                     onClick={async () => {
-                      pushLoader();
+                      window.showLoader();
                       // load manga
                       const result = await Manga.get(
                         history.driver,
@@ -179,7 +178,7 @@ class History extends React.Component<
                       );
 
                       // pop the loader
-                      window.stack.pop();
+                      window.hideLoader();
                       // show details
                       if (result) {
                         (result as Manga).continue();

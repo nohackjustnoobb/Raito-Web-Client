@@ -6,8 +6,6 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
-import { pushLoader } from "../../utils/utils";
-
 class ChangePassword extends Component<
   {},
   { show: boolean; oldPassword: string; newPassword: string }
@@ -34,12 +32,12 @@ class ChangePassword extends Component<
   }
 
   async submit() {
-    pushLoader();
+    window.showLoader();
     const result = await window.raito.user.changePassword(
       this.state.newPassword,
       this.state.oldPassword
     );
-    window.stack.pop();
+    window.hideLoader();
 
     if (result) {
       this.close();

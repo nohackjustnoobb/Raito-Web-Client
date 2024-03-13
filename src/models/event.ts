@@ -1,6 +1,6 @@
 enum RaitoEvent {
   settingsChanged = "settingsChanged",
-  driverChanged = "driverChangedd",
+  driverChanged = "driverChanged",
   syncStateChanged = "syncStateChanged",
   updateCollectionsStateChanged = "updateCollectionsStateChanged",
   screenChanged = "screenChanged",

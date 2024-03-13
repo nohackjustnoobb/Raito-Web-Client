@@ -52,7 +52,7 @@ class RaitoManga {
       !Server.verifyAddress(process.env.REACT_APP_SYNC_ADDRESS!)
     )
       window.alert(
-        "Failed to initialise the application due to a missing or invalid sync server address."
+        "Failed to initialize the application due to a missing or invalid sync server address."
       );
 
     this.syncServer = new Server(
@@ -74,7 +74,7 @@ class RaitoManga {
     const result = await this.settingsState.initialize();
     if (!result)
       return window.alert(
-        "Failed to initialise the application due to failure to get any drivers."
+        "Failed to initialize the application due to failure to get any drivers."
       );
 
     await this.sync();
@@ -111,7 +111,7 @@ class RaitoManga {
     const notEnd = collections.filter((v) => !v.isEnd);
     const end = collections.filter((v) => v.isEnd);
 
-    // function for updateing the state
+    // function for updating the state
     const updateState = () => {
       this.updateCollectionsState.currentState = `${counter} / ${collections.length}`;
       dispatchEvent(RaitoEvent.updateCollectionsStateChanged);
@@ -172,7 +172,7 @@ class RaitoManga {
   }
 
   async syncHistory() {
-    // get the time of the lasy sync
+    // get the time of the lazy sync
     const date = localStorage.getItem("lastSync");
     const history = await db.history
       .filter((v) => date === null || v.datetime >= Number(date))

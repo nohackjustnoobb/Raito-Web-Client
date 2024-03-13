@@ -89,7 +89,7 @@ class Main extends Component<{}, { dark: boolean }> {
     window.search = (keyword: string) =>
       window.stack.push(<Search keyword={keyword} />);
 
-    // listem for theme changes
+    // listen for theme changes
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", ({ matches }) =>

@@ -40,11 +40,11 @@ class Driver {
    */
   recommendedChunkSize: number = 0;
   /**
-   * Cache for the list of mangas.
+   * Cache for the list of manga.
    */
   list: { [category: string]: Array<{ [page: number]: Array<string> }> } = {};
   /**
-   * Cache for the seach results.
+   * Cache for the search results.
    */
   search: { [keyword: string]: { [page: number]: Array<string> } } = {};
   /**
@@ -227,14 +227,14 @@ class Driver {
       return false;
     }
 
-    const mangas = await result.json();
+    const manga = await result.json();
 
     // check if the object is already initialized
     if (!this.list[category]) this.list[category] = [{}, {}, {}];
     this.list[category][status][page] = [];
 
     // convert the data to SimpleManga objects
-    mangas.forEach((v: any) => {
+    manga.forEach((v: any) => {
       const manga: SimpleManga = new SimpleManga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
@@ -263,7 +263,7 @@ class Driver {
     // check if disabled
     if (this.isDown) return false;
 
-    // check if initializated
+    // check if initialized
     if (!tryInitialize(this)) return false;
 
     // check if the end is reached or no results
@@ -290,14 +290,14 @@ class Driver {
       return false;
     }
 
-    const mangas = await result.json();
+    const manga = await result.json();
 
     // check if the object is already initialized
     if (!this.search[keyword]) this.search[keyword] = {};
     this.search[keyword][page] = [];
 
     // convert the data to SimpleManga objects
-    mangas.forEach((v: any) => {
+    manga.forEach((v: any) => {
       const manga: SimpleManga = new SimpleManga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
@@ -322,7 +322,7 @@ class Driver {
     // check if disabled
     if (this.isDown) return [];
 
-    // check if initializated
+    // check if initialized
     if (!tryInitialize(this)) return [];
 
     if (!this.supportSuggestion || !keyword) return [];
@@ -342,14 +342,14 @@ class Driver {
   }
 
   /**
-   * Get the info of mangas from the server
+   * Get the info of manga from the server
    *
    * It will only fetch from server only if the manga is not cached / cache parameter is set to false.
    *
    * @async
    * @param ids A array of id that wants to be fetched from the server. (required)
-   * @param showAll Detemine whether the detailed manga should be fetched. (default: false)
-   * @param cache Detemine whether it should use cache. (default: true)
+   * @param showAll Determine whether the detailed manga should be fetched. (default: false)
+   * @param cache Determine whether it should use cache. (default: true)
    * @returns
    */
   async getManga(
@@ -360,7 +360,7 @@ class Driver {
     // check if disabled
     if (this.isDown) return false;
 
-    // check if initializated
+    // check if initialized
     if (!tryInitialize(this)) return false;
 
     // filter the cached ids
@@ -400,10 +400,10 @@ class Driver {
       return false;
     }
 
-    const mangas = await result.json();
+    const manga = await result.json();
 
     // cache the results
-    mangas.forEach((v: any) => {
+    manga.forEach((v: any) => {
       // cache the manga by its type
       if (showAll) {
         const manga: Manga = new Manga(v);

@@ -77,11 +77,11 @@ class Server {
    * @returns whether if it is added successfully.
    */
   async initialize(): Promise<boolean> {
-    const reuslt = await this.get("", undefined, undefined, undefined, false);
+    const result = await this.get("", undefined, undefined, undefined, false);
 
-    if (reuslt.ok) {
+    if (result.ok) {
       // get the server information
-      const info = await reuslt.json();
+      const info = await result.json();
       this.version = info.version;
       if (!this.isSyncServer) {
         this.availableDriver = info.availableDrivers;
@@ -93,7 +93,7 @@ class Server {
       this.isDown = true;
     }
 
-    return reuslt.ok;
+    return result.ok;
   }
 
   remove() {

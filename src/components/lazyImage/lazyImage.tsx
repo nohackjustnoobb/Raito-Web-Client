@@ -4,7 +4,8 @@ import { Component, ReactNode } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
-import { sleep } from "../../utils/utils";
+import RaitoEvent from "../../models/event";
+import { listenToEvents, RaitoSubscription, sleep } from "../../utils/utils";
 
 type Props = {
   src: string;
@@ -20,10 +21,14 @@ class LazyImage extends Component<
 > {
   isLoading: boolean = false;
   ref: HTMLElement | null = null;
-  observer = new IntersectionObserver(() => {
-    if (this.ref && this.isScrolledIntoView(this.ref))
-      this.setState({ isVisible: true });
-  });
+  raitoSubscription: RaitoSubscription | null = null;
+  observer = new IntersectionObserver(
+    () => {
+      if (this.ref && this.isScrolledIntoView(this.ref))
+        this.setState({ isVisible: true });
+    },
+    { threshold: [0, 1] }
+  );
 
   constructor(props: Props) {
     super(props);
@@ -39,8 +44,18 @@ class LazyImage extends Component<
   }
 
   componentDidMount() {
+    // register for update events
+    this.raitoSubscription = listenToEvents(
+      [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
+      () => !this.state.url && this.forceUpdate()
+    );
+
     if (this.props.lazy !== undefined && !this.props.lazy)
       this.setState({ isVisible: true });
+  }
+
+  componentWillUnmount() {
+    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
   async componentDidUpdate() {
@@ -85,6 +100,11 @@ class LazyImage extends Component<
   }
 
   render(): ReactNode {
+    const minLength = this.ref
+      ? Math.min(this.ref.clientWidth, this.ref.clientHeight)
+      : Infinity;
+    const loaderSize = minLength < 100 ? minLength * 0.5 : 60;
+
     return (
       <div
         className="imgWrapper"
@@ -113,10 +133,11 @@ class LazyImage extends Component<
                 : "lazy"
             }
           />
-        ) : this.props.lazy === undefined || this.props.lazy ? (
+        ) : (this.props.lazy === undefined || this.props.lazy) &&
+          this.state.isVisible ? (
           <TailSpin
-            height={60}
-            width={60}
+            height={loaderSize}
+            width={loaderSize}
             color={"var(--color-chapters-text)"}
             wrapperClass="imgLoader"
             ariaLabel="tail-spin-loading"

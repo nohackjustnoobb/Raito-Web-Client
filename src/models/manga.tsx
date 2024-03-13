@@ -52,7 +52,7 @@ class SimpleManga {
   }
 
   /**
-   * Get a list of mangas at once.
+   * Get a list of manga at once.
    *
    * @static
    * @async

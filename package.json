@@ -1,6 +1,6 @@
 {
   "name": "raito-web-client",
-  "version": "0.1.0-beta.22",
+  "version": "0.1.0-beta.23",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -21,6 +21,7 @@
     "js-md5": "^0.8.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.13",
     "react-i18next": "^14.0.5",
     "react-loader-spinner": "^6.1.1-0",
     "react-scripts": "5.0.1",

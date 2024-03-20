@@ -55,7 +55,7 @@ class Read extends Component<Props, State> {
   statusUpdater: NodeJS.Timeout | null = null;
   // reference for read
   readRef: HTMLElement | null = null;
-  // state for cooldown
+  // state for cool down
   lastLoad: number | null = null;
   // timeout for preventing too frequently loading
   timeoutId: NodeJS.Timeout | null = null;
@@ -63,8 +63,8 @@ class Read extends Component<Props, State> {
   isTouchOnEdge: boolean = false;
   // if the page is hidden
   isHidden: boolean = false;
-  // if overscolling the page
-  isOverscolling: boolean = false;
+  // if over scrolling the page
+  isOverScrolling: boolean = false;
   // if the chapter is extra
   isExtra: boolean | null = null;
   // the initial chapter index
@@ -209,7 +209,8 @@ class Read extends Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const shouldUpdate = nextState.page === this.state.page;
+    const shouldUpdate =
+      nextState.page === this.state.page || nextState.id !== this.state.id;
     if (!shouldUpdate && this.menuAction) this.menuAction(nextState.page);
 
     return shouldUpdate;
@@ -315,11 +316,11 @@ class Read extends Component<Props, State> {
   }
 
   shouldLoadMore(event?: React.WheelEvent<HTMLDivElement>) {
-    if (this.isOverscolling) {
+    if (this.isOverScrolling) {
       this.restorePosition();
 
       if (this.readRef && this.readRef.scrollTop >= 0)
-        this.isOverscolling = false;
+        this.isOverScrolling = false;
     }
 
     if (!this.timeoutId && this.readRef) {
@@ -335,13 +336,13 @@ class Read extends Component<Props, State> {
         if (
           this.readRef &&
           window.raito.settingsState.overscrollToLoadPreviousChapters &&
-          !this.isOverscolling &&
+          !this.isOverScrolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
         ) {
           await this.loadMore(false);
 
-          if (this.readRef.scrollTop < 0) this.isOverscolling = true;
+          if (this.readRef.scrollTop < 0) this.isOverScrolling = true;
         }
 
         this.timeoutId = null;

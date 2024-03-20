@@ -4,6 +4,7 @@ import "./index.scss";
 import { Component, ReactNode } from "react";
 
 import ReactDOM from "react-dom/client";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -132,6 +133,21 @@ class Main extends Component<{}, { dark: boolean }> {
     checkCssVariable();
   }
 
+  fallbackRender({ error }: FallbackProps) {
+    return (
+      <div className="crash">
+        <h4>App Crashed</h4>
+        <pre>{error.message}</pre>
+        <div>
+          <button onClick={() => navigator.clipboard.writeText(error.message)}>
+            Copy Error
+          </button>
+          <button onClick={() => window.location.reload()}>Refresh Page</button>
+        </div>
+      </div>
+    );
+  }
+
   render(): ReactNode {
     const useDarkMode =
       window.raito.settingsState.themeModel === Theme.Auto
@@ -155,11 +171,13 @@ class Main extends Component<{}, { dark: boolean }> {
     });
 
     return (
-      <ThemeProvider theme={theme}>
-        <Loader />
-        <StackView />
-        <App />
-      </ThemeProvider>
+      <ErrorBoundary fallbackRender={this.fallbackRender.bind(this)}>
+        <ThemeProvider theme={theme}>
+          <Loader />
+          <StackView />
+          <App />
+        </ThemeProvider>
+      </ErrorBoundary>
     );
   }
 }

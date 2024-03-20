@@ -34,3 +34,51 @@ html[data-theme="dark"] {
   --color-chapters-background: #373737;
   --color-chapters-text: #7f7f7f;
 }
+
+.crash {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: var(--color-text);
+  width: 100vw;
+  height: 100vh;
+  gap: 1rem;
+
+  p,
+  h4,
+  pre {
+    margin: 0;
+  }
+
+  pre {
+    border-radius: 1rem;
+    background-color: var(--color-sub-background);
+    padding: 1rem;
+    color: red;
+  }
+
+  div {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  button {
+    border-radius: 1rem;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    outline: none;
+    background-color: var(--color-sub-background);
+    border-color: var(--color-text);
+    border-width: 1.5px;
+    border-style: solid;
+    color: var(--color-text);
+    font-weight: bold;
+    cursor: pointer;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+}

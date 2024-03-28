@@ -179,6 +179,23 @@ class Settings extends React.Component<Props> {
                   <option value={2}>{this.props.t("Light")}</option>
                 </select>
               </div>
+
+              <div className="options">
+                <span>{this.props.t("numberOfRecordPreviews")}</span>
+                <select
+                  value={window.raito.settingsState.numberOfRecordPreviews}
+                  onChange={(event) => {
+                    window.raito.settingsState.numberOfRecordPreviews = Number(
+                      event.target.value
+                    );
+                    window.raito.settingsState.update();
+                  }}
+                >
+                  {Array.from(Array(11), (_, i) => (
+                    <option value={i * 5}>{i * 5}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <h3>{this.props.t("ReaderSettings")}</h3>

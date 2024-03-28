@@ -49,6 +49,8 @@ class Read extends Component<Props, State> {
   timeout: number = 500;
   // cache for previous height
   prevHeight: number | null = null;
+  // cache for previous scrollTop
+  prevTop: number | null = null;
   // store image that is wider
   wideImage: Array<string> = [];
   // timer for updating the status
@@ -82,6 +84,7 @@ class Read extends Component<Props, State> {
 
   onVisibilityChange() {
     this.prevHeight = null;
+    this.prevTop = null;
 
     if (document.visibilityState !== "visible") this.isHidden = true;
     else setTimeout(() => (this.isHidden = false), 500);
@@ -222,6 +225,7 @@ class Read extends Component<Props, State> {
 
     // reset previous height data
     this.prevHeight = null;
+    this.prevTop = null;
 
     if (this.isExtra === null) {
       this.isExtra =
@@ -283,12 +287,20 @@ class Read extends Component<Props, State> {
     );
 
     // cache previous height
-    if (!next && this.readRef) this.prevHeight = this.readRef.scrollHeight;
+    if (this.readRef) {
+      // reset the height and scrollTop
+      this.prevHeight = null;
+      this.prevTop = null;
+
+      if (next) this.prevTop = this.readRef.scrollTop;
+      else this.prevHeight = this.readRef.scrollHeight;
+    }
   }
 
   toggleOffset() {
     // update the viewport
     this.prevHeight = null;
+    this.prevTop = null;
 
     if (this.indexPageCache.length) {
       const [id, page] = this.indexPageCache[0];
@@ -351,8 +363,11 @@ class Read extends Component<Props, State> {
   }
 
   restorePosition() {
-    if (this.prevHeight && this.readRef)
-      this.readRef.scrollTop = this.readRef.scrollHeight - this.prevHeight;
+    if (this.readRef) {
+      if (this.prevHeight)
+        this.readRef.scrollTop = this.readRef.scrollHeight - this.prevHeight;
+      if (this.prevTop) this.readRef.scrollTop = this.prevTop;
+    }
   }
 
   zoomTo(scale: number, offset?: { x: number; y: number }) {
@@ -601,13 +616,19 @@ class Read extends Component<Props, State> {
                             onLoad={(event) => {
                               // check if the image is horizontal
                               const element = event.target as HTMLImageElement;
+                              const shouldRestore =
+                                this.prevHeight || (this.prevTop && page < 2);
+
                               if (
                                 element.naturalWidth >= element.naturalHeight
                               ) {
                                 this.wideImage.push(id);
-                                this.forceUpdate(() => this.restorePosition());
+                                this.forceUpdate(() => {
+                                  if (shouldRestore) this.restorePosition();
+                                });
+                              } else if (shouldRestore) {
+                                this.restorePosition();
                               }
-                              this.restorePosition();
                             }}
                             lazy={false}
                           />

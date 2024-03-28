@@ -137,6 +137,9 @@ class App extends Component<
     const filteredHistory = this.state.history.filter(
       (v) => v.chapterId !== null
     );
+    const previewHistory = filteredHistory
+      .sort((a, b) => b.datetime - a.datetime)
+      .slice(0, window.raito.settingsState.numberOfRecordPreviews);
 
     return (
       <div id="main">
@@ -160,7 +163,7 @@ class App extends Component<
           </div>
         </div>
         <div id="content">
-          {filteredHistory.length !== 0 && (
+          {previewHistory.length !== 0 && (
             <ul id="historyPreview">
               <li
                 className="viewAll"
@@ -168,33 +171,29 @@ class App extends Component<
               >
                 <Icon path={mdiClockOutline} size={1} />
               </li>
-              {filteredHistory
-                .sort((a, b) => b.datetime - a.datetime)
-                .slice(0, 10)
-                .map((v) => (
-                  <li
-                    key={`${v.driver}_${v.id}`}
-                    onClick={async () => {
-                      window.showLoader();
-                      // load manga
-                      const result = await Manga.get(v.driver, v.id);
+              {previewHistory.map((v) => (
+                <li
+                  key={`${v.driver}_${v.id}`}
+                  onClick={async () => {
+                    window.showLoader();
+                    // load manga
+                    const result = await Manga.get(v.driver, v.id);
 
-                      // pop the loader
-                      window.hideLoader();
+                    // pop the loader
+                    window.hideLoader();
 
-                      // show details
-                      if (result) (result as SimpleManga).pushDetails();
-                    }}
-                  >
-                    <LazyImage src={v.thumbnail} />
-                    <h4>{window.raito.translate(v.title)}</h4>
-                    <p>
-                      {window.raito.translate(
-                        `${v.chapterTitle!} / ${v.latest}`
-                      )}
-                    </p>
-                  </li>
-                ))}
+                    // show details
+                    if (result) (result as SimpleManga).pushDetails();
+                    else alert(`${v.driver}${this.props.t("isDown")}`);
+                  }}
+                >
+                  <LazyImage src={v.thumbnail} />
+                  <h4>{window.raito.translate(v.title)}</h4>
+                  <p>
+                    {window.raito.translate(`${v.chapterTitle!} / ${v.latest}`)}
+                  </p>
+                </li>
+              ))}
               {this.state.history && (
                 <li
                   className="viewAll"

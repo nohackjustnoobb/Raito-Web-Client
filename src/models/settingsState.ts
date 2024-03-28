@@ -27,6 +27,7 @@ class SettingsState {
   themes: Theme[] = [];
   formatChapterTitle: boolean = true;
   currentTheme: string | null = null;
+  numberOfRecordPreviews: number = 15;
 
   // reader settings
   displayMode: DisplayMode = DisplayMode.Auto;
@@ -35,7 +36,7 @@ class SettingsState {
 
   // server settings
   useProxy: boolean = true;
-  useBase64: boolean = true;
+  useBase64: boolean = false;
 
   // developer settings
   debugMode: boolean = false;
@@ -78,15 +79,17 @@ class SettingsState {
 
       // special cases
       const displayModeString = localStorage.getItem("displayMode");
-      this.displayMode =
-        displayModeString !== null
-          ? JSON.parse(displayModeString)
-          : this.displayMode;
+      if (displayModeString) this.displayMode = JSON.parse(displayModeString);
 
       const themeString = localStorage.getItem("themeModel");
-      this.themeModel =
-        themeString !== null ? JSON.parse(themeString) : this.themeModel;
+      if (themeString) this.themeModel = JSON.parse(themeString);
       this.currentTheme = localStorage.getItem("currentTheme");
+
+      const numberOfRecordPreviewsString = localStorage.getItem(
+        "numberOfRecordPreviews"
+      );
+      if (numberOfRecordPreviewsString)
+        this.numberOfRecordPreviews = Number(numberOfRecordPreviewsString);
 
       // experimental functions
       this.experimentalUseZoomablePlugin =
@@ -103,6 +106,10 @@ class SettingsState {
     else localStorage.removeItem("currentTheme");
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
     localStorage.setItem("themeModel", JSON.stringify(this.themeModel));
+    localStorage.setItem(
+      "numberOfRecordPreviews",
+      this.numberOfRecordPreviews.toString()
+    );
 
     // boolean
     this.saveBool("forceTranslate", this.forceTranslate);

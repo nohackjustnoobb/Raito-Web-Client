@@ -55,7 +55,7 @@ class Details extends Component<Props, State> {
     this.setState(
       {
         manga: manga,
-        extra: !Boolean(manga.chapters.serial.length),
+        extra: !manga.chapters.serial.length,
       },
       () => {
         // setup observers for current manga state
@@ -72,8 +72,17 @@ class Details extends Component<Props, State> {
             id: this.state.manga!.id,
           })
         ).subscribe((result) => {
-          if (this.state.history?.chapterId !== result?.chapterId)
-            this.setState({ history: result ?? null });
+          if (result && this.state.history?.chapterId !== result.chapterId) {
+            if (
+              this.state.history === null &&
+              this.state.manga?.chapters.extra.find(
+                (v) => v.id === result.chapterId
+              )
+            )
+              this.setState({ extra: true });
+
+            this.setState({ history: result });
+          }
         });
       }
     );
@@ -102,8 +111,17 @@ class Details extends Component<Props, State> {
             {this.props.t("serial")}
           </li>
           <li
-            onClick={() => this.setState({ extra: true })}
-            className={this.state.extra ? "selected" : ""}
+            onClick={() => {
+              if (this.state.manga?.chapters.extra.length)
+                this.setState({ extra: true });
+            }}
+            className={
+              !this.state.manga?.chapters.extra.length
+                ? "disabled"
+                : this.state.extra
+                ? "selected"
+                : ""
+            }
           >
             {this.props.t("extra")}
           </li>

@@ -120,5 +120,6 @@
     "Sports": "運動",
     "Mecha": "機甲",
     "Restricted": "R15",
-    "snapToPage": "對齊到頁面"
+    "snapToPage": "對齊到頁面",
+    "numberOfRecordPreviews": "記錄預覽數目"
 }

@@ -74,6 +74,11 @@
     .selected {
       font-weight: bold;
     }
+
+    .disabled {
+      opacity: 0.25;
+      cursor: auto;
+    }
   }
 
   .chapters {

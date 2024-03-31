@@ -223,7 +223,6 @@ class RaitoManga {
       page++;
     }
 
-    this.isHistoryChanged = false;
     localStorage.setItem("lastSync", now.toString());
   }
 
@@ -310,6 +309,7 @@ class RaitoManga {
     }
 
     this.syncState.isSyncing = false;
+    this.isHistoryChanged = false;
     this.syncState.lastSync = Date.now();
     this.syncState.currentState = undefined;
     dispatchEvent(RaitoEvent.syncStateChanged);

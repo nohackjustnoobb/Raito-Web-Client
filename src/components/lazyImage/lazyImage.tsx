@@ -85,7 +85,7 @@ class LazyImage extends Component<
         }
       } catch (e) {}
 
-      sleep(250);
+      await sleep(250);
       this.isLoading = false;
     }
   }

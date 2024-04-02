@@ -140,9 +140,8 @@ class SettingsState {
     window.raito.settingsState.update();
   }
 
-  update(sync: boolean = false) {
+  update() {
     this.save();
-    if (sync) this.saveSettings();
 
     // update the theme
     const theme = this.themes.find((v) => v.name === this.currentTheme);
@@ -152,36 +151,6 @@ class SettingsState {
     } else Theme.reset();
 
     dispatchEvent(RaitoEvent.settingsChanged);
-  }
-
-  async saveSettings(sync: boolean = true) {
-    // settings that will be synchronized
-    const settings: any = {};
-
-    settings["customServer"] = [];
-    for (const config of window.raito.sourceServers) {
-      if (!config.isDefaultServer)
-        settings["customServer"].push({
-          address: config.address,
-          accessKey: config.accessKey,
-        });
-    }
-
-    settings["themes"] = this.themes;
-
-    const encodedSettings = btoa(JSON.stringify(settings));
-    if (window.raito.user.token && sync) {
-      const result = await window.raito.syncServer.post(
-        "settings",
-        {},
-        JSON.stringify({ settings: encodedSettings }),
-        { "Content-Type": "application/json" }
-      );
-
-      if (!result.ok) return;
-    }
-
-    localStorage.setItem("settings", encodedSettings);
   }
 
   async useSettings(encodedSettings: string) {
@@ -203,6 +172,41 @@ class SettingsState {
             if (theme.name === this.currentTheme) this.themes.at(-1)?.inject();
           }
     }
+
+    dispatchEvent(RaitoEvent.settingsChanged);
+  }
+
+  async saveSettings(encoded: string | null = null) {
+    if (encoded !== null) return localStorage.setItem("settings", encoded);
+
+    // settings that will be synchronized
+    const settings: any = {};
+
+    settings["customServer"] = [];
+    for (const config of window.raito.sourceServers) {
+      if (!config.isDefaultServer)
+        settings["customServer"].push({
+          address: config.address,
+          accessKey: config.accessKey,
+        });
+    }
+
+    settings["themes"] = this.themes;
+
+    const encodedSettings = btoa(JSON.stringify(settings));
+    if (window.raito.user.token) {
+      const result = await window.raito.syncServer.post(
+        "settings",
+        {},
+        JSON.stringify({ settings: encodedSettings }),
+        { "Content-Type": "application/json" }
+      );
+
+      if (!result.ok) return;
+    }
+
+    localStorage.setItem("settings", encodedSettings);
+    dispatchEvent(RaitoEvent.settingsChanged);
   }
 
   async initialize(): Promise<boolean> {

@@ -192,7 +192,9 @@ class Settings extends React.Component<Props> {
                   }}
                 >
                   {Array.from(Array(11), (_, i) => (
-                    <option value={i * 5}>{i * 5}</option>
+                    <option value={i * 5} key={i}>
+                      {i * 5}
+                    </option>
                   ))}
                 </select>
               </div>

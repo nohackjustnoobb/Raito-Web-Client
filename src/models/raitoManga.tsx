@@ -167,7 +167,7 @@ class RaitoManga {
     if (result.ok) {
       const json = await result.json();
       await this.settingsState.useSettings(json.settings);
-      this.settingsState.update(false);
+      this.settingsState.saveSettings(json.settings);
     }
   }
 

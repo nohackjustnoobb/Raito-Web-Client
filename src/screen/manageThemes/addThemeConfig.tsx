@@ -41,7 +41,8 @@ class AddThemeConfig extends Component<
     window.raito.settingsState.themes.push(
       new Theme(this.state.name, this.state.style)
     );
-    window.raito.settingsState.update(true);
+
+    window.raito.settingsState.saveSettings();
     this.close();
   }
 

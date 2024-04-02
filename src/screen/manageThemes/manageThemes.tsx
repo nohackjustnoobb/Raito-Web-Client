@@ -94,7 +94,8 @@ class ManageThemes extends Component<Props> {
                           (theme) => theme.name !== v.name
                         );
 
-                      window.raito.settingsState.update(true);
+                      window.raito.settingsState.update();
+                      window.raito.settingsState.saveSettings();
                     }}
                   >
                     {this.props.t("delete")}

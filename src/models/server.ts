@@ -116,7 +116,7 @@ class Server {
       return !isThis;
     });
 
-    return window.raito.settingsState.update(true);
+    return window.raito.settingsState.saveSettings();
   }
 
   /**

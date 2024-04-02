@@ -36,7 +36,7 @@ class AddServerConfig extends Component<
     window.hideLoader();
 
     if (result) {
-      window.raito.settingsState.update(true);
+      window.raito.settingsState.saveSettings();
       this.close();
     } else {
       alert(this.props.t("failedToConnectToTheServer"));

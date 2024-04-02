@@ -1,8 +1,11 @@
 .manageServers {
   height: 100vh;
-  width: calc(100vw - 2rem);
-  padding-right: 1rem;
-  padding-left: 1rem;
+  width: calc(
+    100vw - max(1rem, env(safe-area-inset-right)) -
+      max(1rem, env(safe-area-inset-left))
+  );
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-left: max(1rem, env(safe-area-inset-left));
   padding-bottom: max(env(safe-area-inset-bottom), 1rem);
   background-color: var(--color-background);
   color: var(--color-text);

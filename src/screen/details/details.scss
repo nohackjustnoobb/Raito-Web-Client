@@ -1,10 +1,14 @@
 .details {
   height: 100vh;
-  width: calc(100vw - 2rem);
+  width: calc(
+    100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 2rem
+  );
   padding: 1rem;
   padding-top: 0;
   display: flex;
   margin: 0;
+  margin-left: env(safe-area-inset-left);
+  margin-right: env(safe-area-inset-right);
   background-color: var(--color-background);
   overflow: hidden;
   scrollbar-width: none;

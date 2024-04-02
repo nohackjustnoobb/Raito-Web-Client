@@ -98,7 +98,7 @@ class History extends React.Component<
                 <Icon path={mdiCloudSync} size={1} />
               </div>
               <div onClick={() => alert("developing")}>
-                <Icon path={mdiPlaylistEdit} size={1} />
+                <Icon path={mdiPlaylistEdit} size={1.25} />
               </div>
             </div>
           }

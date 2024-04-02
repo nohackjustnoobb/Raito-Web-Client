@@ -21,11 +21,16 @@
 }
 
 .upperMenu {
-  width: 100%;
+  width: calc(
+    100% - max(1rem, env(safe-area-inset-right)) -
+      max(1rem, env(safe-area-inset-left))
+  );
   background-color: var(--color-background);
   color: var(--color-text);
   backdrop-filter: blur(5px);
   padding: 1rem;
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-left: max(1rem, env(safe-area-inset-left));
   padding-top: max(1rem, env(safe-area-inset-top));
   display: flex;
   flex-direction: row;
@@ -136,11 +141,16 @@
 }
 
 .lowerMenu {
-  width: 100%;
+  width: calc(
+    100% - max(1rem, env(safe-area-inset-right)) -
+      max(1rem, env(safe-area-inset-left))
+  );
   background-color: var(--color-background);
   color: var(--color-text);
   backdrop-filter: blur(5px);
   padding: 1rem;
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-left: max(1rem, env(safe-area-inset-left));
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
@@ -150,11 +160,9 @@
   h3 {
     padding: 0;
     margin: 0;
-    padding-right: 2rem;
   }
 
   .sliderWrapper {
-    width: calc(100% - 5rem);
-    padding-right: 2rem;
+    width: calc(100% - 2rem);
   }
 }

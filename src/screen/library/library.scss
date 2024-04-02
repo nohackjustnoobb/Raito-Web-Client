@@ -1,10 +1,13 @@
 .library {
-  width: calc(100% - 2rem);
+  width: calc(
+    100vw - max(1rem, env(safe-area-inset-right)) -
+      max(1rem, env(safe-area-inset-left))
+  );
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-left: max(1rem, env(safe-area-inset-left));
   background-color: var(--color-background);
   color: var(--color-text);
 

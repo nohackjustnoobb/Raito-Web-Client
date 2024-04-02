@@ -89,10 +89,9 @@ class Server {
           Driver.getOrCreate(id, this);
         });
       }
-    } else {
-      this.isDown = true;
     }
 
+    this.isDown = !result.ok;
     return result.ok;
   }
 
@@ -142,9 +141,8 @@ class Server {
     checkServerDown: boolean = true
   ): Promise<Response> {
     // check if the server is down and try again
-    if (checkServerDown && this.isDown && !(await this.initialize())) {
+    if (checkServerDown && this.isDown && !(await this.initialize()))
       return Response.error();
-    }
 
     // attach token or access key
     if (this.isSyncServer) {

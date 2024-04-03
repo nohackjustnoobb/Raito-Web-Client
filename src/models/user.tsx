@@ -6,6 +6,9 @@ import RaitoEvent from "./event";
 class User {
   token: string | null;
   email: string | null;
+  id: number | null = null;
+  createdAt: Date | null = null;
+  updatedAt: Date | null = null;
 
   constructor() {
     // try to get the token and email from the local storage
@@ -65,7 +68,21 @@ class User {
     dispatchEvent(RaitoEvent.settingsChanged);
   }
 
+  async getInfo() {
+    if (!this.token) return;
+
+    const result = await window.raito.syncServer.get("me");
+    if (!result.ok) return;
+
+    const json = await result.json();
+    this.id = json["id"];
+    this.createdAt = new Date(json["createdAt"]);
+    this.updatedAt = new Date(json["updatedAt"]);
+  }
+
   async clear(password: string): Promise<boolean> {
+    if (!this.token) return false;
+
     // delete remote data
     const result = await window.raito.syncServer.post(
       "clear",
@@ -102,6 +119,8 @@ class User {
     newPassword: string,
     oldPassword: string
   ): Promise<boolean> {
+    if (!this.token) return false;
+
     return (
       await window.raito.syncServer.post(
         "me",

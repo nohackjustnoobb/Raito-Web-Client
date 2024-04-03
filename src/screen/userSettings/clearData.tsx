@@ -2,21 +2,20 @@ import "./clearData.scss";
 
 import { Component, ReactNode } from "react";
 
+import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
-class ClearData extends Component<{}, { show: boolean; password: string }> {
+class ClearData extends Component<
+  WithTranslation,
+  { show: boolean; password: string }
+> {
   timeout: number = 500;
-
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      show: false,
-      password: "",
-    };
-  }
+  state = {
+    show: false,
+    password: "",
+  };
 
   componentDidMount() {
     this.setState({ show: true });
@@ -28,7 +27,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
   }
 
   async submit() {
-    if (window.confirm("確定要刪除所有數據？")) {
+    if (window.confirm(this.props.t("clearDataConfirmation"))) {
       window.showLoader();
       const result = await window.raito.user.clear(this.state.password);
       window.hideLoader();
@@ -37,7 +36,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
         this.close();
       } else {
         this.setState({ password: "" });
-        alert("密碼錯誤");
+        alert(this.props.t("wrongPassword"));
       }
     }
   }
@@ -58,7 +57,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="密碼"
+                label={this.props.t("password")}
                 variant="outlined"
                 type="password"
                 fullWidth
@@ -79,7 +78,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
                   fullWidth
                   onClick={() => this.close()}
                 >
-                  取消
+                  {this.props.t("cancel")}
                 </Button>
                 <Button
                   variant="outlined"
@@ -88,7 +87,7 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
                   fullWidth
                   onClick={() => this.submit()}
                 >
-                  確認
+                  {this.props.t("confirm")}
                 </Button>
               </span>
             </div>
@@ -99,4 +98,4 @@ class ClearData extends Component<{}, { show: boolean; password: string }> {
   }
 }
 
-export default ClearData;
+export default withTranslation()(ClearData);

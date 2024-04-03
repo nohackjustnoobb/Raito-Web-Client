@@ -2,12 +2,13 @@ import "./createUser.scss";
 
 import { Component, ReactNode } from "react";
 
+import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
 class CreateUser extends Component<
-  {},
+  WithTranslation,
   {
     show: boolean;
     password: string;
@@ -17,18 +18,13 @@ class CreateUser extends Component<
   }
 > {
   timeout: number = 500;
-
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      show: false,
-      password: "",
-      email: "",
-      confirmPassword: "",
-      key: "",
-    };
-  }
+  state = {
+    show: false,
+    password: "",
+    email: "",
+    confirmPassword: "",
+    key: "",
+  };
 
   componentDidMount() {
     this.setState({ show: true });
@@ -48,7 +44,7 @@ class CreateUser extends Component<
 
     if (result) {
       this.setState({ email: "", password: "", confirmPassword: "" });
-      alert("success");
+      alert("Success");
     } else {
       alert("Fail");
     }
@@ -70,7 +66,7 @@ class CreateUser extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="電郵"
+                label={this.props.t("email")}
                 variant="outlined"
                 type="email"
                 fullWidth
@@ -83,7 +79,7 @@ class CreateUser extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="密碼"
+                label={this.props.t("password")}
                 variant="outlined"
                 type="password"
                 autoComplete="new-password"
@@ -96,7 +92,7 @@ class CreateUser extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="重新輸入密碼"
+                label={this.props.t("passwordConfirmation")}
                 variant="outlined"
                 type="password"
                 fullWidth
@@ -109,7 +105,7 @@ class CreateUser extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="註冊密鑰"
+                label={this.props.t("registerKey")}
                 variant="outlined"
                 type="text"
                 fullWidth
@@ -127,7 +123,7 @@ class CreateUser extends Component<
                   fullWidth
                   onClick={() => this.close()}
                 >
-                  取消
+                  {this.props.t("cancel")}
                 </Button>
                 <Button
                   variant="contained"
@@ -136,7 +132,7 @@ class CreateUser extends Component<
                   fullWidth
                   onClick={() => this.submit()}
                 >
-                  確認
+                  {this.props.t("confirm")}
                 </Button>
               </span>
             </div>
@@ -147,4 +143,4 @@ class CreateUser extends Component<
   }
 }
 
-export default CreateUser;
+export default withTranslation()(CreateUser);

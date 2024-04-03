@@ -78,7 +78,7 @@ class Settings extends React.Component<Props> {
                       }
                     }}
                   >
-                    {this.props.t(user.token ? "accountSettings" : "logins")}
+                    {this.props.t(user.token ? "settings" : "logins")}
                   </Button>
                 </span>
               </div>
@@ -159,7 +159,7 @@ class Settings extends React.Component<Props> {
                   size="small"
                   onClick={() => window.stack.push(<ManageThemes />)}
                 >
-                  {this.props.t("manage")}
+                  {this.props.t("settings")}
                 </Button>
               </div>
               <div className="options">
@@ -262,7 +262,7 @@ class Settings extends React.Component<Props> {
                   size="small"
                   onClick={() => window.stack.push(<ManageServers />)}
                 >
-                  {this.props.t("manage")}
+                  {this.props.t("settings")}
                 </Button>
               </div>
               <div className="options">

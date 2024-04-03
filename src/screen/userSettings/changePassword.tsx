@@ -2,25 +2,21 @@ import "./changePassword.scss";
 
 import { Component, ReactNode } from "react";
 
+import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
 class ChangePassword extends Component<
-  {},
+  WithTranslation,
   { show: boolean; oldPassword: string; newPassword: string }
 > {
   timeout: number = 500;
-
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      show: false,
-      oldPassword: "",
-      newPassword: "",
-    };
-  }
+  state = {
+    show: false,
+    oldPassword: "",
+    newPassword: "",
+  };
 
   componentDidMount() {
     this.setState({ show: true });
@@ -43,7 +39,7 @@ class ChangePassword extends Component<
       this.close();
     } else {
       this.setState({ oldPassword: "" });
-      alert("密碼錯誤");
+      alert(this.props.t("wrongPassword"));
     }
   }
 
@@ -63,7 +59,7 @@ class ChangePassword extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="舊密碼"
+                label={this.props.t("oldPassword")}
                 variant="outlined"
                 type="password"
                 fullWidth
@@ -76,7 +72,7 @@ class ChangePassword extends Component<
               <TextField
                 size="small"
                 id="outlined-basic"
-                label="新密碼"
+                label={this.props.t("newPassword")}
                 variant="outlined"
                 type="password"
                 fullWidth
@@ -97,7 +93,7 @@ class ChangePassword extends Component<
                   fullWidth
                   onClick={() => this.close()}
                 >
-                  取消
+                  {this.props.t("cancel")}
                 </Button>
                 <Button
                   variant="contained"
@@ -106,7 +102,7 @@ class ChangePassword extends Component<
                   fullWidth
                   onClick={() => this.submit()}
                 >
-                  確認
+                  {this.props.t("confirm")}
                 </Button>
               </span>
             </div>
@@ -117,4 +113,4 @@ class ChangePassword extends Component<
   }
 }
 
-export default ChangePassword;
+export default withTranslation()(ChangePassword);

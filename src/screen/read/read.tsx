@@ -366,7 +366,8 @@ class Read extends Component<Props, State> {
     if (this.readRef) {
       if (this.prevHeight)
         this.readRef.scrollTop = this.readRef.scrollHeight - this.prevHeight;
-      if (this.prevTop) this.readRef.scrollTop = this.prevTop;
+      if (this.prevTop && this.readRef.scrollTop > this.prevTop)
+        this.readRef.scrollTop = this.prevTop;
     }
   }
 

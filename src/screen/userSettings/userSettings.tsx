@@ -2,136 +2,141 @@ import "./userSettings.scss";
 
 import { Component, ReactNode } from "react";
 
-import { CSSTransition } from "react-transition-group";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 import { Button } from "@mui/material";
 
+import TopBar from "../../components/topBar/topBar";
 import db from "../../models/db";
+import makeSwipeable, {
+  InjectedSwipeableProps,
+} from "../swipeableScreen/swipeableScreen";
 import ChangePassword from "./changePassword";
 import ClearData from "./clearData";
 
-class UserSettings extends Component<{}, { show: boolean }> {
-  timeout: number = 500;
+interface Props extends InjectedSwipeableProps, WithTranslation {}
 
-  constructor(props: {}) {
-    super(props);
-
-    this.state = {
-      show: false,
-    };
-  }
-
-  componentDidMount() {
-    this.setState({ show: true });
-  }
-
-  close() {
-    this.setState({ show: false });
-    setTimeout(() => window.stack.pop(), this.timeout);
+class UserSettings extends Component<Props> {
+  async componentDidMount() {
+    await window.raito.user.getInfo();
+    this.forceUpdate();
   }
 
   render(): ReactNode {
     const user = window.raito.user;
+    const options: any = {
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+      hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+    };
 
     return (
-      <div className="userSettingsWrapper">
-        <CSSTransition
-          in={this.state.show}
-          classNames="userSettings"
-          timeout={this.timeout}
-          unmountOnExit
-          mountOnEnter
-        >
-          <div className="userSettings">
-            <div className="background" onClick={() => this.close()} />
-            <div className="userSettingsContent">
-              <span className="email">
-                帳戶：<b>{user.email}</b>
-              </span>
-              <span>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  size="small"
-                  fullWidth
-                  onClick={() => window.stack.push(<ChangePassword />)}
-                >
-                  更改密碼
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="secondary"
-                  fullWidth
-                  onClick={async () => {
-                    localStorage.removeItem("lastSync");
-
-                    // sync the data without timestamp
-                    window.showLoader();
-                    await window.raito.sync();
-                    window.hideLoader();
-                  }}
-                >
-                  同步所有數據
-                </Button>
-              </span>
-              <span>
-                <Button
-                  variant={"outlined"}
-                  color="error"
-                  size="small"
-                  fullWidth
-                  onClick={async () => {
-                    if (
-                      window.confirm(
-                        "確定要刪除所有本地數據並與服務器重新同步？"
-                      )
-                    ) {
-                      // delete all data and sync the data
-                      window.showLoader();
-                      localStorage.removeItem("lastSync");
-                      await db.collections.clear();
-                      await db.history.clear();
-                      await window.raito.sync();
-                      window.hideLoader();
-                    }
-                  }}
-                >
-                  刪除本地數據
-                </Button>
-                <Button
-                  variant={"outlined"}
-                  color="error"
-                  size="small"
-                  fullWidth
-                  onClick={() => window.stack.push(<ClearData />)}
-                >
-                  刪除所有數據
-                </Button>
-              </span>
-
-              <span className="logout">
-                <Button
-                  variant={"outlined"}
-                  color="error"
-                  size="small"
-                  fullWidth
-                  onClick={() => {
-                    if (window.confirm("確認登出？")) {
-                      user.logout();
-                      this.close();
-                    }
-                  }}
-                >
-                  登出
-                </Button>
-              </span>
+      <div className="userSettings">
+        <TopBar close={this.props.close} />
+        <div className="subSettings info">
+          {user.id && (
+            <div className="item">
+              <span>ID:</span>
+              <b>{user.id}</b>
             </div>
+          )}
+          <div className="item">
+            <span>{this.props.t("email")}:</span>
+            <b>{user.email}</b>
           </div>
-        </CSSTransition>
+          {user.createdAt && (
+            <div className="item">
+              <span>{this.props.t("createdAt")}:</span>
+              <b>{user.createdAt.toLocaleString(undefined, options)}</b>
+            </div>
+          )}
+          {user.updatedAt && (
+            <div className="item">
+              <span>{this.props.t("updatedAt")}:</span>
+              <b>{user.updatedAt.toLocaleString(undefined, options)}</b>
+            </div>
+          )}
+        </div>
+
+        <div className="subSettings">
+          <Button
+            variant="text"
+            size="small"
+            fullWidth
+            onClick={() => window.stack.push(<ChangePassword />)}
+          >
+            {this.props.t("changePassword")}
+          </Button>
+          <Button
+            variant="text"
+            size="small"
+            fullWidth
+            onClick={async () => {
+              localStorage.removeItem("lastSync");
+
+              // sync the data without timestamp
+              window.showLoader();
+              await window.raito.sync();
+              window.hideLoader();
+            }}
+          >
+            {this.props.t("syncAllData")}
+          </Button>
+        </div>
+
+        <div className="subSettings">
+          <Button
+            variant="text"
+            color="error"
+            size="small"
+            fullWidth
+            onClick={async () => {
+              if (window.confirm(this.props.t("deleteLocalDataConfirmation"))) {
+                // delete all data and sync the data
+                window.showLoader();
+                localStorage.removeItem("lastSync");
+                await db.collections.clear();
+                await db.history.clear();
+                await window.raito.sync();
+                window.hideLoader();
+              }
+            }}
+          >
+            {this.props.t("deleteLocalData")}
+          </Button>
+          <Button
+            variant="text"
+            color="error"
+            size="small"
+            fullWidth
+            onClick={() => window.stack.push(<ClearData />)}
+          >
+            {this.props.t("deleteAllData")}
+          </Button>
+        </div>
+
+        <div className="subSettings">
+          <Button
+            variant={"text"}
+            color="error"
+            size="small"
+            fullWidth
+            onClick={() => {
+              if (window.confirm(this.props.t("logoutConfirmation"))) {
+                user.logout();
+                this.props.close();
+              }
+            }}
+          >
+            {this.props.t("logout")}
+          </Button>
+        </div>
       </div>
     );
   }
 }
 
-export default UserSettings;
+export default makeSwipeable(withTranslation()(UserSettings));

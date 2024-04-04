@@ -130,7 +130,8 @@ class Main extends Component<{}, { dark: boolean }> {
       } else this.forceUpdate();
     };
 
-    checkCssVariable();
+    // prevent blocking
+    setTimeout(() => checkCssVariable());
   }
 
   fallbackRender({ error }: FallbackProps) {

@@ -40,9 +40,6 @@ class User {
         { "Content-Type": "application/json" }
       );
 
-      // upload settings
-      await window.raito.settingsState.saveSettings();
-
       localStorage.setItem("token", this.token!);
       localStorage.setItem("email", this.email!);
 

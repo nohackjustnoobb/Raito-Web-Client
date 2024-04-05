@@ -82,6 +82,7 @@ class Settings extends React.Component<Props> {
                   </Button>
                 </span>
               </div>
+
               <div className="options">
                 <span>{this.props.t("language")}: </span>
                 <select
@@ -119,6 +120,7 @@ class Settings extends React.Component<Props> {
                   ))}
                 </select>
               </div>
+
               <div className="options">
                 <span>{this.props.t("forceTranslate")}: </span>
                 <Checkbox
@@ -129,6 +131,7 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
+
               <div className="options">
                 <span>{this.props.t("developerMode")}: </span>
                 <Checkbox
@@ -138,6 +141,27 @@ class Settings extends React.Component<Props> {
                     window.raito.settingsState.update();
                   }}
                 />
+              </div>
+
+              <div className="options">
+                <span>{this.props.t("imageCacheMaxAge")}</span>
+                <select
+                  value={window.raito.settingsState.imageCacheMaxAge}
+                  onChange={(event) => {
+                    window.raito.settingsState.imageCacheMaxAge = Number(
+                      event.target.value
+                    );
+                    window.raito.settingsState.update();
+                  }}
+                >
+                  {Array.from(Array(8), (_, i) => (
+                    <option value={i === 7 ? 31536000 : i * 3600} key={i}>
+                      {this.props.t(
+                        i === 0 ? "noCache" : i === 7 ? "neverExpired" : `${i}h`
+                      )}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <h3>{this.props.t("appearanceSettings")}</h3>
@@ -152,6 +176,7 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
+
               <div className="options">
                 <span>{this.props.t("theme")}: </span>
                 <Button
@@ -162,6 +187,7 @@ class Settings extends React.Component<Props> {
                   {this.props.t("settings")}
                 </Button>
               </div>
+
               <div className="options">
                 <span>{this.props.t("darkTheme")}</span>
                 <select
@@ -218,6 +244,7 @@ class Settings extends React.Component<Props> {
                   <option value={2}>{this.props.t("dualPage")}</option>
                 </select>
               </div>
+
               <div className="options">
                 <span>{this.props.t("pullToLoadPreviousChapter")}</span>
                 <Checkbox
@@ -231,6 +258,7 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
+
               <div className="options">
                 <span>{this.props.t("snapToPage")}</span>
                 <Checkbox
@@ -255,6 +283,7 @@ class Settings extends React.Component<Props> {
                   {this.props.t("checkStatus")}
                 </Button>
               </div>
+
               <div className="options">
                 <span>{this.props.t("sourceServers")}: </span>
                 <Button
@@ -265,6 +294,7 @@ class Settings extends React.Component<Props> {
                   {this.props.t("settings")}
                 </Button>
               </div>
+
               <div className="options">
                 <span>{this.props.t("useProxy")}: </span>
                 <Checkbox
@@ -348,6 +378,7 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("syncServerVersion")}: </span>
                 <b>{window.raito.syncServer.version}</b>
               </div>
+
               <div className="options">
                 <span>{this.props.t("clientVersion")}: </span>
                 <b>{process.env.REACT_APP_VERSION}</b>

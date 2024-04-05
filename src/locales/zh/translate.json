@@ -138,5 +138,8 @@
     "logoutConfirmation": "確認登出？",
     "createdAt": "創建於",
     "updatedAt": "更新於",
-    "wrongEmailorPassword": "郵箱或密碼錯誤"
+    "wrongEmailorPassword": "郵箱或密碼錯誤",
+    "imageCacheMaxAge": "圖片緩存最大壽命",
+    "noCache": "無緩存",
+    "neverExpired": "永不過期"
 }

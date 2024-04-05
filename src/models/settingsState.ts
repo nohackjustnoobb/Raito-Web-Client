@@ -21,6 +21,7 @@ class SettingsState {
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
   showDeveloperSettings: boolean = false;
+  imageCacheMaxAge: number = 7200;
 
   // appearance settings
   themeModel: ThemeModel = ThemeModel.Auto;
@@ -91,6 +92,10 @@ class SettingsState {
       if (numberOfRecordPreviewsString)
         this.numberOfRecordPreviews = Number(numberOfRecordPreviewsString);
 
+      const imageCacheTimeoutString = localStorage.getItem("imageCacheMaxAge");
+      if (imageCacheTimeoutString)
+        this.imageCacheMaxAge = Number(imageCacheTimeoutString);
+
       // experimental functions
       this.experimentalUseZoomablePlugin =
         this.loadBool("experimentalUseZoomablePlugin") ??
@@ -110,6 +115,7 @@ class SettingsState {
       "numberOfRecordPreviews",
       this.numberOfRecordPreviews.toString()
     );
+    localStorage.setItem("imageCacheMaxAge", this.imageCacheMaxAge.toString());
 
     // boolean
     this.saveBool("forceTranslate", this.forceTranslate);

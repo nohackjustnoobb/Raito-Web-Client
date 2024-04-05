@@ -138,5 +138,8 @@
     "logoutConfirmation": "Are you sure you want to logout?",
     "createdAt": "Created At",
     "updatedAt": "Updated At",
-    "wrongEmailorPassword": "Wrong Email or Password"
+    "wrongEmailorPassword": "Wrong Email or Password",
+    "imageCacheMaxAge": "Image Cache Max Age",
+    "noCache": "No Cache",
+    "neverExpired": "Never Expired"
 }

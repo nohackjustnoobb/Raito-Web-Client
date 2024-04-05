@@ -70,7 +70,14 @@ class LazyImage extends Component<
         const response = await fetch(
           window.raito.settingsState.useBase64
             ? `${this.props.src}?base64=1`
-            : this.props.src
+            : this.props.src,
+          {
+            headers: {
+              "cache-control": window.raito.settingsState.imageCacheMaxAge
+                ? `max-age=${window.raito.settingsState.imageCacheMaxAge}`
+                : "no-cache",
+            },
+          }
         );
 
         if (response.ok) {

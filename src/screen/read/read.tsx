@@ -212,11 +212,9 @@ class Read extends Component<Props, State> {
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const shouldUpdate =
-      nextState.page === this.state.page || nextState.id !== this.state.id;
-    if (!shouldUpdate && this.menuAction) this.menuAction(nextState.page);
+    if (this.menuAction) this.menuAction(nextState.page);
 
-    return shouldUpdate;
+    return nextState.page === this.state.page || nextState.id !== this.state.id;
   }
 
   async loadMore(next: boolean = true, setLastLoad: boolean = true) {

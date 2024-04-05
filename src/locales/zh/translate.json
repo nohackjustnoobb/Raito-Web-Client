@@ -44,7 +44,7 @@
     "auto": "自動",
     "dark": "深色",
     "light": "淺色",
-    "ReaderSettings": "閱讀器設定",
+    "readerSettings": "閱讀器設定",
     "mangaLayout": "漫畫排版",
     "singlePage": "單頁",
     "dualPage": "雙頁",
@@ -141,5 +141,6 @@
     "wrongEmailorPassword": "郵箱或密碼錯誤",
     "imageCacheMaxAge": "圖片緩存最大壽命",
     "noCache": "無緩存",
-    "neverExpired": "永不過期"
+    "neverExpired": "永不過期",
+    "imageSettings": "圖片設定"
 }

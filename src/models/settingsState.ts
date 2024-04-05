@@ -92,9 +92,9 @@ class SettingsState {
       if (numberOfRecordPreviewsString)
         this.numberOfRecordPreviews = Number(numberOfRecordPreviewsString);
 
-      const imageCacheTimeoutString = localStorage.getItem("imageCacheMaxAge");
-      if (imageCacheTimeoutString)
-        this.imageCacheMaxAge = Number(imageCacheTimeoutString);
+      const imageCacheMaxAgeString = localStorage.getItem("imageCacheMaxAge");
+      if (imageCacheMaxAgeString)
+        this.imageCacheMaxAge = Number(imageCacheMaxAgeString);
 
       // experimental functions
       this.experimentalUseZoomablePlugin =

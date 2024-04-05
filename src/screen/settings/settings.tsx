@@ -142,27 +142,6 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
-
-              <div className="options">
-                <span>{this.props.t("imageCacheMaxAge")}</span>
-                <select
-                  value={window.raito.settingsState.imageCacheMaxAge}
-                  onChange={(event) => {
-                    window.raito.settingsState.imageCacheMaxAge = Number(
-                      event.target.value
-                    );
-                    window.raito.settingsState.update();
-                  }}
-                >
-                  {Array.from(Array(8), (_, i) => (
-                    <option value={i === 7 ? 31536000 : i * 3600} key={i}>
-                      {this.props.t(
-                        i === 0 ? "noCache" : i === 7 ? "neverExpired" : `${i}h`
-                      )}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
             <h3>{this.props.t("appearanceSettings")}</h3>
             <div className="subSettings">
@@ -200,9 +179,9 @@ class Settings extends React.Component<Props> {
                     window.updateRoot();
                   }}
                 >
-                  <option value={0}>{this.props.t("Auto")}</option>
-                  <option value={1}>{this.props.t("Dark")}</option>
-                  <option value={2}>{this.props.t("Light")}</option>
+                  <option value={0}>{this.props.t("auto")}</option>
+                  <option value={1}>{this.props.t("dark")}</option>
+                  <option value={2}>{this.props.t("light")}</option>
                 </select>
               </div>
 
@@ -226,7 +205,7 @@ class Settings extends React.Component<Props> {
               </div>
             </div>
 
-            <h3>{this.props.t("ReaderSettings")}</h3>
+            <h3>{this.props.t("readerSettings")}</h3>
             <div className="subSettings">
               <div className="options">
                 <span>{this.props.t("mangaLayout")}: </span>
@@ -239,7 +218,7 @@ class Settings extends React.Component<Props> {
                     window.raito.settingsState.update();
                   }}
                 >
-                  <option value={0}>{this.props.t("Auto")}</option>
+                  <option value={0}>{this.props.t("auto")}</option>
                   <option value={1}>{this.props.t("singlePage")}</option>
                   <option value={2}>{this.props.t("dualPage")}</option>
                 </select>
@@ -271,6 +250,54 @@ class Settings extends React.Component<Props> {
               </div>
             </div>
 
+            <h3>{this.props.t("imageSettings")}</h3>
+            <div className="subSettings">
+              <div className="options">
+                <span>{this.props.t("imageCacheMaxAge")}</span>
+                <select
+                  value={window.raito.settingsState.imageCacheMaxAge}
+                  onChange={(event) => {
+                    window.raito.settingsState.imageCacheMaxAge = Number(
+                      event.target.value
+                    );
+                    window.raito.settingsState.update();
+                  }}
+                >
+                  {Array.from(Array(8), (_, i) => (
+                    <option value={i === 7 ? 31536000 : i * 3600} key={i}>
+                      {this.props.t(
+                        i === 0 ? "noCache" : i === 7 ? "neverExpired" : `${i}h`
+                      )}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="options">
+                <span>{this.props.t("useProxy")}: </span>
+                <Checkbox
+                  checked={window.raito.settingsState.useProxy}
+                  onChange={(_, checked) => {
+                    window.raito.settingsState.useProxy = checked;
+                    window.raito.settingsState.update();
+                  }}
+                />
+              </div>
+
+              {window.raito.settingsState.useProxy && (
+                <div className="options">
+                  <span>{this.props.t("useBase64")}: </span>
+                  <Checkbox
+                    checked={window.raito.settingsState.useBase64}
+                    onChange={(_, checked) => {
+                      window.raito.settingsState.useBase64 = checked;
+                      window.raito.settingsState.update();
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
             <h3>{this.props.t("serverSettings")}</h3>
             <div className="subSettings">
               <div className="options">
@@ -294,29 +321,6 @@ class Settings extends React.Component<Props> {
                   {this.props.t("settings")}
                 </Button>
               </div>
-
-              <div className="options">
-                <span>{this.props.t("useProxy")}: </span>
-                <Checkbox
-                  checked={window.raito.settingsState.useProxy}
-                  onChange={(_, checked) => {
-                    window.raito.settingsState.useProxy = checked;
-                    window.raito.settingsState.update();
-                  }}
-                />
-              </div>
-              {window.raito.settingsState.useProxy && (
-                <div className="options">
-                  <span>{this.props.t("useBase64")}: </span>
-                  <Checkbox
-                    checked={window.raito.settingsState.useBase64}
-                    onChange={(_, checked) => {
-                      window.raito.settingsState.useBase64 = checked;
-                      window.raito.settingsState.update();
-                    }}
-                  />
-                </div>
-              )}
             </div>
 
             {window.raito.settingsState.showDeveloperSettings && (

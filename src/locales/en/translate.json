@@ -44,7 +44,7 @@
     "auto": "Auto",
     "dark": "Dark",
     "light": "Light",
-    "ReaderSettings": "Reader Settings",
+    "readerSettings": "Reader Settings",
     "mangaLayout": "Manga Layout",
     "singlePage": "Single Page",
     "dualPage": "Dual Page",
@@ -141,5 +141,6 @@
     "wrongEmailorPassword": "Wrong Email or Password",
     "imageCacheMaxAge": "Image Cache Max Age",
     "noCache": "No Cache",
-    "neverExpired": "Never Expired"
+    "neverExpired": "Never Expired",
+    "imageSettings": "Image Settings"
 }

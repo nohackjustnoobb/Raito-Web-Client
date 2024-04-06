@@ -168,42 +168,52 @@
         font-weight: bold;
       }
 
-      @mixin overlay($theme: #ff0055aa) {
-        z-index: 2;
+      .tag {
         position: absolute;
-        background-color: $theme;
-        color: white;
-        font-weight: bold;
-        font-size: 1rem;
-        padding: 0.125rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        backdrop-filter: blur(10px);
+        z-index: 1;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 1.5rem;
-        white-space: nowrap;
-      }
+        flex-direction: column;
+        align-items: start;
+        gap: 0.5rem;
+        border-radius: 0.5rem 0 0 0;
+        overflow: hidden;
 
-      .end {
-        @include overlay;
-        border-radius: 0.5rem 0 0.5rem 0;
-      }
+        div {
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          padding: 0.125rem;
+          padding-left: 1rem;
+          padding-right: 1rem;
+          backdrop-filter: blur(10px);
+          border-radius: 0 0.5rem 0.5rem 0;
+          display: flex;
+          justify-content: center;
+          word-break: break-all;
+          align-items: center;
+          min-height: 1.5rem;
+          margin-right: 0.5rem;
+          user-select: all;
+          cursor: text;
 
-      .driverID {
-        @include overlay(#006affaa);
-        border-radius: 0.5rem 0 0 0.5rem;
-        right: 0;
-        bottom: 4.9rem;
-      }
+          &:first-child {
+            border-radius: 0.5rem 0 0.5rem 0;
+          }
+        }
 
-      .mangaID {
-        @include overlay(#006affaa);
-        border-radius: 0.5rem 0 0 0.5rem;
-        right: 0;
+        .end {
+          background-color: #ff0055aa;
+        }
 
-        bottom: 3rem;
+        .driverID {
+          background-color: #006affaa;
+          top: 2rem;
+        }
+
+        .mangaID {
+          background-color: #006affaa;
+          top: 4rem;
+        }
       }
 
       img {

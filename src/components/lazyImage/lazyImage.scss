@@ -14,6 +14,8 @@
     width: 100%;
     margin: 0;
     word-break: break-all;
+    user-select: all;
+    cursor: text;
   }
 
   img {

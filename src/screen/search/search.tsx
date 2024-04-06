@@ -230,12 +230,17 @@ class Search extends Component<Props, State> {
                 onClick={() => manga.pushDetails()}
                 className="manga"
               >
-                {manga.isEnded && (
-                  <div className="end">{this.props.t("end")}</div>
-                )}
-                {window.raito.settingsState.debugMode && (
-                  <div className="mangaID">{manga.id}</div>
-                )}
+                <div className="tag">
+                  {manga.isEnded && (
+                    <div className="end">{this.props.t("end")}</div>
+                  )}
+                  {window.raito.settingsState.debugMode && (
+                    <>
+                      <div className="driverID">{manga.driver.identifier}</div>
+                      <div className="mangaID">{manga.id}</div>
+                    </>
+                  )}
+                </div>
                 <LazyImage src={manga.thumbnail} />
                 <p>{window.raito.translate(manga.title)}</p>
                 <p className="latest">

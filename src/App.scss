@@ -269,45 +269,57 @@
         text-overflow: ellipsis;
       }
 
-      @mixin overlay($theme: #ff0055aa) {
-        z-index: 1;
+      .tag {
         position: absolute;
-        background-color: $theme;
-        color: white;
-        font-weight: bold;
-        font-size: 1rem;
-        padding: 0.125rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        backdrop-filter: blur(10px);
-        border-radius: 0.5rem 0 0.5rem 0;
+        z-index: 1;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 1.5rem;
-        white-space: nowrap;
-      }
+        flex-direction: column;
+        align-items: start;
+        gap: 0.5rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
 
-      .end {
-        @include overlay;
-      }
+        div:first-child {
+          border-radius: 0.5rem 0 0.5rem 0;
+        }
 
-      .new {
-        @include overlay(#00ff22aa);
-      }
+        @mixin overlay($theme: #ff0055aa) {
+          background-color: $theme;
+          color: white;
+          font-weight: bold;
+          font-size: 1rem;
+          padding: 0.125rem;
+          padding-left: 1rem;
+          padding-right: 1rem;
+          backdrop-filter: blur(10px);
+          border-radius: 0 0.5rem 0.5rem 0;
+          display: flex;
+          justify-content: center;
+          word-break: break-all;
+          align-items: center;
+          min-height: 1.5rem;
+          margin-right: 0.5rem;
+        }
 
-      .driverID {
-        @include overlay(#006affaa);
-        border-radius: 0.5rem 0 0 0.5rem;
-        right: 0;
-        bottom: 5.9rem;
-      }
+        .end {
+          @include overlay;
+        }
 
-      .mangaID {
-        @include overlay(#006affaa);
-        border-radius: 0.5rem 0 0 0.5rem;
-        right: 0;
-        bottom: 4rem;
+        .new {
+          @include overlay(#00ff22aa);
+        }
+
+        .driverID {
+          @include overlay(#006affaa);
+          top: 2rem;
+        }
+
+        .mangaID {
+          @include overlay(#006affaa);
+          top: 4rem;
+        }
       }
     }
   }

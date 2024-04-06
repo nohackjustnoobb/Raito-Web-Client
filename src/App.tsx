@@ -256,18 +256,20 @@ class App extends Component<
                         SimpleManga.fromCollection(manga).pushDetails()
                       }
                     >
-                      {manga.isEnd && (
-                        <div className="end">{this.props.t("end")}</div>
-                      )}
-                      {history?.new && !manga.isEnd && (
-                        <div className="new">{this.props.t("update")}</div>
-                      )}
-                      {window.raito.settingsState.debugMode && (
-                        <>
-                          <div className="driverID">{manga.driver}</div>
-                          <div className="mangaID">{manga.id}</div>
-                        </>
-                      )}
+                      <div className="tag">
+                        {manga.isEnd && (
+                          <div className="end">{this.props.t("end")}</div>
+                        )}
+                        {history?.new && !manga.isEnd && (
+                          <div className="new">{this.props.t("update")}</div>
+                        )}
+                        {window.raito.settingsState.debugMode && (
+                          <>
+                            <div className="driverID">{manga.driver}</div>
+                            <div className="mangaID">{manga.id}</div>
+                          </>
+                        )}
+                      </div>
                       <LazyImage src={manga.thumbnail} />
                       <h3>{window.raito.translate(manga.title)}</h3>
                       <h5>

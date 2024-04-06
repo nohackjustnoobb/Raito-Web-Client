@@ -20,6 +20,7 @@ class LazyImage extends Component<
   { isVisible: boolean; url: string | null }
 > {
   isLoading: boolean = false;
+  prevDebugMode: boolean = false;
   ref: HTMLElement | null = null;
   raitoSubscription: RaitoSubscription | null = null;
   observer = new IntersectionObserver(
@@ -44,10 +45,20 @@ class LazyImage extends Component<
   }
 
   componentDidMount() {
+    this.prevDebugMode = window.raito.settingsState.debugMode;
+
     // register for update events
     this.raitoSubscription = listenToEvents(
       [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
-      () => !this.state.url && this.forceUpdate()
+      () => {
+        if (
+          !this.state.url ||
+          window.raito.settingsState.debugMode !== this.prevDebugMode
+        ) {
+          this.prevDebugMode = window.raito.settingsState.debugMode;
+          this.forceUpdate();
+        }
+      }
     );
 
     if (this.props.lazy !== undefined && !this.props.lazy)
@@ -127,6 +138,9 @@ class LazyImage extends Component<
           }
         }}
       >
+        {window.raito.settingsState.debugMode && (
+          <span className="src">{this.props.src}</span>
+        )}
         {(this.props.load === undefined || this.props.load) &&
         this.state.isVisible &&
         this.state.url ? (

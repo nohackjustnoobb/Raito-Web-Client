@@ -160,10 +160,19 @@ class History extends React.Component<
                     </h5>
                     {window.raito.settingsState.debugMode && (
                       <div className="debugInfo">
-                        <h5>
+                        <p>
                           {history.driver} <i>#{history.id}</i>
-                        </h5>
-                        <h5>{date.toLocaleString("en-GB")}</h5>
+                        </p>
+                        <p>
+                          {date.toLocaleString(undefined, {
+                            month: "long",
+                            day: "2-digit",
+                            year: "numeric",
+                            hour12: true,
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
                       </div>
                     )}
                   </div>

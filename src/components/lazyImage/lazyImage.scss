@@ -2,6 +2,19 @@
   overflow: hidden;
   background-color: var(--color-search-background);
   flex-shrink: 0;
+  position: relative;
+
+  .src {
+    position: absolute;
+    bottom: 0;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    opacity: 0.9;
+    font-size: 0.75rem;
+    width: 100%;
+    margin: 0;
+    word-break: break-all;
+  }
 
   img {
     width: 100%;

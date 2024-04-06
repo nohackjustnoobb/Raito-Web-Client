@@ -109,9 +109,11 @@
       .debugInfo {
         margin-top: 0.5rem;
 
-        h5 {
+        p {
           color: #006affaa;
           font-weight: bold;
+          margin: 0;
+          font-weight: normal;
         }
       }
     }

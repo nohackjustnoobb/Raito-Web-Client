@@ -324,6 +324,10 @@ class Manga extends SimpleManga {
    * The authors of the manga.
    */
   authors: Array<string>;
+  /**
+   *  The update time of the latest chapter
+   */
+  updateTime: null | Date = null;
 
   /**
    * Creates an instance of Manga.
@@ -343,6 +347,7 @@ class Manga extends SimpleManga {
       (this.chapters.serial.length === 0
         ? this.chapters.extra[0].title
         : this.chapters.serial[0].title);
+    if (data.updateTime) this.updateTime = new Date(data.updateTime * 1000);
   }
 
   /**

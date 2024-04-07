@@ -278,6 +278,7 @@
       li:not(.vDivider) {
         height: 5rem;
         min-width: 5rem;
+        max-width: 10rem;
         display: flex;
         flex-direction: column;
         align-content: center;

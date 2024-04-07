@@ -142,5 +142,6 @@
     "imageCacheMaxAge": "Image Cache Max Age",
     "noCache": "No Cache",
     "neverExpired": "Never Expired",
-    "imageSettings": "Image Settings"
+    "imageSettings": "Image Settings",
+    "updateTime": "Update Time"
 }

@@ -142,5 +142,6 @@
     "imageCacheMaxAge": "圖片緩存最大壽命",
     "noCache": "無緩存",
     "neverExpired": "永不過期",
-    "imageSettings": "圖片設定"
+    "imageSettings": "圖片設定",
+    "updateTime": "更新時間"
 }

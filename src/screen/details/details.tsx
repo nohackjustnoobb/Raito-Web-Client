@@ -267,6 +267,28 @@ class Details extends Component<Props, State> {
                     window.raito.translate(this.state.manga.latest)}
                 </span>
               </li>
+              {this.state.manga && this.state.manga.updateTime && (
+                <>
+                  <li className="vDivider" />
+                  <li>
+                    <span className="title">{this.props.t("updateTime")}</span>
+                    <span className="content">
+                      {this.state.manga.updateTime.toLocaleString(undefined, {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric",
+                      })}
+                      <br />
+                      {this.state.manga.updateTime.toLocaleString(undefined, {
+                        hour12: true,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </li>
+                </>
+              )}
+
               <li className="vDivider" />
               <li>
                 <span className="title">{this.props.t("source")}</span>

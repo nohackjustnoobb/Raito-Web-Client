@@ -28,6 +28,7 @@ interface State {
   collected: boolean;
   history: history | null;
   isVertical: boolean;
+  showTime: boolean;
 }
 
 class Details extends Component<Props, State> {
@@ -37,6 +38,7 @@ class Details extends Component<Props, State> {
     collected: false,
     history: null,
     isVertical: window.innerWidth < window.innerHeight,
+    showTime: false,
   };
   collectionsSubscription: Subscription | null = null;
   historySubscription: Subscription | null = null;
@@ -270,7 +272,12 @@ class Details extends Component<Props, State> {
               {this.state.manga && this.state.manga.updateTime && (
                 <>
                   <li className="vDivider" />
-                  <li>
+                  <li
+                    onClick={() =>
+                      this.setState({ showTime: !this.state.showTime })
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
                     <span className="title">{this.props.t("updateTime")}</span>
                     <span className="content">
                       {this.state.manga.updateTime.toLocaleString(undefined, {
@@ -279,11 +286,12 @@ class Details extends Component<Props, State> {
                         year: "numeric",
                       })}
                       <br />
-                      {this.state.manga.updateTime.toLocaleString(undefined, {
-                        hour12: true,
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {this.state.showTime &&
+                        this.state.manga.updateTime.toLocaleString(undefined, {
+                          hour12: true,
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                     </span>
                   </li>
                 </>

@@ -304,6 +304,8 @@
 
         .end {
           background-color: #ff0055aa;
+          user-select: none;
+          cursor: inherit;
         }
 
         .driverID {
@@ -318,6 +320,8 @@
 
         .new {
           background-color: #00ff22aa;
+          user-select: none;
+          cursor: inherit;
         }
       }
     }

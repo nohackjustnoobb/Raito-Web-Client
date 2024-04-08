@@ -190,6 +190,8 @@
 
         .end {
           background-color: #ff0055aa;
+          user-select: none;
+          cursor: inherit;
         }
 
         .driverID {

@@ -9,6 +9,7 @@ import { Button, Checkbox } from "@mui/material";
 
 interface Props extends WithTranslation {
   downloadAsPDF: (singleFile: boolean) => void;
+  downloadAsZip: () => void;
 }
 
 class DownloadTypes extends Component<Props> {
@@ -45,10 +46,10 @@ class DownloadTypes extends Component<Props> {
                   value={this.state.type}
                   onChange={(event) => {
                     // TODO
-                    if (event.target.value !== "1")
+                    if (event.target.value === "0")
                       return alert(this.props.t("developing"));
 
-                    this.setState({ type: event.target.value });
+                    this.setState({ type: Number(event.target.value) });
                   }}
                 >
                   <option value={0}>{this.props.t("inApp")}</option>
@@ -89,6 +90,9 @@ class DownloadTypes extends Component<Props> {
                     switch (this.state.type) {
                       case 1:
                         this.props.downloadAsPDF(this.state.singleFile);
+                        break;
+                      case 2:
+                        this.props.downloadAsZip();
                         break;
                     }
                   }}

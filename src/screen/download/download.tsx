@@ -2,11 +2,14 @@ import "./download.scss";
 
 import { Component } from "react";
 
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import JSZip from "jszip";
 import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Manga } from "../../models/manga";
-import { generatePDF } from "../../utils/utils";
+import { sleep } from "../../utils/utils";
 import DownloadTypes from "./downloadTypes";
 
 interface Props extends WithTranslation {
@@ -32,6 +35,53 @@ class Download extends Component<Props> {
     window.showLoader();
 
     try {
+      const generatePDF = async (name: string, imgs: Array<string>) => {
+        if (!imgs.length) return;
+
+        const loadImage = async (src: string) => {
+          const img = new Image();
+          img.src = src;
+          while (!img.complete) await sleep(100);
+          return img;
+        };
+
+        const imgElems: Array<HTMLImageElement> = Array(imgs.length);
+        const promises = [];
+        for (let i = 0; i < imgs.length; i++)
+          promises.push(
+            (async () => {
+              imgElems[i] = await loadImage(imgs[i]);
+            })()
+          );
+        await Promise.all(promises);
+
+        const first = imgElems[0];
+        const pdf = new jsPDF({
+          unit: "px",
+          format: [first.width, first.height],
+          orientation: first.width > first.height ? "l" : "p",
+        });
+        pdf.addImage(first, "webp", 0, 0, first.width, first.height);
+
+        for (let i = 1; i < imgElems.length; i++) {
+          const img = imgElems[i];
+          pdf.addPage(
+            [img.width, img.height],
+            img.width > img.height ? "l" : "p"
+          );
+          pdf.addImage(img, "webp", 0, 0, img.width, img.height);
+        }
+
+        // iOS only
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+          const view = new Uint8Array(pdf.output("arraybuffer"));
+          const blob = new Blob([view], { type: "application/octet-stream" });
+          saveAs(blob, `${name}.pdf`);
+        } else {
+          await pdf.save(`${name}.pdf`, { returnPromise: true });
+        }
+      };
+
       if (singleFile) {
         const sortAndGenerate = async (
           name: string,
@@ -82,6 +132,68 @@ class Download extends Component<Props> {
     window.hideLoader();
   }
 
+  async downloadAsZip() {
+    window.showLoader();
+
+    try {
+      const zip = new JSZip();
+
+      const filterAndAdd = async (
+        name: string,
+        baseChapters: Array<string>
+      ) => {
+        let folder;
+
+        for (const id of baseChapters
+          .filter((v) => this.selected.indexOf(v) >= 0)
+          .reverse()) {
+          if (!folder) folder = zip.folder(name);
+
+          const result = await this.props.manga.getChapter(id, true);
+          if (result.length !== 0 && folder) {
+            const chapterFolder = folder.folder(
+              window.raito.translate(this.props.manga.getChapterById(id)!.title)
+            );
+
+            if (chapterFolder) {
+              const promises = [];
+              for (let i = 0; i < result.length; i++)
+                promises.push(
+                  (async () => {
+                    const img = await fetch(result[i]);
+                    const type = img.headers
+                      .get("Content-Type")
+                      ?.replace("image/", "");
+
+                    if (img.ok && type) {
+                      chapterFolder.file(`${i}.${type}`, await img.blob());
+                    }
+                  })()
+                );
+              await Promise.all(promises);
+            }
+          }
+        }
+      };
+
+      await filterAndAdd(
+        this.props.t("serial"),
+        this.props.manga.chapters.serial.map((v) => v.id)
+      );
+      await filterAndAdd(
+        this.props.t("extra"),
+        this.props.manga.chapters.extra.map((v) => v.id)
+      );
+
+      saveAs(
+        await zip.generateAsync({ type: "blob" }),
+        `${window.raito.translate(this.props.manga.title)}.zip`
+      );
+    } catch {}
+
+    window.hideLoader();
+  }
+
   render() {
     return (
       <div className="downloadWrapper">
@@ -116,6 +228,7 @@ class Download extends Component<Props> {
                     window.stack.push(
                       <DownloadTypes
                         downloadAsPDF={this.downloadAsPDF.bind(this)}
+                        downloadAsZip={this.downloadAsZip.bind(this)}
                       />
                     );
                   }}

@@ -10,6 +10,7 @@ import { Button, Checkbox } from "@mui/material";
 interface Props extends WithTranslation {
   downloadAsPDF: (singleFile: boolean) => void;
   downloadAsZip: () => void;
+  downloadAsPanels: () => void;
 }
 
 class DownloadTypes extends Component<Props> {
@@ -55,6 +56,7 @@ class DownloadTypes extends Component<Props> {
                   <option value={0}>{this.props.t("inApp")}</option>
                   <option value={1}>PDF</option>
                   <option value={2}>ZIP</option>
+                  <option value={3}>Panels{this.props.t("compatible")}</option>
                 </select>
               </div>
               {this.state.type === 1 && (
@@ -93,6 +95,9 @@ class DownloadTypes extends Component<Props> {
                         break;
                       case 2:
                         this.props.downloadAsZip();
+                        break;
+                      case 3:
+                        this.props.downloadAsPanels();
                         break;
                     }
                   }}

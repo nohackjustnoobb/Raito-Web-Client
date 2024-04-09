@@ -150,5 +150,6 @@
     "inApp": "在應用程式中",
     "combineIntoASingleFile": "合併為一個文件",
     "noSelectedChapters": "沒有已選擇章節",
-    "pdfTip": "將圖像轉換為PDF需要一些時間"
+    "pdfTip": "將圖像轉換為PDF需要一些時間",
+    "compatible": "相容"
 }

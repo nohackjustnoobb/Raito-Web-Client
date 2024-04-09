@@ -132,59 +132,33 @@ class Download extends Component<Props> {
     window.hideLoader();
   }
 
-  async downloadAsZip() {
+  async downloadAsCompressed(
+    filterAndAddFunction: (
+      zip: JSZip,
+      name: string,
+      baseChapters: Array<string>
+    ) => Promise<void>
+  ) {
     window.showLoader();
 
     try {
       const zip = new JSZip();
-
-      const filterAndAdd = async (
-        name: string,
-        baseChapters: Array<string>
-      ) => {
-        let folder;
-
-        for (const id of baseChapters
-          .filter((v) => this.selected.indexOf(v) >= 0)
-          .reverse()) {
-          if (!folder) folder = zip.folder(name);
-
-          const result = await this.props.manga.getChapter(id, true);
-          if (result.length !== 0 && folder) {
-            const chapterFolder = folder.folder(
-              window.raito.translate(this.props.manga.getChapterById(id)!.title)
-            );
-
-            if (chapterFolder) {
-              const promises = [];
-              for (let i = 0; i < result.length; i++)
-                promises.push(
-                  (async () => {
-                    const img = await fetch(result[i]);
-                    const type = img.headers
-                      .get("Content-Type")
-                      ?.replace("image/", "");
-
-                    if (img.ok && type) {
-                      chapterFolder.file(`${i}.${type}`, await img.blob());
-                    }
-                  })()
-                );
-              await Promise.all(promises);
-            }
-          }
-        }
-      };
-
-      await filterAndAdd(
-        this.props.t("serial"),
-        this.props.manga.chapters.serial.map((v) => v.id)
-      );
-      await filterAndAdd(
-        this.props.t("extra"),
-        this.props.manga.chapters.extra.map((v) => v.id)
+      const rootFolder = zip.folder(
+        window.raito.translate(this.props.manga.title)
       );
 
+      if (rootFolder) {
+        await filterAndAddFunction(
+          rootFolder,
+          this.props.t("serial"),
+          this.props.manga.chapters.serial.map((v) => v.id)
+        );
+        await filterAndAddFunction(
+          rootFolder,
+          this.props.t("extra"),
+          this.props.manga.chapters.extra.map((v) => v.id)
+        );
+      }
       saveAs(
         await zip.generateAsync({ type: "blob" }),
         `${window.raito.translate(this.props.manga.title)}.zip`
@@ -192,6 +166,95 @@ class Download extends Component<Props> {
     } catch {}
 
     window.hideLoader();
+  }
+
+  async downloadAsZip() {
+    const filterAndAdd = async (
+      zip: JSZip,
+      name: string,
+      baseChapters: Array<string>
+    ) => {
+      let folder;
+
+      for (const id of baseChapters
+        .filter((v) => this.selected.indexOf(v) >= 0)
+        .reverse()) {
+        if (!folder) folder = zip.folder(name);
+
+        const result = await this.props.manga.getChapter(id, true);
+        if (result.length !== 0 && folder) {
+          const chapterFolder = folder.folder(
+            window.raito.translate(this.props.manga.getChapterById(id)!.title)
+          );
+
+          if (chapterFolder) {
+            const promises = [];
+            for (let i = 0; i < result.length; i++)
+              promises.push(
+                (async () => {
+                  const img = await fetch(result[i]);
+                  const type = img.headers
+                    .get("Content-Type")
+                    ?.replace("image/", "");
+
+                  if (img.ok && type)
+                    chapterFolder.file(`${i}.${type}`, await img.blob());
+                })()
+              );
+            await Promise.all(promises);
+          }
+        }
+      }
+    };
+
+    await this.downloadAsCompressed(filterAndAdd);
+  }
+
+  async downloadAsPanels() {
+    const filterAndAdd = async (
+      zip: JSZip,
+      name: string,
+      baseChapters: Array<string>
+    ) => {
+      let folder;
+
+      for (const id of baseChapters
+        .filter((v) => this.selected.indexOf(v) >= 0)
+        .reverse()) {
+        if (!folder) folder = zip.folder(`${name}`);
+
+        const result = await this.props.manga.getChapter(id, true);
+        if (result.length !== 0 && folder) {
+          const chapterZip = new JSZip();
+
+          if (chapterZip) {
+            const promises = [];
+            for (let i = 0; i < result.length; i++)
+              promises.push(
+                (async () => {
+                  const img = await fetch(result[i]);
+                  const type = img.headers
+                    .get("Content-Type")
+                    ?.replace("image/", "");
+
+                  if (img.ok && type)
+                    chapterZip.file(`${i}.${type}`, await img.blob());
+                })()
+              );
+            await Promise.all(promises);
+
+            folder.file(
+              `${window.raito.translate(
+                this.props.manga.getChapterById(id)!.title
+              )}.cbz`,
+              await chapterZip.generateAsync({ type: "blob" })
+            );
+          }
+        }
+      }
+    };
+
+    await this.downloadAsCompressed(filterAndAdd);
   }
 
   render() {
@@ -229,6 +292,7 @@ class Download extends Component<Props> {
                       <DownloadTypes
                         downloadAsPDF={this.downloadAsPDF.bind(this)}
                         downloadAsZip={this.downloadAsZip.bind(this)}
+                        downloadAsPanels={this.downloadAsPanels.bind(this)}
                       />
                     );
                   }}

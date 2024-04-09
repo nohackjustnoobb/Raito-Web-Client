@@ -150,5 +150,6 @@
     "inApp": "In App",
     "combineIntoASingleFile": "Combine Into a Single File",
     "noSelectedChapters": "No Selected Chapters",
-    "pdfTip": "It takes some time to convert images to PDF"
+    "pdfTip": "It takes some time to convert images to PDF",
+    "compatible": " Compatible"
 }

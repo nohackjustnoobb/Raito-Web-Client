@@ -53,7 +53,6 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
             key={index}
             style={{
               zIndex: index + 2,
-              display: index < this.state.stack.length - 2 ? "none" : "block",
             }}
             className="stackScreen"
           >

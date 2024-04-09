@@ -215,14 +215,10 @@
         border-radius: 2.5rem;
         color: var(--color-text);
         background-color: var(--color-background);
-        flex: 1;
         cursor: pointer;
-      }
-
-      .collect {
         display: flex;
         align-items: center;
-        flex: 2;
+        flex: 1;
       }
     }
 

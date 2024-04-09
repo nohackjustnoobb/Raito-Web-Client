@@ -1,3 +1,6 @@
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+
 import Driver from "../models/driver";
 import RaitoEvent from "../models/event";
 import { ReactComponent as Icon } from "./icon.svg";
@@ -78,10 +81,55 @@ const tryInitialize = async (driver: Driver): Promise<boolean> => {
 const sleep = async (duration: number): Promise<void> =>
   new Promise((res) => setTimeout(res, duration));
 
+const generatePDF = async (name: string, imgs: Array<string>) => {
+  if (!imgs.length) return;
+
+  const loadImage = async (src: string) => {
+    const img = new Image();
+    img.src = src;
+    while (!img.complete) await sleep(100);
+    return img;
+  };
+
+  const imgElems: Array<HTMLImageElement> = Array(imgs.length);
+  const promises = [];
+  for (let i = 0; i < imgs.length; i++)
+    promises.push(
+      (async () => {
+        imgElems[i] = await loadImage(imgs[i]);
+      })()
+    );
+  await Promise.all(promises);
+
+  const first = imgElems[0];
+  const pdf = new jsPDF({
+    unit: "px",
+    format: [first.width, first.height],
+    orientation: first.width > first.height ? "l" : "p",
+  });
+  pdf.addImage(first, "webp", 0, 0, first.width, first.height);
+
+  for (let i = 1; i < imgElems.length; i++) {
+    const img = imgElems[i];
+    pdf.addPage([img.width, img.height], img.width > img.height ? "l" : "p");
+    pdf.addImage(img, "webp", 0, 0, img.width, img.height);
+  }
+
+  // iOS only
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    const view = new Uint8Array(pdf.output("arraybuffer"));
+    const blob = new Blob([view], { type: "application/octet-stream" });
+    saveAs(blob, `${name}.pdf`);
+  } else {
+    await pdf.save(`${name}.pdf`, { returnPromise: true });
+  }
+};
+
 export {
   convertRemToPixels,
   dispatchEvent,
   errorHandler,
+  generatePDF,
   getCssVariable,
   Icon as AppIcon,
   listenToEvents,

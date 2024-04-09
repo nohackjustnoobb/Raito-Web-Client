@@ -143,5 +143,12 @@
     "noCache": "無緩存",
     "neverExpired": "永不過期",
     "imageSettings": "圖片設定",
-    "updateTime": "更新時間"
+    "updateTime": "更新時間",
+    "download": "下載",
+    "selectChapters": "選擇章節",
+    "downloadType": "下載類型",
+    "inApp": "在應用程式中",
+    "combineIntoASingleFile": "合併為一個文件",
+    "noSelectedChapters": "沒有已選擇章節",
+    "pdfTip": "將圖像轉換為PDF需要一些時間"
 }

@@ -5,7 +5,12 @@ import { Component, ReactNode } from "react";
 import { liveQuery, Subscription } from "dexie";
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiBookmark, mdiBookmarkOffOutline, mdiExportVariant } from "@mdi/js";
+import {
+  mdiBookmark,
+  mdiBookmarkOffOutline,
+  mdiDownload,
+  mdiExportVariant,
+} from "@mdi/js";
 import Icon from "@mdi/react";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
@@ -14,6 +19,7 @@ import db, { history } from "../../models/db";
 import RaitoEvent from "../../models/event";
 import { Manga, SimpleManga } from "../../models/manga";
 import { listenToEvents, RaitoSubscription } from "../../utils/utils";
+import Download from "../download/download";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -211,7 +217,6 @@ class Details extends Component<Props, State> {
             </div>
             <ul className="otherButtons">
               <li
-                className="collect"
                 onClick={() => {
                   if (this.state.collected) {
                     this.state.manga?.remove();
@@ -230,7 +235,14 @@ class Details extends Component<Props, State> {
                   {this.props.t(this.state.collected ? "added" : "add")}
                 </span>
               </li>
-              <li>{this.props.t("developing")}</li>
+              <li
+                onClick={() =>
+                  window.stack.push(<Download manga={this.state.manga!} />)
+                }
+              >
+                <Icon path={mdiDownload} size={1.25} />{" "}
+                <span>{this.props.t("download")}</span>
+              </li>
             </ul>
             <div className="divider" />
             <div className="description">

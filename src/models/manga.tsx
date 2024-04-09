@@ -391,7 +391,10 @@ class Manga extends SimpleManga {
    * @param chapterId The id of the chapter. (required)
    * @returns
    */
-  async getChapter(chapterId: string): Promise<Array<string>> {
+  async getChapter(
+    chapterId: string,
+    forceProxy: boolean = false
+  ): Promise<Array<string>> {
     if (this.driver.isDown) {
       alert(`${this.driver.identifier}${i18next.t("isDown")}`);
       return [];
@@ -401,7 +404,7 @@ class Manga extends SimpleManga {
       driver: this.driver.identifier,
       id: chapterId,
       "extra-data": this.chapters.extraData,
-      proxy: window.raito.settingsState.useProxy ? "1" : "0",
+      proxy: forceProxy || window.raito.settingsState.useProxy ? "1" : "0",
     });
 
     if (!result) {

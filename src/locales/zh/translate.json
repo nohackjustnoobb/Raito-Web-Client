@@ -151,5 +151,8 @@
     "combineIntoASingleFile": "合併為一個文件",
     "noSelectedChapters": "沒有已選擇章節",
     "pdfTip": "將圖像轉換為PDF需要一些時間",
-    "compatible": "相容"
+    "compatible": "相容",
+    "downloading": "下載中",
+    "fetchingInfo": "獲取資訊中",
+    "generating": "生成中"
 }

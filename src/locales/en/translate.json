@@ -151,5 +151,8 @@
     "combineIntoASingleFile": "Combine Into a Single File",
     "noSelectedChapters": "No Selected Chapters",
     "pdfTip": "It takes some time to convert images to PDF",
-    "compatible": " Compatible"
+    "compatible": " Compatible",
+    "downloading": "Downloading",
+    "fetchingInfo": "Fetching Info",
+    "generating": "Generating"
 }

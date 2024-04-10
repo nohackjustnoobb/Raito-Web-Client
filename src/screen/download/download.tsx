@@ -143,7 +143,7 @@ class Download extends Component<Props> {
         ) => {
           const urls: Array<string> = [];
 
-          progress[name] = { name: name, value: "fetchingInfo" };
+          progress[name] = { name: name, value: this.props.t("fetchingInfo") };
           this.setState({ progress: progress });
 
           for (const id of sortedChapters
@@ -159,6 +159,7 @@ class Download extends Component<Props> {
               urls,
               name
             );
+          else delete progress[name];
         };
 
         const promises = [];
@@ -189,7 +190,10 @@ class Download extends Component<Props> {
                 this.props.manga.getChapterById(id)!.title
               );
 
-              progress[id] = { name: title, value: "fetchingInfo" };
+              progress[id] = {
+                name: title,
+                value: this.props.t("fetchingInfo"),
+              };
               this.setState({ progress: progress });
 
               const result = await this.props.manga.getChapter(id, true);
@@ -286,7 +290,7 @@ class Download extends Component<Props> {
               this.props.manga.getChapterById(id)!.title
             );
 
-            progress[id] = { name: title, value: "fetchingInfo" };
+            progress[id] = { name: title, value: this.props.t("fetchingInfo") };
             this.setState({ progress: progress });
             const result = await this.props.manga.getChapter(id, true);
 
@@ -350,7 +354,7 @@ class Download extends Component<Props> {
               this.props.manga.getChapterById(id)!.title
             );
 
-            progress[id] = { name: title, value: "fetchingInfo" };
+            progress[id] = { name: title, value: this.props.t("fetchingInfo") };
             this.setState({ progress: progress });
             const result = await this.props.manga.getChapter(id, true);
 

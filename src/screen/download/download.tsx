@@ -430,7 +430,27 @@ class Download extends Component<Props> {
                 <span onClick={() => this.close()}>
                   {this.props.t("cancel")}
                 </span>
-                <b>{this.props.t("selectChapters")}</b>
+                <b
+                  onClick={() => {
+                    const chapterIds = (
+                      this.state.extra
+                        ? this.props.manga.chapters.extra
+                        : this.props.manga.chapters.serial
+                    ).map((chapter) => chapter.id);
+                    const isSelected = (id: string) =>
+                      this.selected.includes(id);
+
+                    if (chapterIds.some((id) => isSelected(id)))
+                      this.selected = this.selected.filter(
+                        (id) => !chapterIds.includes(id)
+                      );
+                    else this.selected.push(...chapterIds);
+
+                    this.forceUpdate();
+                  }}
+                >
+                  {this.props.t("selectChapters")}
+                </b>
                 <span
                   onClick={() => {
                     if (!this.selected.length)

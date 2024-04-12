@@ -46,6 +46,8 @@ window.raito.initialize().then(async () => {
     const id = params.get("id");
 
     if (driver && id) {
+      while (!Driver.getOrCreate(driver).initialized) await sleep(250);
+
       // show share and reset url
       const result = await SimpleManga.get(driver, id);
       if (result) (result as SimpleManga).pushDetails();

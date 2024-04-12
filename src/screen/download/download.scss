@@ -75,6 +75,15 @@
     .controller {
       display: flex;
       justify-content: space-between;
+      position: relative;
+
+      b {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+      }
 
       span {
         cursor: pointer;

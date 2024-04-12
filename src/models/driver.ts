@@ -94,9 +94,11 @@ class Driver {
    */
   static getOrCreate(id: string, server: Server | null = null): Driver {
     // try get the driver
-    let driver = window.raito.availableDrivers.find((v) => v.identifier === id);
+    let driver = window.raito.availableDrivers.find(
+      (v) => v.identifier === id.toUpperCase()
+    );
     if (!driver) {
-      driver = new Driver(id, server);
+      driver = new Driver(id.toUpperCase(), server);
       window.raito.availableDrivers.push(driver);
     } else if (server !== null) {
       // replace the server if it already exists

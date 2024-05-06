@@ -1,6 +1,5 @@
-import { dispatchEvent } from "../utils/utils";
 import Driver from "./driver";
-import RaitoEvent from "./event";
+import { dispatchEvent, RaitoEvents } from "./events";
 import Server from "./server";
 import Theme from "./theme";
 
@@ -156,7 +155,7 @@ class SettingsState {
       else this.currentTheme = null;
     } else Theme.reset();
 
-    dispatchEvent(RaitoEvent.settingsChanged);
+    dispatchEvent(RaitoEvents.settingsChanged);
   }
 
   async useSettings(encodedSettings: string) {
@@ -179,7 +178,7 @@ class SettingsState {
           }
     }
 
-    dispatchEvent(RaitoEvent.settingsChanged);
+    dispatchEvent(RaitoEvents.settingsChanged);
   }
 
   async saveSettings(encoded: string | null = null) {
@@ -212,7 +211,7 @@ class SettingsState {
     }
 
     localStorage.setItem("settings", encodedSettings);
-    dispatchEvent(RaitoEvent.settingsChanged);
+    dispatchEvent(RaitoEvents.settingsChanged);
   }
 
   async initialize(): Promise<boolean> {

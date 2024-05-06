@@ -4,8 +4,12 @@ import { Component, ReactNode } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
-import RaitoEvent from "../../models/event";
-import { listenToEvents, RaitoSubscription, sleep } from "../../utils/utils";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
+import { sleep } from "../../utils/utils";
 
 type Props = {
   src: string;
@@ -49,7 +53,7 @@ class LazyImage extends Component<
 
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
+      [RaitoEvents.settingsChanged, RaitoEvents.screenChanged],
       () => {
         if (
           !this.state.url ||

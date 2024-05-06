@@ -59,6 +59,15 @@ html[data-theme="dark"] {
     background-color: var(--color-sub-background);
     padding: 1rem;
     color: red;
+    max-width: calc(100% - 4rem);
+    white-space: pre-wrap;
+    max-height: 70%;
+    overflow: scroll;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   div {

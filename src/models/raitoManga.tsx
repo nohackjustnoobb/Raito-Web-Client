@@ -1,10 +1,10 @@
 import { md5 } from "js-md5";
 import chinese from "s2t-chinese";
 
-import { dispatchEvent, sleep } from "../utils/utils";
+import { sleep } from "../utils/utils";
 import db from "./db";
 import Driver from "./driver";
-import RaitoEvent from "./event";
+import { dispatchEvent, RaitoEvents } from "./events";
 import { Manga } from "./manga";
 import Server from "./server";
 import SettingsState from "./settingsState";
@@ -114,7 +114,7 @@ class RaitoManga {
     // function for updating the state
     const updateState = () => {
       this.updateCollectionsState.currentState = `${counter} / ${collections.length}`;
-      dispatchEvent(RaitoEvent.updateCollectionsStateChanged);
+      dispatchEvent(RaitoEvents.updateCollectionsStateChanged);
     };
     updateState();
 
@@ -133,7 +133,7 @@ class RaitoManga {
     this.updateCollectionsState.lastUpdate = Date.now();
     this.updateCollectionsState.isUpdating = false;
     this.updateCollectionsState.currentState = undefined;
-    dispatchEvent(RaitoEvent.updateCollectionsStateChanged);
+    dispatchEvent(RaitoEvents.updateCollectionsStateChanged);
   }
 
   async getHashes(): Promise<SyncHashes> {
@@ -274,7 +274,7 @@ class RaitoManga {
     this.syncState.isSyncing = true;
 
     this.syncState.currentState = "checkingHashes";
-    dispatchEvent(RaitoEvent.syncStateChanged);
+    dispatchEvent(RaitoEvents.syncStateChanged);
 
     const hashes = await this.getHashes();
     const result = await this.syncServer.get("sync");
@@ -284,7 +284,7 @@ class RaitoManga {
       if (remoteHashes.settings !== hashes.settings) {
         // update state
         this.syncState.currentState = "syncingSettings";
-        dispatchEvent(RaitoEvent.syncStateChanged);
+        dispatchEvent(RaitoEvents.syncStateChanged);
 
         await this.syncSettings();
       }
@@ -292,7 +292,7 @@ class RaitoManga {
       if (remoteHashes.history !== hashes.history) {
         // update state
         this.syncState.currentState = "syncingHistory";
-        dispatchEvent(RaitoEvent.syncStateChanged);
+        dispatchEvent(RaitoEvents.syncStateChanged);
 
         // sync the history
         await this.syncHistory();
@@ -301,7 +301,7 @@ class RaitoManga {
       if (remoteHashes.collections !== hashes.collections) {
         // update state
         this.syncState.currentState = "syncingCollection";
-        dispatchEvent(RaitoEvent.syncStateChanged);
+        dispatchEvent(RaitoEvents.syncStateChanged);
 
         // sync the collections
         await this.syncCollections();
@@ -312,7 +312,7 @@ class RaitoManga {
     this.isHistoryChanged = false;
     this.syncState.lastSync = Date.now();
     this.syncState.currentState = undefined;
-    dispatchEvent(RaitoEvent.syncStateChanged);
+    dispatchEvent(RaitoEvents.syncStateChanged);
   }
 
   translate(text: string): string {
@@ -326,19 +326,16 @@ class RaitoManga {
 
     if (!this.settingsState.formatChapterTitle) return result;
 
-    let match = result.match(/第([\d.]+(?:-[\d.]+)?)[話话回]/);
-    if (match && match[1]) {
-      result = match[1].replace(/^0+/, "").padStart(1, "0");
-    }
-
-    match = result.match(
-      /(?:周刊版?|週刊版?|連載版?|连载版?)\s?([\d.]+(?:-[\d.]+)?)/
+    let match = result.match(
+      /(?:周刊版?|週刊版?|連載版?|连载版?).*?([\d.]+(?:-[\d.]+)?)/
     );
-    if (match && match[1]) {
-      result = "連載" + match[1].padStart(2, "0");
-    }
+    if (match && match[1]) return "連載" + match[1].padStart(2, "0");
 
-    result = result.replace(/第0+(\d+)卷/g, "第$1卷");
+    match = result.match(/第([\d.]+(?:-[\d.]+)?)[話话回]/);
+    if (match && match[1]) return match[1].replace(/^0+/, "").padStart(1, "0");
+
+    match = result.match(/第0+(\d+)卷/);
+    if (match && match[1]) return `第${match[1]}卷`;
 
     return result;
   }

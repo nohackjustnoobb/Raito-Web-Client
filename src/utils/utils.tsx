@@ -1,5 +1,4 @@
 import Driver from "../models/driver";
-import RaitoEvent from "../models/event";
 import { ReactComponent as Icon } from "./icon.svg";
 
 const convertRemToPixels = (rem: number): number =>
@@ -34,33 +33,6 @@ const errorHandler = async (response: Response) => {
   }
 };
 
-const dispatchEvent = (eventId: RaitoEvent) => {
-  const event = new Event(eventId);
-  window.dispatchEvent(event);
-};
-
-class RaitoSubscription {
-  constructor(public eventIds: Array<RaitoEvent>, public action: () => void) {}
-
-  subscribe() {
-    this.eventIds.forEach((event) =>
-      window.addEventListener(event, () => this.action(), false)
-    );
-  }
-
-  unsubscribe() {
-    this.eventIds.forEach((event) =>
-      window.removeEventListener(event, () => this.action(), false)
-    );
-  }
-}
-
-const listenToEvents = (eventIds: Array<RaitoEvent>, action: () => void) => {
-  const subscription = new RaitoSubscription(eventIds, action);
-  subscription.subscribe();
-  return subscription;
-};
-
 const tryInitialize = async (driver: Driver): Promise<boolean> => {
   if (driver.initialized) return true;
 
@@ -80,12 +52,9 @@ const sleep = async (duration: number): Promise<void> =>
 
 export {
   convertRemToPixels,
-  dispatchEvent,
   errorHandler,
   getCssVariable,
   Icon as AppIcon,
-  listenToEvents,
-  RaitoSubscription,
   sleep,
   tryInitialize,
 };

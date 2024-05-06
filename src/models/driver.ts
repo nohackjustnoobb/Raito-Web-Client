@@ -1,8 +1,8 @@
 import i18next from "i18next";
 
-import { dispatchEvent, tryInitialize } from "../utils/utils";
+import { tryInitialize } from "../utils/utils";
 import db from "./db";
-import RaitoEvent from "./event";
+import { dispatchEvent, RaitoEvents } from "./events";
 import { Manga, SimpleManga } from "./manga";
 import Server from "./server";
 
@@ -141,7 +141,7 @@ class Driver {
     if (!window.raito.selectedDriver.initialized)
       await window.raito.selectedDriver.initialize();
 
-    dispatchEvent(RaitoEvent.driverChanged);
+    dispatchEvent(RaitoEvents.driverChanged);
   }
 
   /**
@@ -185,7 +185,7 @@ class Driver {
     this.initialized = true;
 
     // update the screens
-    dispatchEvent(RaitoEvent.driverChanged);
+    dispatchEvent(RaitoEvents.driverChanged);
   }
 
   /**
@@ -500,7 +500,7 @@ class Driver {
     };
     this.isDown = !this.onlineStatus.online;
 
-    if (this.onlineStatus.online) dispatchEvent(RaitoEvent.driverChanged);
+    if (this.onlineStatus.online) dispatchEvent(RaitoEvents.driverChanged);
   }
 }
 

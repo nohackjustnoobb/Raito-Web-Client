@@ -5,10 +5,13 @@ import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
-import RaitoEvent from "../../models/event";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
 import { Chapter, Manga } from "../../models/manga";
 import { DisplayMode } from "../../models/settingsState";
-import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import Menu from "./menu";
 import Warning from "./warning";
 
@@ -96,7 +99,7 @@ class Read extends Component<Props, State> {
 
   async componentDidMount() {
     // register for update events
-    this.raitoSubscription = listenToEvents([RaitoEvent.screenChanged], () => {
+    this.raitoSubscription = listenToEvents([RaitoEvents.screenChanged], () => {
       if (this.isHidden) return;
 
       // cache the page and index before updating

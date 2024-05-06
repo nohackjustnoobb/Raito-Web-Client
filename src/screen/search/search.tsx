@@ -11,13 +11,13 @@ import Icon from "@mdi/react";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import Driver from "../../models/driver";
-import RaitoEvent from "../../models/event";
-import { SimpleManga } from "../../models/manga";
 import {
-  convertRemToPixels,
   listenToEvents,
+  RaitoEvents,
   RaitoSubscription,
-} from "../../utils/utils";
+} from "../../models/events";
+import { SimpleManga } from "../../models/manga";
+import { convertRemToPixels } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -50,7 +50,7 @@ class Search extends Component<Props, State> {
   componentDidMount() {
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.driverChanged],
+      [RaitoEvents.driverChanged],
       this.forceUpdate.bind(this)
     );
 
@@ -168,8 +168,6 @@ class Search extends Component<Props, State> {
 
               // set timeout
               this.timeoutId = setTimeout(async () => {
-                console.log(this.state.keyword);
-
                 if (this.state.keyword && window.raito.selectedDriver)
                   this.setState({
                     suggestions:

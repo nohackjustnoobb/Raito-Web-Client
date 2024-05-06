@@ -11,13 +11,13 @@ import Icon from "@mdi/react";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import Driver, { Status } from "../../models/driver";
-import RaitoEvent from "../../models/event";
-import { SimpleManga } from "../../models/manga";
 import {
-  convertRemToPixels,
   listenToEvents,
+  RaitoEvents,
   RaitoSubscription,
-} from "../../utils/utils";
+} from "../../models/events";
+import { SimpleManga } from "../../models/manga";
+import { convertRemToPixels } from "../../utils/utils";
 import Search from "../search/search";
 import makeSwipeable, {
   InjectedSwipeableProps,
@@ -39,7 +39,7 @@ class Library extends Component<
   componentDidMount() {
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.driverChanged],
+      [RaitoEvents.driverChanged],
       this.forceUpdate.bind(this)
     );
     this.forceUpdate();

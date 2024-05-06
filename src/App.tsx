@@ -17,13 +17,13 @@ import Icon from "@mdi/react";
 
 import LazyImage from "./components/lazyImage/lazyImage";
 import db, { collection, history } from "./models/db";
-import RaitoEvent from "./models/event";
+import { listenToEvents, RaitoEvents } from "./models/events";
 import { Manga, SimpleManga } from "./models/manga";
 import History from "./screen/history/history";
 import Library from "./screen/library/library";
 import Search from "./screen/search/search";
 import Settings from "./screen/settings/settings";
-import { AppIcon, listenToEvents } from "./utils/utils";
+import { AppIcon } from "./utils/utils";
 
 const filters = ["all", "update", "end"];
 
@@ -41,7 +41,7 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   componentDidMount() {
     // register for update events
     listenToEvents(
-      [RaitoEvent.updateCollectionsStateChanged, RaitoEvent.syncStateChanged],
+      [RaitoEvents.updateCollectionsStateChanged, RaitoEvents.syncStateChanged],
       this.forceUpdate.bind(this)
     );
 

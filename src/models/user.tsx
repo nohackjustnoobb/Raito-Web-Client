@@ -1,7 +1,6 @@
 import Login from "../screen/login/login";
-import { dispatchEvent } from "../utils/utils";
 import db from "./db";
-import RaitoEvent from "./event";
+import { dispatchEvent, RaitoEvents } from "./events";
 
 class User {
   token: string | null;
@@ -46,7 +45,7 @@ class User {
       // sync the collections and histories
       window.raito.sync();
 
-      dispatchEvent(RaitoEvent.settingsChanged);
+      dispatchEvent(RaitoEvents.settingsChanged);
     }
 
     return result.ok;
@@ -62,7 +61,7 @@ class User {
     localStorage.removeItem("lastSync");
 
     // update the screens
-    dispatchEvent(RaitoEvent.settingsChanged);
+    dispatchEvent(RaitoEvents.settingsChanged);
   }
 
   async getInfo() {

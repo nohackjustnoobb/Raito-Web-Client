@@ -11,14 +11,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import App from "./App";
 import Loader from "./components/loader/loader";
 import Driver from "./models/driver";
-import RaitoEvent from "./models/event";
+import { dispatchEvent, RaitoEvents } from "./models/events";
 import { SimpleManga } from "./models/manga";
 import RaitoManga from "./models/raitoManga";
 import { Theme } from "./models/settingsState";
 import Search from "./screen/search/search";
 import StackView, { Stack } from "./screen/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { dispatchEvent, getCssVariable, sleep } from "./utils/utils";
+import { getCssVariable, sleep } from "./utils/utils";
 
 // declare global variables
 declare global {
@@ -59,10 +59,10 @@ window.raito.initialize().then(async () => {
 
 // update the screen when screen rotate or resize
 window.addEventListener("resize", () =>
-  dispatchEvent(RaitoEvent.screenChanged)
+  dispatchEvent(RaitoEvents.screenChanged)
 );
 window.addEventListener("orientationchange", () =>
-  dispatchEvent(RaitoEvent.screenChanged)
+  dispatchEvent(RaitoEvents.screenChanged)
 );
 
 // reset the update and sync state when site is minimized

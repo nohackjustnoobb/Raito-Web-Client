@@ -16,9 +16,12 @@ import Icon from "@mdi/react";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import db, { history } from "../../models/db";
-import RaitoEvent from "../../models/event";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
 import { Manga, SimpleManga } from "../../models/manga";
-import { listenToEvents, RaitoSubscription } from "../../utils/utils";
 import Download from "../download/download";
 import makeSwipeable, {
   InjectedSwipeableProps,
@@ -52,7 +55,7 @@ class Details extends Component<Props, State> {
 
   async componentDidMount() {
     // register for update events
-    this.raitoSubscription = listenToEvents([RaitoEvent.screenChanged], () => {
+    this.raitoSubscription = listenToEvents([RaitoEvents.screenChanged], () => {
       const isVertical = window.innerWidth < window.innerHeight;
       if (isVertical !== this.state.isVertical)
         this.setState({ isVertical: isVertical });

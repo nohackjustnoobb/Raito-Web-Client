@@ -6,8 +6,11 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, Checkbox } from "@mui/material";
 
-import RaitoEvent from "../../models/event";
-import { listenToEvents, RaitoSubscription } from "../../utils/utils";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
@@ -18,7 +21,7 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
 
   componentDidMount() {
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.settingsChanged],
+      [RaitoEvents.settingsChanged],
       this.forceUpdate.bind(this)
     );
 

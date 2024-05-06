@@ -10,8 +10,11 @@ import { Button, Checkbox } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
-import RaitoEvent from "../../models/event";
-import { listenToEvents, RaitoSubscription } from "../../utils/utils";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";
 import ManageThemes from "../manageThemes/manageThemes";
@@ -30,7 +33,7 @@ class Settings extends React.Component<Props> {
   componentDidMount() {
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
+      [RaitoEvents.settingsChanged, RaitoEvents.screenChanged],
       this.forceUpdate.bind(this)
     );
   }
@@ -392,7 +395,7 @@ class Settings extends React.Component<Props> {
           <p className="credit">
             This application is released under the MIT license. (
             <a
-              href="https://github.com/nohackjustnoobb/Raito-Web-Client"
+              href="https://github.com/nohackjustnoobb/Raito-Manga"
               target={"_blank"}
               rel="noreferrer"
             >

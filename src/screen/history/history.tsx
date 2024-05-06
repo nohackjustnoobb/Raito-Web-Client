@@ -12,13 +12,13 @@ import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import db, { history } from "../../models/db";
 import Driver from "../../models/driver";
-import RaitoEvent from "../../models/event";
-import { Manga } from "../../models/manga";
 import {
-  convertRemToPixels,
   listenToEvents,
+  RaitoEvents,
   RaitoSubscription,
-} from "../../utils/utils";
+} from "../../models/events";
+import { Manga } from "../../models/manga";
+import { convertRemToPixels } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -45,7 +45,7 @@ class History extends React.Component<
   componentDidMount() {
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.settingsChanged, RaitoEvent.screenChanged],
+      [RaitoEvents.settingsChanged, RaitoEvents.screenChanged],
       this.forceUpdate.bind(this)
     );
 

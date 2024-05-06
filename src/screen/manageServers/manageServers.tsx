@@ -9,8 +9,11 @@ import Icon from "@mdi/react";
 import { Button } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
-import RaitoEvent from "../../models/event";
-import { listenToEvents, RaitoSubscription } from "../../utils/utils";
+import {
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -24,7 +27,7 @@ class ManageServers extends Component<Props> {
   componentDidMount() {
     // register for update events
     this.raitoSubscription = listenToEvents(
-      [RaitoEvent.settingsChanged],
+      [RaitoEvents.settingsChanged],
       this.forceUpdate.bind(this)
     );
   }

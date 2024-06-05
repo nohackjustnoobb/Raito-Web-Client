@@ -4,6 +4,7 @@ enum RaitoEvents {
   syncStateChanged = "syncStateChanged",
   updateCollectionsStateChanged = "updateCollectionsStateChanged",
   screenChanged = "screenChanged",
+  downloadChanged = "downloadChanged",
 }
 
 const dispatchEvent = (eventId: RaitoEvents) => {

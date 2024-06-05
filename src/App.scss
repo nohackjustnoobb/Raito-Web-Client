@@ -215,6 +215,63 @@
       margin-top: 1rem;
     }
 
+    #downloadTasks {
+      flex: 1;
+      flex-grow: 0;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      display: flex;
+      margin-top: 1rem;
+      gap: 1rem;
+      flex-direction: column;
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        .imgWrapper {
+          border-radius: 0.5rem;
+          aspect-ratio: 9/12;
+          width: 6rem;
+        }
+
+        div {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .info {
+          width: calc(100% - 7rem);
+
+          .options {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            margin-top: 1rem;
+
+            button {
+              flex: 1;
+            }
+          }
+        }
+
+        b {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        p {
+          opacity: 0.4;
+          margin: 0;
+          margin-top: 0.25rem;
+        }
+      }
+    }
+
     #empty {
       flex: 1;
       display: flex;

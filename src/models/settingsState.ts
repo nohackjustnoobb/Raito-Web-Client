@@ -215,7 +215,7 @@ class SettingsState {
   }
 
   async initialize(): Promise<boolean> {
-    // load the settings
+    // load the remote settings
     const trySettings = localStorage.getItem("settings");
     if (trySettings) await this.useSettings(trySettings);
 

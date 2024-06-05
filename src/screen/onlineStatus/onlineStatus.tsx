@@ -49,9 +49,9 @@ class OnlineStatus extends Component<
               <h5>
                 {this.state.isLoading
                   ? this.props.t("updating")
-                  : window.raito.lastCheckOnDriverStatus
+                  : window.raito.statusManager.lastCheck
                   ? `${this.props.t("updated")} ${Math.round(
-                      (Date.now() - window.raito.lastCheckOnDriverStatus!) /
+                      (Date.now() - window.raito.statusManager.lastCheck!) /
                         1000
                     )} ${this.props.t("secondsAgo")}`
                   : this.props.t("noStatus")}
@@ -98,7 +98,7 @@ class OnlineStatus extends Component<
                   onClick={async () => {
                     if (!this.state.isLoading) {
                       this.setState({ isLoading: true });
-                      await window.raito.checkOnlineStatus(true);
+                      await window.raito.statusManager.checkOnlineStatus(true);
                       this.setState({ isLoading: false });
                     }
                   }}

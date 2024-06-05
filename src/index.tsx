@@ -68,7 +68,7 @@ window.addEventListener("orientationchange", () =>
 // reset the update and sync state when site is minimized
 document.addEventListener("visibilitychange", async () => {
   window.raito.updateCollectionsState.isUpdating = false;
-  window.raito.syncState.isSyncing = false;
+  window.raito.syncManager.state.isSyncing = false;
 
   // update the collections if not updated for 30 seconds
   if (
@@ -82,7 +82,6 @@ document.addEventListener("visibilitychange", async () => {
 
 // main entry point
 class Main extends Component<{}, { dark: boolean }> {
-  isLoading = false;
   state = {
     dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
   };
@@ -98,32 +97,6 @@ class Main extends Component<{}, { dark: boolean }> {
       .addEventListener("change", ({ matches }) =>
         this.setState({ dark: matches })
       );
-
-    // clear the cache
-    setInterval(() => Driver.clearCache(), 7200000);
-
-    // check if any things is down
-    setInterval(async () => {
-      const disabledDriver: Array<Driver> =
-        window.raito.availableDrivers.filter(
-          (driver) => driver.isDown || driver.server?.isDown
-        );
-      if (!disabledDriver.length || this.isLoading) return;
-
-      this.isLoading = true;
-      await window.raito.checkOnlineStatus();
-      this.isLoading = false;
-    }, 5000);
-
-    // sync every 30 seconds
-    setInterval(() => {
-      if (
-        window.raito.isHistoryChanged ||
-        (window.raito.syncState.lastSync &&
-          window.raito.syncState.lastSync + 30000 <= Date.now())
-      )
-        window.raito.sync();
-    }, 5000);
 
     const checkCssVariable = () => {
       if (!getCssVariable("--color-primary")) {

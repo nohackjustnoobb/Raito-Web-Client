@@ -17,19 +17,16 @@
     transition: transform 500ms;
   }
 
-  .background-enter,
-  .progress-enter {
+  .background-enter {
     opacity: 0;
   }
 
-  .background-enter-active,
-  .progress-enter-active {
+  .background-enter-active {
     transition: opacity 500ms;
     opacity: 1;
   }
 
-  .background-exit-active,
-  .progress-exit-active {
+  .background-exit-active {
     opacity: 0;
     transition: opacity 500ms;
   }
@@ -200,64 +197,6 @@
 
       .chapters {
         padding-bottom: max(1rem, env(safe-area-inset-bottom));
-      }
-    }
-  }
-
-  .progress {
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    color: var(--color-text);
-    z-index: 3;
-
-    .content {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      background-color: var(--color-background);
-      top: 50%;
-      left: 50%;
-      min-width: 15rem;
-      max-width: 55%;
-      max-height: 65%;
-      border-radius: 1rem;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      ul {
-        list-style-type: none;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        margin-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        overflow-y: scroll;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-          display: none;
-        }
-
-        li {
-          display: flex;
-          align-items: center;
-          width: 100%;
-          gap: 1rem;
-        }
-      }
-    }
-
-    @media screen and (max-width: 100vh) {
-      .content {
-        width: calc(100% - 4rem);
-        max-width: 100%;
       }
     }
   }

@@ -43,7 +43,7 @@ class User {
       localStorage.setItem("email", this.email!);
 
       // sync the collections and histories
-      window.raito.sync();
+      window.raito.syncManager.sync();
 
       dispatchEvent(RaitoEvents.settingsChanged);
     }

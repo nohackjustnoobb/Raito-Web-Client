@@ -150,9 +150,14 @@
     "inApp": "In App",
     "combineIntoASingleFile": "Combine Into a Single File",
     "noSelectedChapters": "No Selected Chapters",
-    "pdfTip": "It takes some time to convert images to PDF",
+    "pdfTip": "Downloading as a PDF is not recommended due to performance issues",
     "compatible": " Compatible",
     "downloading": "Downloading",
+    "waiting": "Waiting",
+    "save": "Save",
     "fetchingInfo": "Fetching Info",
-    "generating": "Generating"
+    "generating": "Generating",
+    "check": "Check",
+    "hide": "Hide",
+    "done": "Done"
 }

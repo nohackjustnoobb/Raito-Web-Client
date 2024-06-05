@@ -92,7 +92,7 @@ class History extends React.Component<
                 onClick={() => {
                   if (!window.raito.user.token)
                     return alert(this.props.t("notLoggedIn"));
-                  window.raito.sync();
+                  window.raito.syncManager.sync();
                 }}
               >
                 <Icon path={mdiCloudSync} size={1} />

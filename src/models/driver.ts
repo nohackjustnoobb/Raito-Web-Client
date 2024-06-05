@@ -456,7 +456,7 @@ class Driver {
           // remove the cached manga details
           if (this.manga[manga]) delete this.manga[manga];
 
-          window.raito.isHistoryChanged = true;
+          window.raito.syncManager.isHistoryChanged = true;
           await db.history.update([this.identifier, mangaObject.id], {
             datetime: Date.now(),
             new: true,
@@ -468,7 +468,7 @@ class Driver {
           mangaObject.thumbnail !== history?.thumbnail ||
           mangaObject.title !== history?.title
         ) {
-          window.raito.isHistoryChanged = true;
+          window.raito.syncManager.isHistoryChanged = true;
           await db.history.update([this.identifier, mangaObject.id], {
             title: mangaObject.title,
             thumbnail: mangaObject.thumbnail,

@@ -152,6 +152,10 @@ class LazyImage extends Component<
             src={this.state.url}
             alt=""
             onLoad={this.props.onLoad}
+            onError={() => {
+              this.setState({ url: null });
+              if (this.ref) this.observer.observe(this.ref);
+            }}
             loading={
               this.props.lazy !== undefined && !this.props.lazy
                 ? "eager"

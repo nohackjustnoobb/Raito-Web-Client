@@ -117,7 +117,13 @@ class Details extends Component<Props, State> {
           />
           <li
             onClick={() => this.setState({ extra: false })}
-            className={this.state.extra ? "" : "selected"}
+            className={
+              !this.state.manga?.chapters.serial.length
+                ? "disabled"
+                : this.state.extra
+                ? ""
+                : "selected"
+            }
           >
             {this.props.t("serial")}
           </li>

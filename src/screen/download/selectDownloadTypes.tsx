@@ -1,4 +1,4 @@
-import "./downloadTypes.scss";
+import "./selectDownloadTypes.scss";
 
 import { Component } from "react";
 
@@ -7,14 +7,14 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, Checkbox } from "@mui/material";
 
+import { DownloadOptions, DownloadTypes } from "../../models/downloadTask";
+
 interface Props extends WithTranslation {
-  downloadAsPDF: (singleFile: boolean) => void;
-  downloadAsZip: () => void;
-  downloadAsPanels: () => void;
+  createDownloadTask: (type: DownloadTypes, options?: DownloadOptions) => void;
 }
 
-class DownloadTypes extends Component<Props> {
-  state = { show: false, type: 1, singleFile: false };
+class SelectDownloadTypes extends Component<Props> {
+  state = { show: false, type: DownloadTypes.Panels, singleFile: false };
   // timeout of the transition
   timeout: number = 500;
 
@@ -40,7 +40,9 @@ class DownloadTypes extends Component<Props> {
           <div className="downloadTypes">
             <div className="background" onClick={() => this.close()} />
             <div className="content">
-              {this.state.type === 1 && <h5>{this.props.t("pdfTip")}</h5>}
+              {this.state.type === DownloadTypes.Pdf && (
+                <h5>{this.props.t("pdfTip")}</h5>
+              )}
               <div className="options">
                 <span>{this.props.t("downloadType")}: </span>
                 <select
@@ -53,13 +55,17 @@ class DownloadTypes extends Component<Props> {
                     this.setState({ type: Number(event.target.value) });
                   }}
                 >
-                  <option value={0}>{this.props.t("inApp")}</option>
-                  <option value={1}>PDF</option>
-                  <option value={2}>ZIP</option>
-                  <option value={3}>Panels{this.props.t("compatible")}</option>
+                  <option value={DownloadTypes.InApp}>
+                    {this.props.t("inApp")}
+                  </option>
+                  <option value={DownloadTypes.Pdf}>PDF</option>
+                  <option value={DownloadTypes.Zip}>ZIP</option>
+                  <option value={DownloadTypes.Panels}>
+                    Panels{this.props.t("compatible")}
+                  </option>
                 </select>
               </div>
-              {this.state.type === 1 && (
+              {this.state.type === DownloadTypes.Pdf && (
                 <div className="options">
                   <span>{this.props.t("combineIntoASingleFile")}: </span>
                   <Checkbox
@@ -89,17 +95,11 @@ class DownloadTypes extends Component<Props> {
                   onClick={() => {
                     this.close();
 
-                    switch (this.state.type) {
-                      case 1:
-                        this.props.downloadAsPDF(this.state.singleFile);
-                        break;
-                      case 2:
-                        this.props.downloadAsZip();
-                        break;
-                      case 3:
-                        this.props.downloadAsPanels();
-                        break;
-                    }
+                    setTimeout(() => {
+                      this.props.createDownloadTask(this.state.type, {
+                        singleFile: this.state.singleFile,
+                      });
+                    }, this.timeout);
                   }}
                 >
                   {this.props.t("confirm")}
@@ -113,4 +113,4 @@ class DownloadTypes extends Component<Props> {
   }
 }
 
-export default withTranslation()(DownloadTypes);
+export default withTranslation()(SelectDownloadTypes);

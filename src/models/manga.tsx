@@ -200,7 +200,7 @@ class SimpleManga {
     if (!sync) return;
 
     // try get history
-    window.raito.isHistoryChanged = true;
+    window.raito.syncManager.isHistoryChanged = true;
     const history = await db.history.get([this.driver.identifier, this.id]);
     if (history) {
       // update only when latest is changed
@@ -276,7 +276,7 @@ class SimpleManga {
    */
   async save(chapter: Chapter, page: number) {
     // update or create history
-    window.raito.isHistoryChanged = true;
+    window.raito.syncManager.isHistoryChanged = true;
     await db.history.put({
       driver: this.driver.identifier,
       id: this.id,

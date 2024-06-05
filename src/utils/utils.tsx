@@ -7,7 +7,7 @@ const convertRemToPixels = (rem: number): number =>
 const getCssVariable = (name: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(name);
 
-const errorHandler = async (response: Response) => {
+async function errorHandler(response: Response) {
   const status = response.status;
 
   switch (status) {
@@ -31,9 +31,9 @@ const errorHandler = async (response: Response) => {
         }`
       );
   }
-};
+}
 
-const tryInitialize = async (driver: Driver): Promise<boolean> => {
+async function tryInitialize(driver: Driver): Promise<boolean> {
   if (driver.initialized) return true;
 
   let counter = 0;
@@ -45,16 +45,35 @@ const tryInitialize = async (driver: Driver): Promise<boolean> => {
   }
 
   return true;
-};
+}
 
 const sleep = async (duration: number): Promise<void> =>
   new Promise((res) => setTimeout(res, duration));
+
+async function retryFetch(
+  url: string,
+  options: RequestInit = {},
+  retries: number = 3,
+  delay: number = 500
+): Promise<Response> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      const response: Response = await fetch(url, options);
+      if (response.ok) return response;
+    } catch (e) {}
+
+    await sleep(delay);
+  }
+
+  return Response.error();
+}
 
 export {
   convertRemToPixels,
   errorHandler,
   getCssVariable,
   Icon as AppIcon,
+  retryFetch,
   sleep,
   tryInitialize,
 };

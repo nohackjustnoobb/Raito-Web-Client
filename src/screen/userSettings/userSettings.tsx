@@ -79,7 +79,7 @@ class UserSettings extends Component<Props> {
 
               // sync the data without timestamp
               window.showLoader();
-              await window.raito.sync();
+              await window.raito.syncManager.sync();
               window.hideLoader();
             }}
           >
@@ -100,7 +100,7 @@ class UserSettings extends Component<Props> {
                 localStorage.removeItem("lastSync");
                 await db.collections.clear();
                 await db.history.clear();
-                await window.raito.sync();
+                await window.raito.syncManager.sync();
                 window.hideLoader();
               }
             }}

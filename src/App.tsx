@@ -14,6 +14,7 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import Icon from "@mdi/react";
+import { Button } from "@mui/material";
 
 import LazyImage from "./components/lazyImage/lazyImage";
 import db, { collection, history } from "./models/db";
@@ -24,8 +25,6 @@ import Library from "./screen/library/library";
 import Search from "./screen/search/search";
 import Settings from "./screen/settings/settings";
 import { AppIcon } from "./utils/utils";
-
-const filters = ["all", "update", "end"];
 
 enum StatusMode {
   None,
@@ -51,20 +50,28 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   render() {
     let status = null;
 
-    if (window.raito.updateCollectionsState.isUpdating)
+    if (
+      window.raito.updateCollectionsState.isUpdating &&
+      window.raito.updateCollectionsState.currentState
+    )
       status = `${this.props.t("updating")} ${
         window.raito.updateCollectionsState.currentState
       }`;
 
-    if (window.raito.syncState.isSyncing && window.raito.syncState.currentState)
-      status = this.props.t(window.raito.syncState.currentState);
+    if (
+      window.raito.syncManager.state.isSyncing &&
+      window.raito.syncManager.state.currentStatus
+    )
+      status = this.props.t(window.raito.syncManager.state.currentStatus);
 
     if (status === null) {
       switch (this.state.mode) {
         case StatusMode.Sync:
-          if (window.raito.syncState.lastSync)
+          if (window.raito.syncManager.state.lastSync)
             status = `${this.props.t("synced")} 
-          ${Math.round((Date.now() - window.raito.syncState.lastSync) / 1000)} 
+          ${Math.round(
+            (Date.now() - window.raito.syncManager.state.lastSync) / 1000
+          )} 
           ${this.props.t("secondsAgo")}`;
           break;
         case StatusMode.Update:
@@ -99,17 +106,28 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   }
 }
 
+const filters = ["all", "update", "end", "download"];
+enum Filters {
+  All,
+  Update,
+  End,
+  Download,
+}
+
 class App extends Component<
   WithTranslation,
-  { history: Array<history>; collections: Array<collection>; filter: string }
+  { history: Array<history>; collections: Array<collection>; filter: Filters }
 > {
   constructor(props: WithTranslation) {
     super(props);
 
-    this.state = { history: [], collections: [], filter: "all" };
+    this.state = { history: [], collections: [], filter: Filters.All };
   }
 
   componentDidMount() {
+    // register for update events
+    listenToEvents([RaitoEvents.downloadChanged], this.forceUpdate.bind(this));
+
     // trace for histories changes
     liveQuery(() => db.history.toArray()).subscribe((result) =>
       this.setState({ history: result })
@@ -120,15 +138,23 @@ class App extends Component<
     );
   }
 
+  componentDidUpdate() {
+    if (
+      this.state.filter === Filters.Download &&
+      !window.raito.downloadManager.tasks.length
+    )
+      this.setState({ filter: Filters.All });
+  }
+
   render(): ReactNode {
     const filteredCollection = this.state.collections.filter((v) => {
       switch (this.state.filter) {
-        case "update":
+        case Filters.Update:
           const record = this.state.history.find(
             (h) => h.id === v.id && h.driver === v.driver
           );
           return record?.new;
-        case "end":
+        case Filters.End:
           return v.isEnd;
         default:
           return true;
@@ -207,21 +233,73 @@ class App extends Component<
           )}
           <div id="subMenuBar">
             <ul id="filters">
-              {filters.map((v) => (
-                <li
-                  key={v}
-                  className={this.state.filter === v ? "selected" : ""}
-                  onClick={() => this.setState({ filter: v })}
-                >
-                  {this.props.t(v)}
-                </li>
-              ))}
+              {filters
+                .filter(
+                  (v) =>
+                    filters.indexOf(v) !== Filters.Download ||
+                    window.raito.downloadManager.tasks.length
+                )
+                .map((v) => (
+                  <li
+                    key={v}
+                    className={
+                      this.state.filter === filters.indexOf(v) ? "selected" : ""
+                    }
+                    onClick={() =>
+                      this.setState({ filter: filters.indexOf(v) })
+                    }
+                  >
+                    {this.props.t(v)}
+                  </li>
+                ))}
             </ul>
             <div onClick={() => window.raito.updateCollections()}>
               <Icon path={mdiRefresh} size={1.25} />
             </div>
           </div>
-          {filteredCollection.length === 0 ? (
+          {this.state.filter === Filters.Download ? (
+            <ul id="downloadTasks">
+              {window.raito.downloadManager.tasks.map((v, i) => (
+                <li key={i}>
+                  <LazyImage src={v.manga.thumbnail} />
+                  <div className="info">
+                    <b>{window.raito.translate(v.manga.title)}</b>
+                    <p>
+                      {this.props.t(
+                        v.done ? "done" : v.started ? "downloading" : "waiting"
+                      )}
+                    </p>
+                    <div className="options">
+                      <Button
+                        variant={"outlined"}
+                        color="error"
+                        size="small"
+                        disabled={v.started && !v.done}
+                        onClick={() => window.raito.downloadManager.remove(i)}
+                      >
+                        {this.props.t("cancel")}
+                      </Button>
+                      <Button
+                        variant={"outlined"}
+                        size="small"
+                        onClick={() => {
+                          if (v.done) {
+                            v.save();
+                            window.raito.downloadManager.remove(i);
+                          } else {
+                            v.showProgress();
+                          }
+                        }}
+                        disabled={!v.started}
+                      >
+                        {this.props.t(v.done ? "save" : "check")}
+                      </Button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : filteredCollection.length === 0 ? (
             <div id="empty">
               <p>{this.props.t("noFavorites")}</p>
             </div>

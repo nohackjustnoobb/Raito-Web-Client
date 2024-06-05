@@ -152,15 +152,18 @@
       }
     }
 
+    h2.title {
+      user-select: all;
+      cursor: text;
+    }
+
     .title {
       margin: 0;
       margin-top: 1rem;
       text-align: center;
       padding: 0;
       font-size: 2rem;
-      user-select: all;
       color: var(--color-text);
-      cursor: text;
     }
 
     .author {
@@ -233,6 +236,7 @@
 
     .description {
       margin-top: 2rem;
+      overflow: hidden;
 
       h3 {
         margin: 0;
@@ -253,6 +257,7 @@
       margin: 0;
       width: calc(100% - 2rem);
       display: flex;
+      overflow: hidden;
       overflow-x: scroll;
       color: var(--color-text);
       padding-left: 1rem;
@@ -293,6 +298,9 @@
           display: flex;
           justify-content: center;
           align-items: center;
+          user-select: all;
+          overflow: hidden;
+          cursor: text;
         }
       }
     }

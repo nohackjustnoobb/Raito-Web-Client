@@ -79,18 +79,17 @@ class SelectDownloadTypes extends Component<Props> {
 
               <span>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="small"
-                  color="secondary"
+                  color="error"
                   fullWidth
                   onClick={() => this.close()}
                 >
                   {this.props.t("cancel")}
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
-                  color="error"
                   fullWidth
                   onClick={() => {
                     this.close();

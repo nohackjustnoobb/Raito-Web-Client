@@ -70,7 +70,6 @@ class RaitoManga {
     await this.updateCollections();
 
     // Nonstop jobs
-
     // clear the cache
     setInterval(() => Driver.clearCache(), 7200000);
   }

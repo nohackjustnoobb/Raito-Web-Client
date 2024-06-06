@@ -1,0 +1,38 @@
+.notification-enter {
+  transform: translate(-50%, -100%);
+}
+
+.notification-enter-active {
+  transform: translateX(-50%);
+  transition: transform 500ms;
+}
+
+.notification-exit,
+.notification-enter-done {
+  transform: translateX(-50%);
+}
+
+.notification-exit-active {
+  transform: translate(-50%, -200%);
+  transition: transform 500ms;
+}
+
+.notification {
+  display: flex;
+  color: var(--color-text);
+  align-items: center;
+  background-color: var(--color-chapters-background);
+  padding: 1rem;
+  width: calc(100% - 4rem);
+  max-width: 30rem;
+  border-radius: 1rem;
+  position: fixed;
+  gap: 1rem;
+  top: max(1rem, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 9999;
+
+  span {
+    flex: 1;
+  }
+}

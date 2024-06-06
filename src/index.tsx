@@ -10,6 +10,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import App from "./App";
 import Loader from "./components/loader/loader";
+import Notification, {
+  NotificationItem,
+} from "./components/notification/notification";
 import Driver from "./models/driver";
 import { dispatchEvent, RaitoEvents } from "./models/events";
 import { SimpleManga } from "./models/manga";
@@ -27,6 +30,7 @@ declare global {
     search: (keyword: string) => void;
     showLoader: () => void;
     hideLoader: () => void;
+    pushNotification: (item: NotificationItem) => void;
     stack: Stack;
     raito: RaitoManga;
   }
@@ -150,6 +154,7 @@ class Main extends Component<{}, { dark: boolean }> {
       <ErrorBoundary fallbackRender={this.fallbackRender.bind(this)}>
         <ThemeProvider theme={theme}>
           <Loader />
+          <Notification />
           <StackView />
           <App />
         </ThemeProvider>

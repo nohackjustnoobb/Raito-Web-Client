@@ -52,21 +52,118 @@ registerRoute(
 );
 
 // An example runtime caching route for requests that aren't handled by the
-// precache, in this case same-origin .png requests like those from in public/
-// registerRoute(
-//   // Add in any other file extensions or routing criteria as needed.
-//   ({ url }) =>
-//     url.origin === self.location.origin && url.pathname.endsWith(".png"),
-//   // Customize this strategy as needed, e.g., by changing to CacheFirst.
-//   new StaleWhileRevalidate({
-//     cacheName: "images",
-//     plugins: [
-//       // Ensure that once this runtime cache reaches a maximum size the
-//       // least-recently used images are removed.
-//       new ExpirationPlugin({ maxEntries: 50 }),
-//     ],
-//   })
-// );
+// precache, in this case images requests
+async function clearExpiredCacheEntries() {
+  const cache = await caches.open("images");
+  const keys = await cache.keys();
+  const now = Date.now();
+
+  for (const request of keys) {
+    const response = await cache.match(request);
+    if (response) {
+      const dateHeader = response.headers.get("Date");
+      const cacheControlHeader = response.headers.get("Cache-Control");
+
+      if (dateHeader && cacheControlHeader) {
+        const maxAgeMatch = cacheControlHeader.match(/max-age=(\d+)/);
+        if (maxAgeMatch) {
+          const date = new Date(dateHeader);
+          const age = (now - date.getTime()) / 1000;
+          const maxAge = parseInt(maxAgeMatch[1]);
+
+          if (maxAge && maxAge > age) continue;
+        }
+      }
+
+      await cache.delete(request);
+    }
+  }
+}
+
+setInterval(clearExpiredCacheEntries, 5 * 60 * 1000);
+
+async function removeLeastUsedCacheEntry() {
+  const cache = await caches.open("images");
+  const keys = await cache.keys();
+  let leastUsed: Date | null = null;
+  let leastUsedEntry: Request | null = null;
+
+  for (const request of keys) {
+    const response = await cache.match(request);
+    if (response) {
+      const dateHeader = response.headers.get("Date");
+      if (dateHeader) {
+        const date = new Date(dateHeader);
+        if (!leastUsed || leastUsed > date) {
+          leastUsed = date;
+          leastUsedEntry = request;
+        }
+      }
+    }
+  }
+
+  if (leastUsedEntry) await cache.delete(leastUsedEntry);
+}
+
+const imagesExtensionRegexp = /\.(jpg|jpeg|png|gif|bmp|tiff|webp)$/i;
+registerRoute(
+  // Add in any other file extensions or routing criteria as needed.
+  ({ url }) => url.pathname.match(imagesExtensionRegexp),
+  async ({ request }) => {
+    const cache = await caches.open("images");
+    const cachedResponse = await cache.match(request);
+
+    if (cachedResponse) {
+      const dateHeader = cachedResponse.headers.get("Date");
+      const cacheControlHeader = cachedResponse.headers.get("Cache-Control");
+      if (cacheControlHeader && dateHeader) {
+        const maxAgeMatch = cacheControlHeader.match(/max-age=(\d+)/);
+        if (maxAgeMatch) {
+          const maxAge = parseInt(maxAgeMatch[1]);
+          const date = new Date(dateHeader);
+          const age = (Date.now() - date.getTime()) / 1000;
+          if (age < maxAge) {
+            // The cached response is still valid
+            const updatedResponse = cachedResponse.clone();
+            updatedResponse.headers.set("Date", new Date().toUTCString());
+            await cache.put(request, updatedResponse);
+
+            return updatedResponse;
+          } else {
+            await cache.delete(request);
+          }
+        }
+      }
+    }
+
+    // Fetch a fresh response
+    const freshResponse = await fetch(request);
+
+    // Check if the response is cacheable
+    if (freshResponse.status === 200) {
+      const cacheControlHeader = freshResponse.headers.get("Cache-Control");
+      if (!cacheControlHeader || !cacheControlHeader.includes("no-store")) {
+        // Clone the response and add it to the cache
+        const responseToCache = freshResponse.clone();
+        try {
+          await cache.put(request, responseToCache);
+        } catch (e) {
+          await removeLeastUsedCacheEntry();
+          try {
+            await cache.put(request, responseToCache);
+          } catch (e) {
+            console.error(
+              "Failed to cache after removing least used entry:",
+              e
+            );
+          }
+        }
+      }
+    }
+
+    return freshResponse;
+  }
+);
 
 // This allows the web app to trigger skipWaiting via
 // registration.waiting.postMessage({type: 'SKIP_WAITING'})

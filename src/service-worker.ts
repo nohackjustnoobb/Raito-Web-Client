@@ -124,11 +124,7 @@ registerRoute(
           const age = (Date.now() - date.getTime()) / 1000;
           if (age < maxAge) {
             // The cached response is still valid
-            const updatedResponse = cachedResponse.clone();
-            updatedResponse.headers.set("Date", new Date().toUTCString());
-            await cache.put(request, updatedResponse);
-
-            return updatedResponse;
+            return cachedResponse;
           } else {
             await cache.delete(request);
           }

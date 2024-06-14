@@ -1,5 +1,5 @@
-import Driver from "../models/driver";
-import { ReactComponent as Icon } from "./icon.svg";
+import Driver from '../models/driver';
+import { ReactComponent as Icon } from './icon.svg';
 
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);

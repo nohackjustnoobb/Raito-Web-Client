@@ -1,15 +1,18 @@
-import "./lazyImage.scss";
+import './lazyImage.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { TailSpin } from "react-loader-spinner";
+import { TailSpin } from 'react-loader-spinner';
 
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { sleep } from "../../utils/utils";
+} from '../../models/events';
+import { sleep } from '../../utils/utils';
 
 type Props = {
   src: string;
@@ -107,7 +110,7 @@ class LazyImage extends Component<
         }
       } catch (e) {}
 
-      await sleep(250);
+      await sleep(500);
       this.isLoading = false;
     }
   }

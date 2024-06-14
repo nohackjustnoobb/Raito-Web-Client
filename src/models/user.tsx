@@ -1,6 +1,9 @@
-import Login from "../screen/login/login";
-import db from "./db";
-import { dispatchEvent, RaitoEvents } from "./events";
+import Login from '../screen/login/login';
+import db from './db';
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from './events';
 
 class User {
   token: string | null;
@@ -128,7 +131,7 @@ class User {
     ).ok;
   }
 
-  pushLogin = () => window.stack.push(<Login />);
+  pushLogin = () => window.stack.push((zIndex) => <Login zIndex={zIndex} />);
 }
 
 export default User;

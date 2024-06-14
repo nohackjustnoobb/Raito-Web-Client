@@ -1,27 +1,42 @@
-import "./locales/i18n";
-import "./index.scss";
+import './locales/i18n';
+import './index.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import ReactDOM from "react-dom/client";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import ReactDOM from 'react-dom/client';
+import {
+  ErrorBoundary,
+  FallbackProps,
+} from 'react-error-boundary';
 
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  createTheme,
+  ThemeProvider,
+} from '@mui/material/styles';
 
-import App from "./App";
-import Loader from "./components/loader/loader";
+import App from './App';
+import Loader from './components/loader/loader';
 import Notification, {
   NotificationItem,
-} from "./components/notification/notification";
-import Driver from "./models/driver";
-import { dispatchEvent, RaitoEvents } from "./models/events";
-import { SimpleManga } from "./models/manga";
-import RaitoManga from "./models/raitoManga";
-import { Theme } from "./models/settingsState";
-import Search from "./screen/search/search";
-import StackView, { Stack } from "./screen/stack";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { getCssVariable, sleep } from "./utils/utils";
+} from './components/notification/notification';
+import Driver from './models/driver';
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from './models/events';
+import { SimpleManga } from './models/manga';
+import RaitoManga from './models/raitoManga';
+import { Theme } from './models/settingsState';
+import Search from './screen/search/search';
+import StackView, { Stack } from './screen/stack';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import {
+  getCssVariable,
+  sleep,
+} from './utils/utils';
 
 // declare global variables
 declare global {
@@ -93,7 +108,9 @@ class Main extends Component<{}, { dark: boolean }> {
   componentDidMount() {
     window.updateRoot = this.forceUpdate.bind(this);
     window.search = (keyword: string) =>
-      window.stack.push(<Search keyword={keyword} />);
+      window.stack.push((zIndex) => (
+        <Search keyword={keyword} zIndex={zIndex} />
+      ));
 
     // listen for theme changes
     window

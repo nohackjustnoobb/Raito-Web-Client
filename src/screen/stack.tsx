@@ -1,13 +1,20 @@
-import "./stack.css";
+import './stack.css';
 
-import { Component, ReactElement, ReactNode } from "react";
+import {
+  Component,
+  ReactElement,
+  ReactNode,
+} from 'react';
 
 interface Stack {
-  push(screen: ReactElement): void;
+  push(stackable: ReactElement | ((zIndex: number) => ReactElement)): void;
   pop(): void;
 }
 
-class StackView extends Component<{}, { stack: Array<ReactElement> }> {
+class StackView extends Component<
+  {},
+  { stack: Array<ReactElement | ((zIndex: number) => ReactElement)> }
+> {
   constructor(props: {}) {
     super(props);
 
@@ -35,12 +42,12 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
     homePage.removeAttribute("style");
   }
 
-  push(screen: ReactElement): void {
-    this.state.stack.push(screen);
+  push(item: ReactElement | ((zIndex: number) => ReactElement)) {
+    this.state.stack.push(item);
     this.forceUpdate();
   }
 
-  pop(): void {
+  pop() {
     this.state.stack.pop();
     this.forceUpdate();
   }
@@ -48,17 +55,21 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
   render(): ReactNode {
     return (
       <>
-        {this.state.stack.map((screen, index) => (
-          <div
-            key={index}
-            style={{
-              zIndex: index + 2,
-            }}
-            className="stackScreen"
-          >
-            {screen}
-          </div>
-        ))}
+        {this.state.stack.map((item, index) =>
+          item instanceof Function ? (
+            item(index + 2)
+          ) : (
+            <div
+              key={index}
+              style={{
+                zIndex: index + 2,
+              }}
+              className="stackScreen"
+            >
+              {item}
+            </div>
+          )
+        )}
       </>
     );
   }

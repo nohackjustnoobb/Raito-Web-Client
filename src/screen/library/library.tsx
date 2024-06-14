@@ -1,27 +1,36 @@
-import "./library.scss";
+import './library.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
-import { InfinitySpin } from "react-loader-spinner";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
+import { InfinitySpin } from 'react-loader-spinner';
 
-import { mdiChevronDown, mdiMagnify } from "@mdi/js";
-import Icon from "@mdi/react";
+import {
+  mdiChevronDown,
+  mdiMagnify,
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import LazyImage from "../../components/lazyImage/lazyImage";
-import TopBar from "../../components/topBar/topBar";
-import Driver, { Status } from "../../models/driver";
+import LazyImage from '../../components/lazyImage/lazyImage';
+import TopBar from '../../components/topBar/topBar';
+import Driver, { Status } from '../../models/driver';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { SimpleManga } from "../../models/manga";
-import { convertRemToPixels } from "../../utils/utils";
-import Search from "../search/search";
+} from '../../models/events';
+import { SimpleManga } from '../../models/manga';
+import { convertRemToPixels } from '../../utils/utils';
+import Search from '../search/search';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -161,7 +170,11 @@ class Library extends Component<
             </div>
           }
           rightComponent={
-            <div onClick={() => window.stack.push(<Search />)}>
+            <div
+              onClick={() =>
+                window.stack.push((zIndex) => <Search zIndex={zIndex} />)
+              }
+            >
               <Icon path={mdiMagnify} size={1} />
             </div>
           }

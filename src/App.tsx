@@ -1,9 +1,15 @@
-import "./App.scss";
+import './App.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { liveQuery } from "dexie";
-import { withTranslation, WithTranslation } from "react-i18next";
+import { liveQuery } from 'dexie';
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
 import {
   mdiBookSearch,
@@ -12,19 +18,28 @@ import {
   mdiDotsHorizontalCircleOutline,
   mdiLibraryShelves,
   mdiRefresh,
-} from "@mdi/js";
-import Icon from "@mdi/react";
-import { Button } from "@mui/material";
+} from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button } from '@mui/material';
 
-import LazyImage from "./components/lazyImage/lazyImage";
-import db, { collection, history } from "./models/db";
-import { listenToEvents, RaitoEvents } from "./models/events";
-import { Manga, SimpleManga } from "./models/manga";
-import History from "./screen/history/history";
-import Library from "./screen/library/library";
-import Search from "./screen/search/search";
-import Settings from "./screen/settings/settings";
-import { AppIcon } from "./utils/utils";
+import LazyImage from './components/lazyImage/lazyImage';
+import db, {
+  collection,
+  history,
+} from './models/db';
+import {
+  listenToEvents,
+  RaitoEvents,
+} from './models/events';
+import {
+  Manga,
+  SimpleManga,
+} from './models/manga';
+import History from './screen/history/history';
+import Library from './screen/library/library';
+import Search from './screen/search/search';
+import Settings from './screen/settings/settings';
+import { AppIcon } from './utils/utils';
 
 enum StatusMode {
   None,
@@ -177,13 +192,25 @@ class App extends Component<
           />
 
           <div id="actions">
-            <div onClick={() => window.stack.push(<Library />)}>
+            <div
+              onClick={() =>
+                window.stack.push((zIndex) => <Library zIndex={zIndex} />)
+              }
+            >
               <Icon path={mdiLibraryShelves} size={1.25} />
             </div>
-            <div onClick={() => window.stack.push(<Search />)}>
+            <div
+              onClick={() =>
+                window.stack.push((zIndex) => <Search zIndex={zIndex} />)
+              }
+            >
               <Icon path={mdiBookSearch} size={1.25} />
             </div>
-            <div onClick={() => window.stack.push(<Settings />)}>
+            <div
+              onClick={() =>
+                window.stack.push((zIndex) => <Settings zIndex={zIndex} />)
+              }
+            >
               <Icon path={mdiCog} size={1.25} />
             </div>
           </div>
@@ -193,7 +220,9 @@ class App extends Component<
             <ul id="historyPreview">
               <li
                 className="viewAll"
-                onClick={() => window.stack.push(<History />)}
+                onClick={() =>
+                  window.stack.push((zIndex) => <History zIndex={zIndex} />)
+                }
               >
                 <Icon path={mdiClockOutline} size={1} />
               </li>
@@ -223,7 +252,9 @@ class App extends Component<
               {this.state.history && (
                 <li
                   className="viewAll"
-                  onClick={() => window.stack.push(<History />)}
+                  onClick={() =>
+                    window.stack.push((zIndex) => <History zIndex={zIndex} />)
+                  }
                 >
                   <Icon path={mdiDotsHorizontalCircleOutline} size={1} />
                   <span>{this.props.t("more")}</span>

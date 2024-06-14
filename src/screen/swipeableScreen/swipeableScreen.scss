@@ -1,24 +1,25 @@
-.swipeableWrapper {
+.swipeable-enter {
+  left: 100%;
+}
+
+.swipeable-enter-active {
+  left: 0;
+  transition: left 500ms;
+}
+
+.swipeable-exit,
+.swipeable-enter-done {
+  left: 0;
+}
+
+.swipeable-exit-active {
+  left: 100%;
+  transition: left 500ms;
+}
+
+.swipeable {
   height: 100vh;
   width: 100vw;
-  position: relative;
-
-  .swipeable-enter {
-    transform: translateX(100%);
-  }
-
-  .swipeable-enter-active {
-    transform: translateX(0);
-    transition: transform 500ms;
-  }
-
-  .swipeable-exit-active {
-    transform: translateX(100%);
-    transition: transform 500ms;
-  }
-
-  .swipeable {
-    height: 100%;
-    width: 100%;
-  }
+  position: fixed;
+  top: 0;
 }

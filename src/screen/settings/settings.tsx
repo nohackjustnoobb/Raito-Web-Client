@@ -1,29 +1,35 @@
-import "./settings.scss";
+import './settings.scss';
 
-import React from "react";
+import React from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
-import { mdiCogSync } from "@mdi/js";
-import Icon from "@mdi/react";
-import { Button, Checkbox } from "@mui/material";
+import { mdiCogSync } from '@mdi/js';
+import Icon from '@mdi/react';
+import {
+  Button,
+  Checkbox,
+} from '@mui/material';
 
-import TopBar from "../../components/topBar/topBar";
-import { lngName } from "../../locales/i18n";
+import TopBar from '../../components/topBar/topBar';
+import { lngName } from '../../locales/i18n';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
-import ManageServers from "../manageServers/manageServers";
-import ManageThemes from "../manageThemes/manageThemes";
-import OnlineStatus from "../onlineStatus/onlineStatus";
+} from '../../models/events';
+import ExperimentalSettings from '../experimentalSettings/experimentalSettings';
+import ManageServers from '../manageServers/manageServers';
+import ManageThemes from '../manageThemes/manageThemes';
+import OnlineStatus from '../onlineStatus/onlineStatus';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
-import CreateUser from "../userSettings/createUser";
-import UserSettings from "../userSettings/userSettings";
+} from '../swipeableScreen/swipeableScreen';
+import CreateUser from '../userSettings/createUser';
+import UserSettings from '../userSettings/userSettings';
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -75,7 +81,9 @@ class Settings extends React.Component<Props> {
                     size="small"
                     onClick={() => {
                       if (user.token) {
-                        window.stack.push(<UserSettings />);
+                        window.stack.push((zIndex) => (
+                          <UserSettings zIndex={zIndex} />
+                        ));
                       } else {
                         window.raito.user.pushLogin();
                       }
@@ -164,7 +172,11 @@ class Settings extends React.Component<Props> {
                 <Button
                   variant={"outlined"}
                   size="small"
-                  onClick={() => window.stack.push(<ManageThemes />)}
+                  onClick={() =>
+                    window.stack.push((zIndex) => (
+                      <ManageThemes zIndex={zIndex} />
+                    ))
+                  }
                 >
                   {this.props.t("settings")}
                 </Button>
@@ -319,7 +331,11 @@ class Settings extends React.Component<Props> {
                 <Button
                   variant={"outlined"}
                   size="small"
-                  onClick={() => window.stack.push(<ManageServers />)}
+                  onClick={() =>
+                    window.stack.push((zIndex) => (
+                      <ManageServers zIndex={zIndex} />
+                    ))
+                  }
                 >
                   {this.props.t("settings")}
                 </Button>

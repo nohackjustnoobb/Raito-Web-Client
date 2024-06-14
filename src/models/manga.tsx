@@ -1,9 +1,12 @@
-import i18next from "i18next";
+import i18next from 'i18next';
 
-import Details from "../screen/details/details";
-import Read from "../screen/read/read";
-import db, { collection, history } from "./db";
-import Driver from "./driver";
+import Details from '../screen/details/details';
+import Read from '../screen/read/read';
+import db, {
+  collection,
+  history,
+} from './db';
+import Driver from './driver';
 
 /**
  * A class for the base manga.
@@ -162,7 +165,7 @@ class SimpleManga {
     if (this.driver.isDown)
       return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
-    window.stack.push(<Details manga={this} />);
+    window.stack.push((zIndex) => <Details manga={this} zIndex={zIndex} />);
   }
 
   /**

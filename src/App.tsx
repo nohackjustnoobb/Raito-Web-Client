@@ -20,10 +20,10 @@ import LazyImage from "./components/lazyImage/lazyImage";
 import db, { collection, history } from "./models/db";
 import { listenToEvents, RaitoEvents } from "./models/events";
 import { Manga, SimpleManga } from "./models/manga";
-import History from "./screen/history/history";
-import Library from "./screen/library/library";
-import Search from "./screen/search/search";
-import Settings from "./screen/settings/settings";
+import History from "./screens/history/history";
+import Library from "./screens/library/library";
+import Search from "./screens/search/search";
+import Settings from "./screens/settings/settings";
 import { AppIcon } from "./utils/utils";
 
 enum StatusMode {

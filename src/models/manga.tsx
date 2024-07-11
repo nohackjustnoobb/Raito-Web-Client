@@ -1,14 +1,13 @@
 import i18next from "i18next";
 
-import Details from "../screen/details/details";
-import Read from "../screen/read/read";
+import Details from "../screens/details/details";
+import Read from "../screens/read/read";
 import db, { collection, history } from "./db";
 import Driver from "./driver";
 
 /**
  * A class for the base manga.
  *
- * @class
  */
 class SimpleManga {
   /**
@@ -148,7 +147,7 @@ class SimpleManga {
       id: collection.id,
       title: collection.title,
       latest: collection.latest,
-      is_end: collection.isEnd,
+      isEnded: collection.isEnd,
       thumbnail: collection.thumbnail,
     });
   }
@@ -407,7 +406,7 @@ class Manga extends SimpleManga {
       proxy: forceProxy || window.raito.settingsState.useProxy ? "1" : "0",
     });
 
-    if (!result) {
+    if (!result.ok) {
       this.driver.isDown = true;
 
       return [];

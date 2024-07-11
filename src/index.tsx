@@ -18,8 +18,8 @@ import { dispatchEvent, RaitoEvents } from "./models/events";
 import { SimpleManga } from "./models/manga";
 import RaitoManga from "./models/raitoManga";
 import { Theme } from "./models/settingsState";
-import Search from "./screen/search/search";
-import StackView, { Stack } from "./screen/stack";
+import Search from "./screens/search/search";
+import StackView, { Stack } from "./screens/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { getCssVariable, sleep } from "./utils/utils";
 

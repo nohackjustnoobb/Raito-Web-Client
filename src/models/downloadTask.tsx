@@ -3,7 +3,7 @@ import i18next from "i18next";
 import jsPDF from "jspdf";
 import JSZip from "jszip";
 
-import DownloadProgress from "../screen/downloadProgess/downloadProgress";
+import DownloadProgress from "../screens/downloadProgess/downloadProgress";
 import { retryFetch, sleep } from "../utils/utils";
 import { dispatchEvent, RaitoEvents } from "./events";
 import { Chapter, Manga } from "./manga";

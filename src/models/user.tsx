@@ -1,4 +1,4 @@
-import Login from "../screen/login/login";
+import Login from "../screens/login/login";
 import db from "./db";
 import { dispatchEvent, RaitoEvents } from "./events";
 

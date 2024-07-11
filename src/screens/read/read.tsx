@@ -593,7 +593,7 @@ class Read extends Component<Props, State> {
             >
               {sortedChaptersId.map((chapterId: any) => (
                 <div className="chapters" key={chapterId}>
-                  {this.state.chaptersUrls[chapterId].map((url, page) => {
+                  {this.state.chaptersUrls[chapterId]?.map((url, page) => {
                     const id = `${chapterId}_${page}`;
 
                     return (

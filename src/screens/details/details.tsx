@@ -8,8 +8,12 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import {
   mdiBookmark,
   mdiBookmarkOffOutline,
+  mdiDotsGrid,
   mdiDownload,
   mdiExportVariant,
+  mdiOrderNumericAscending,
+  mdiOrderNumericDescending,
+  mdiViewList,
 } from "@mdi/js";
 import Icon from "@mdi/react";
 
@@ -38,6 +42,8 @@ interface State {
   history: history | null;
   isVertical: boolean;
   showTime: boolean;
+  isDescending: boolean;
+  isGrid: boolean;
 }
 
 class Details extends Component<Props, State> {
@@ -48,6 +54,8 @@ class Details extends Component<Props, State> {
     history: null,
     isVertical: window.innerWidth < window.innerHeight,
     showTime: false,
+    isDescending: true,
+    isGrid: true,
   };
   collectionsSubscription: Subscription | null = null;
   historySubscription: Subscription | null = null;
@@ -92,7 +100,9 @@ class Details extends Component<Props, State> {
             )
               this.setState({ extra: true });
 
-            this.setState({ history: result });
+            this.setState({ history: result }, () =>
+              this.scrollToHighlighted()
+            );
           }
         });
       }
@@ -108,59 +118,98 @@ class Details extends Component<Props, State> {
     if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
+  scrollToHighlighted() {
+    const elem = document.getElementsByClassName("highlighted");
+    if (elem.length && !this.state.isVertical) elem[0].scrollIntoView();
+  }
+
   render(): ReactNode {
+    const chaptersList =
+      this.state.manga &&
+      (this.state.extra
+        ? this.state.manga.chapters.extra
+        : this.state.manga.chapters.serial
+      ).map((chapter) => {
+        const title = chapter.title;
+
+        return (
+          <li
+            className={
+              this.state.history?.chapterId === chapter.id ? "highlighted" : ""
+            }
+            onClick={() => this.state.manga!.read(chapter.id)}
+          >
+            <p>
+              {this.state.isGrid
+                ? window.raito.formatChapterTitle(title)
+                : window.raito.translate(title)}
+            </p>
+          </li>
+        );
+      });
+
+    if (chaptersList && !this.state.isDescending) chaptersList.reverse();
+
     const chapters = (
       <>
-        <ul className="serialSelector">
-          <div
-            className={"background " + (this.state.extra ? "extra" : "serial")}
-          />
-          <li
-            onClick={() => this.setState({ extra: false })}
-            className={
-              !this.state.manga?.chapters.serial.length
-                ? "disabled"
-                : this.state.extra
-                ? ""
-                : "selected"
+        <div className="controller">
+          <span
+            onClick={() =>
+              this.setState({ isDescending: !this.state.isDescending })
             }
           >
-            {this.props.t("serial")}
-          </li>
-          <li
-            onClick={() => {
-              if (this.state.manga?.chapters.extra.length)
-                this.setState({ extra: true });
-            }}
-            className={
-              !this.state.manga?.chapters.extra.length
-                ? "disabled"
-                : this.state.extra
-                ? "selected"
-                : ""
-            }
-          >
-            {this.props.t("extra")}
-          </li>
-        </ul>
-        <ul className="chapters">
-          {this.state.manga &&
-            (this.state.extra
-              ? this.state.manga.chapters.extra
-              : this.state.manga.chapters.serial
-            ).map((chapter) => (
-              <li
-                key={chapter.id}
-                className={
-                  this.state.history?.chapterId === chapter.id
-                    ? "highlighted"
-                    : ""
-                }
-                onClick={() => this.state.manga!.read(chapter.id)}
-              >
-                <p>{window.raito.formatChapterTitle(chapter.title)}</p>
-              </li>
-            ))}
+            <Icon
+              path={
+                this.state.isDescending
+                  ? mdiOrderNumericDescending
+                  : mdiOrderNumericAscending
+              }
+              size={1}
+            />
+          </span>
+          <ul className="serialSelector">
+            <div
+              className={
+                "background " + (this.state.extra ? "extra" : "serial")
+              }
+            />
+            <li
+              onClick={() => this.setState({ extra: false })}
+              className={
+                !this.state.manga?.chapters.serial.length
+                  ? "disabled"
+                  : this.state.extra
+                  ? ""
+                  : "selected"
+              }
+            >
+              {this.props.t("serial")}
+            </li>
+            <li
+              onClick={() => {
+                if (this.state.manga?.chapters.extra.length)
+                  this.setState({ extra: true });
+              }}
+              className={
+                !this.state.manga?.chapters.extra.length
+                  ? "disabled"
+                  : this.state.extra
+                  ? "selected"
+                  : ""
+              }
+            >
+              {this.props.t("extra")}
+            </li>
+          </ul>
+          <span onClick={() => this.setState({ isGrid: !this.state.isGrid })}>
+            <Icon
+              path={this.state.isGrid ? mdiDotsGrid : mdiViewList}
+              size={1}
+            />
+          </span>
+        </div>
+        <ul className={`chapters ${this.state.isGrid ? "grid" : "list"}`}>
+          {chaptersList}
         </ul>
       </>
     );

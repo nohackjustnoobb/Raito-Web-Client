@@ -15,7 +15,10 @@ import {
   RaitoSubscription,
 } from "../../models/events";
 import { SimpleManga } from "../../models/manga";
-import { convertRemToPixels } from "../../utils/utils";
+import {
+  convertRemToPixels,
+  wheelToScrollHorizontally,
+} from "../../utils/utils";
 import Search from "../search/search";
 import makeSwipeable, {
   InjectedSwipeableProps,
@@ -172,7 +175,7 @@ class Library extends Component<
         <div className="filters">
           <div className="filter">
             <h3>{this.props.t("genre")}: </h3>
-            <ul>
+            <ul onWheel={wheelToScrollHorizontally("UL")}>
               {window.raito.selectedDriver?.supportedCategories.map((v) => (
                 <li
                   key={v}

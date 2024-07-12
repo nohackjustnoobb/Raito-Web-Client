@@ -30,6 +30,7 @@ import Download from "../download/download";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
+import { wheelToScrollHorizontally } from "../../utils/utils";
 
 interface Props extends WithTranslation, InjectedSwipeableProps {
   manga: SimpleManga;
@@ -134,6 +135,7 @@ class Details extends Component<Props, State> {
 
         return (
           <li
+            key={chapter.id}
             className={
               this.state.history?.chapterId === chapter.id ? "highlighted" : ""
             }
@@ -311,7 +313,7 @@ class Details extends Component<Props, State> {
               </span>
             </div>
             <div className="divider" />
-            <ul className="info">
+            <ul className="info" onWheel={wheelToScrollHorizontally("UL")}>
               <li>
                 <span className="title">{this.props.t("genre")}</span>
                 <span className="content">

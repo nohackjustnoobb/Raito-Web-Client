@@ -1,6 +1,6 @@
 import "./App.scss";
 
-import { Component, ReactNode } from "react";
+import { Component } from "react";
 
 import { liveQuery } from "dexie";
 import { withTranslation, WithTranslation } from "react-i18next";
@@ -24,7 +24,7 @@ import History from "./screens/history/history";
 import Library from "./screens/library/library";
 import Search from "./screens/search/search";
 import Settings from "./screens/settings/settings";
-import { AppIcon } from "./utils/utils";
+import { AppIcon, wheelToScrollHorizontally } from "./utils/utils";
 import MangaPreview, { Tag } from "./components/mangaPreview/mangaPreview";
 
 enum StatusMode {
@@ -147,7 +147,7 @@ class App extends Component<
       this.setState({ filter: Filters.All });
   }
 
-  render(): ReactNode {
+  render() {
     const filteredCollection = this.state.collections.filter((v) => {
       switch (this.state.filter) {
         case Filters.Update:
@@ -191,7 +191,7 @@ class App extends Component<
         </div>
         <div id="content">
           {previewHistory.length !== 0 && (
-            <ul id="historyPreview">
+            <ul id="historyPreview" onWheel={wheelToScrollHorizontally("UL")}>
               <li
                 className="viewAll"
                 onClick={() => window.stack.push(<History />)}

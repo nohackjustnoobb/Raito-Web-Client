@@ -2,7 +2,6 @@ import { Component } from "react";
 import "./mangasList.scss";
 import { SimpleManga } from "../../models/manga";
 import { InfinitySpin } from "react-loader-spinner";
-import LazyImage from "../lazyImage/lazyImage";
 import { WithTranslation, withTranslation } from "react-i18next";
 import MangaPreview, { Tag } from "../mangaPreview/mangaPreview";
 

@@ -1,3 +1,4 @@
+import { WheelEvent } from "react";
 import Driver from "../models/driver";
 import { ReactComponent as Icon } from "./icon.svg";
 
@@ -68,6 +69,27 @@ async function retryFetch(
   return Response.error();
 }
 
+function wheelToScrollHorizontally(parentTagName: string) {
+  return function (event: WheelEvent) {
+    let [x, y] = [event.deltaX, event.deltaY];
+    let magnitude;
+
+    if (x === 0) magnitude = y < 0 ? -30 : 30;
+    else magnitude = x;
+
+    if (event.target) {
+      let elem = event.target as Element;
+
+      while (elem.tagName !== parentTagName && elem.parentElement)
+        elem = elem.parentElement;
+
+      elem.scrollBy({
+        left: magnitude,
+      });
+    }
+  };
+}
+
 export {
   convertRemToPixels,
   errorHandler,
@@ -76,4 +98,5 @@ export {
   retryFetch,
   sleep,
   tryInitialize,
+  wheelToScrollHorizontally,
 };

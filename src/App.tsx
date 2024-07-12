@@ -25,6 +25,7 @@ import Library from "./screens/library/library";
 import Search from "./screens/search/search";
 import Settings from "./screens/settings/settings";
 import { AppIcon } from "./utils/utils";
+import MangaPreview, { Tag } from "./components/mangaPreview/mangaPreview";
 
 enum StatusMode {
   None,
@@ -326,38 +327,22 @@ class App extends Component<
                     (h) => h.id === manga.id && h.driver === manga.driver
                   );
 
+                  const mangaObject = SimpleManga.fromCollection(manga);
+                  const tag = manga.isEnd
+                    ? Tag.Ended
+                    : history?.new
+                    ? Tag.Updated
+                    : Tag.None;
+
+                  const historyString = (history && history.chapterTitle) || "";
+
                   return (
-                    <div
+                    <MangaPreview
                       key={`${manga.id}_${manga.driver}`}
-                      className="collection"
-                      onClick={() =>
-                        SimpleManga.fromCollection(manga).pushDetails()
-                      }
-                    >
-                      <div className="tag">
-                        {manga.isEnd && (
-                          <div className="end">{this.props.t("end")}</div>
-                        )}
-                        {history?.new && !manga.isEnd && (
-                          <div className="new">{this.props.t("update")}</div>
-                        )}
-                        {window.raito.settingsState.debugMode && (
-                          <>
-                            <div className="driverID">{manga.driver}</div>
-                            <div className="mangaID">{manga.id}</div>
-                          </>
-                        )}
-                      </div>
-                      <LazyImage src={manga.thumbnail} />
-                      <h3>{window.raito.translate(manga.title)}</h3>
-                      <h5>
-                        {history && history.chapterTitle
-                          ? window.raito.translate(history.chapterTitle)
-                          : this.props.t("notRead")}
-                        {" / "}
-                        {window.raito.translate(manga.latest)}
-                      </h5>
-                    </div>
+                      manga={mangaObject}
+                      tag={tag}
+                      history={historyString}
+                    />
                   );
                 })}
             </div>

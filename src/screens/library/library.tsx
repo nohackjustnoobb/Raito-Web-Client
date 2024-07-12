@@ -3,12 +3,10 @@ import "./library.scss";
 import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
-import { InfinitySpin } from "react-loader-spinner";
 
 import { mdiChevronDown, mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
-import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import Driver, { Status } from "../../models/driver";
 import {
@@ -22,6 +20,7 @@ import Search from "../search/search";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
+import MangasList from "../../components/mangasList/mangasList";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -29,10 +28,10 @@ const status = ["any", "onGoing", "ended"];
 
 class Library extends Component<
   Props,
-  { genre: string; status: Status; loading: boolean }
+  { genre: string; status: Status; isLoading: boolean }
 > {
   driver: string | undefined = undefined;
-  state = { genre: "All", status: Status.Any, loading: false };
+  state = { genre: "All", status: Status.Any, isLoading: false };
   content: HTMLDivElement | null = null;
   raitoSubscription: RaitoSubscription | null = null;
 
@@ -67,7 +66,7 @@ class Library extends Component<
     // check if any manga fetched
     if (
       window.raito.selectedDriver &&
-      !this.state.loading &&
+      !this.state.isLoading &&
       (!window.raito.selectedDriver.list[this.state.genre] ||
         !Object.keys(
           window.raito.selectedDriver.list[this.state.genre][this.state.status]
@@ -85,12 +84,12 @@ class Library extends Component<
     if (
       !window.raito.selectedDriver ||
       window.raito.selectedDriver.isDown ||
-      this.state.loading ||
+      this.state.isLoading ||
       !this.content
     )
       return;
 
-    this.setState({ loading: true });
+    this.setState({ isLoading: true });
 
     var reached: boolean = false;
     reached = !(await window.raito.selectedDriver!.getList(
@@ -106,7 +105,7 @@ class Library extends Component<
         : 1
     ));
 
-    this.setState({ loading: false }, () => {
+    this.setState({ isLoading: false }, () => {
       // check if scrollable
       if (!reached) this.shouldLoadMore();
     });
@@ -121,6 +120,10 @@ class Library extends Component<
       this.content.clientHeight + this.content.scrollTop + convertRemToPixels(1)
     )
       this.loadMore();
+  }
+
+  setContent(content: HTMLDivElement | null) {
+    this.content = content;
   }
 
   render(): ReactNode {
@@ -202,55 +205,12 @@ class Library extends Component<
             </ul>
           </div>
         </div>
-        <div
-          className="content"
-          ref={(ref) => (this.content = ref)}
-          onScroll={() => this.shouldLoadMore()}
-        >
-          {manga.length === 0 && (
-            <div className="empty">
-              <span>
-                {this.state.loading ? (
-                  <InfinitySpin width="150" color="var(--color-text)" />
-                ) : (
-                  this.props.t("noMatchingManga")
-                )}
-              </span>
-            </div>
-          )}
-          <div className="mangaList">
-            {manga.map((manga, index) => (
-              <div
-                key={`${manga.driver.identifier}${manga.id}${index}`}
-                onClick={() => manga.pushDetails()}
-                className="manga"
-              >
-                <div className="tag">
-                  {manga.isEnded && (
-                    <div className="end">{this.props.t("end")}</div>
-                  )}
-                  {window.raito.settingsState.debugMode && (
-                    <>
-                      <div className="driverID">{manga.driver.identifier}</div>
-                      <div className="mangaID">{manga.id}</div>
-                    </>
-                  )}
-                </div>
-                <LazyImage src={manga.thumbnail} />
-                <p>{window.raito.translate(manga.title)}</p>
-                <p className="latest">
-                  {this.props.t("updatedTo")}{" "}
-                  {window.raito.translate(manga.latest)}
-                </p>
-              </div>
-            ))}
-          </div>
-          {this.state.loading && manga.length !== 0 && (
-            <div className="spin">
-              <InfinitySpin width="150" color="var(--color-text)" />
-            </div>
-          )}
-        </div>
+        <MangasList
+          setContent={this.setContent.bind(this)}
+          shouldLoadMore={this.shouldLoadMore.bind(this)}
+          manga={manga}
+          isLoading={this.state.isLoading}
+        />
       </div>
     );
   }

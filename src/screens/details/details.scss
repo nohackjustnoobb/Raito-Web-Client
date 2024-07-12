@@ -271,10 +271,11 @@
         padding: 0;
       }
 
-      p {
+      span {
         margin-top: 0;
         text-align: justify;
         color: var(--color-chapters-text);
+        white-space: pre-line;
       }
     }
 

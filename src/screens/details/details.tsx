@@ -305,10 +305,10 @@ class Details extends Component<Props, State> {
             <div className="divider" />
             <div className="description">
               <h3>{this.props.t("description")}</h3>
-              <p>
+              <span>
                 {this.state.manga &&
                   window.raito.translate(this.state.manga.description)}
-              </p>
+              </span>
             </div>
             <div className="divider" />
             <ul className="info">

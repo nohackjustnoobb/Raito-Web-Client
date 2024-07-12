@@ -171,7 +171,7 @@ class Settings extends React.Component<Props> {
               </div>
 
               <div className="options">
-                <span>{this.props.t("darkTheme")}</span>
+                <span>{this.props.t("darkTheme")}: </span>
                 <select
                   value={window.raito.settingsState.themeModel}
                   onChange={(event) => {
@@ -189,7 +189,7 @@ class Settings extends React.Component<Props> {
               </div>
 
               <div className="options">
-                <span>{this.props.t("numberOfRecordPreviews")}</span>
+                <span>{this.props.t("numberOfRecordPreviews")}: </span>
                 <select
                   value={window.raito.settingsState.numberOfRecordPreviews}
                   onChange={(event) => {
@@ -228,7 +228,7 @@ class Settings extends React.Component<Props> {
               </div>
 
               <div className="options">
-                <span>{this.props.t("pullToLoadPreviousChapter")}</span>
+                <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
                 <Checkbox
                   checked={
                     window.raito.settingsState.overscrollToLoadPreviousChapters
@@ -242,7 +242,7 @@ class Settings extends React.Component<Props> {
               </div>
 
               <div className="options">
-                <span>{this.props.t("snapToPage")}</span>
+                <span>{this.props.t("snapToPage")}: </span>
                 <Checkbox
                   checked={window.raito.settingsState.snapToPage}
                   onChange={(_, checked) => {
@@ -256,7 +256,7 @@ class Settings extends React.Component<Props> {
             <h3>{this.props.t("imageSettings")}</h3>
             <div className="subSettings">
               <div className="options">
-                <span>{this.props.t("imageCacheMaxAge")}</span>
+                <span>{this.props.t("imageCacheMaxAge")}: </span>
                 <select
                   value={window.raito.settingsState.imageCacheMaxAge}
                   onChange={(event) => {
@@ -342,7 +342,7 @@ class Settings extends React.Component<Props> {
                   </div>
 
                   <div className="options">
-                    <span>{this.props.t("experimentalFeatures")}</span>
+                    <span>{this.props.t("experimentalFeatures")}: </span>
                     <Button
                       variant={"outlined"}
                       size="small"

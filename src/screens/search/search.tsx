@@ -3,12 +3,10 @@ import "./search.scss";
 import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
-import { InfinitySpin } from "react-loader-spinner";
 
 import { mdiChevronDown, mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
-import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import Driver from "../../models/driver";
 import {
@@ -21,6 +19,7 @@ import { convertRemToPixels } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
+import MangasList from "../../components/mangasList/mangasList";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {
   keyword?: string;
@@ -28,16 +27,16 @@ interface Props extends InjectedSwipeableProps, WithTranslation {
 
 interface State {
   keyword: string;
-  focus: boolean;
+  isfocused: boolean;
   suggestions: Array<string> | null;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 class Search extends Component<Props, State> {
   state: State = {
     keyword: this.props.keyword || "",
-    focus: false,
-    loading: false,
+    isfocused: false,
+    isLoading: false,
     suggestions: null,
   };
   driver: string | null = null;
@@ -80,12 +79,12 @@ class Search extends Component<Props, State> {
     if (
       !window.raito.selectedDriver ||
       window.raito.selectedDriver.isDown ||
-      this.state.loading ||
+      this.state.isLoading ||
       !this.content
     )
       return;
 
-    this.setState({ loading: true });
+    this.setState({ isLoading: true });
 
     var reached: boolean = false;
     reached = !(await window.raito.selectedDriver!.getSearch(
@@ -97,7 +96,7 @@ class Search extends Component<Props, State> {
     ));
     this.curSearch = this.state.keyword;
 
-    this.setState({ loading: false }, () => {
+    this.setState({ isLoading: false }, () => {
       // check if scrollable
       if (!reached) this.shouldLoadMore();
     });
@@ -112,6 +111,10 @@ class Search extends Component<Props, State> {
       this.content.clientHeight + this.content.scrollTop + convertRemToPixels(1)
     )
       this.loadMore();
+  }
+
+  setContent(content: HTMLDivElement | null) {
+    this.content = content;
   }
 
   render() {
@@ -153,9 +156,9 @@ class Search extends Component<Props, State> {
             enterKeyHint="search"
             value={this.state.keyword}
             ref={(ref) => (this.searchInput = ref)}
-            onFocus={() => this.setState({ focus: true })}
+            onFocus={() => this.setState({ isfocused: true })}
             onBlur={() =>
-              setTimeout(() => this.setState({ focus: false }), 250)
+              setTimeout(() => this.setState({ isfocused: false }), 250)
             }
             onKeyDown={(event) => {
               if (event.key === "Enter") this.loadMore();
@@ -183,7 +186,7 @@ class Search extends Component<Props, State> {
           </div>
           {this.state.suggestions &&
             this.state.suggestions.length !== 0 &&
-            this.state.focus && (
+            this.state.isfocused && (
               <ul className="suggestions">
                 {this.state.suggestions!.map((suggestion) => (
                   <li
@@ -205,55 +208,12 @@ class Search extends Component<Props, State> {
               </ul>
             )}
         </div>
-        <div
-          className="content"
-          ref={(ref) => (this.content = ref)}
-          onScroll={() => this.shouldLoadMore()}
-        >
-          {manga.length === 0 && (
-            <div className="empty">
-              <span>
-                {this.state.loading ? (
-                  <InfinitySpin width="150" color="var(--color-text)" />
-                ) : (
-                  this.props.t("noMatchingManga")
-                )}
-              </span>
-            </div>
-          )}
-          <div className="mangaList">
-            {manga.map((manga, index) => (
-              <div
-                key={`${manga.driver.identifier}${manga.id}${index}`}
-                onClick={() => manga.pushDetails()}
-                className="manga"
-              >
-                <div className="tag">
-                  {manga.isEnded && (
-                    <div className="end">{this.props.t("end")}</div>
-                  )}
-                  {window.raito.settingsState.debugMode && (
-                    <>
-                      <div className="driverID">{manga.driver.identifier}</div>
-                      <div className="mangaID">{manga.id}</div>
-                    </>
-                  )}
-                </div>
-                <LazyImage src={manga.thumbnail} />
-                <p>{window.raito.translate(manga.title)}</p>
-                <p className="latest">
-                  {this.props.t("updatedTo")}{" "}
-                  {window.raito.translate(manga.latest)}
-                </p>
-              </div>
-            ))}
-          </div>
-          {this.state.loading && manga.length !== 0 && (
-            <div className="spin">
-              <InfinitySpin width="150" color="var(--color-text)" />
-            </div>
-          )}
-        </div>
+        <MangasList
+          setContent={this.setContent.bind(this)}
+          shouldLoadMore={this.shouldLoadMore.bind(this)}
+          manga={manga}
+          isLoading={this.state.isLoading}
+        />
       </div>
     );
   }

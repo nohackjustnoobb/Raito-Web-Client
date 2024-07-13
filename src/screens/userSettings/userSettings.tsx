@@ -8,6 +8,8 @@ import { Button } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
 import db from "../../models/db";
+import syncManager from "../../managers/syncManager";
+import user from "../../models/user";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -18,12 +20,11 @@ interface Props extends InjectedSwipeableProps, WithTranslation {}
 
 class UserSettings extends Component<Props> {
   async componentDidMount() {
-    await window.raito.user.getInfo();
+    await user.getInfo();
     this.forceUpdate();
   }
 
   render(): ReactNode {
-    const user = window.raito.user;
     const options: any = {
       month: "long",
       day: "2-digit",
@@ -79,7 +80,7 @@ class UserSettings extends Component<Props> {
 
               // sync the data without timestamp
               window.showLoader();
-              await window.raito.syncManager.sync();
+              await syncManager.sync();
               window.hideLoader();
             }}
           >
@@ -100,7 +101,7 @@ class UserSettings extends Component<Props> {
                 localStorage.removeItem("lastSync");
                 await db.collections.clear();
                 await db.history.clear();
-                await window.raito.syncManager.sync();
+                await syncManager.sync();
                 window.hideLoader();
               }
             }}

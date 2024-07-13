@@ -7,6 +7,9 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button } from "@mui/material";
 
+import driversManager from "../../managers/driversManager";
+import serversManager from "../../managers/serversManager";
+
 class OnlineStatus extends Component<
   WithTranslation,
   { show: boolean; isLoading: boolean }
@@ -49,10 +52,9 @@ class OnlineStatus extends Component<
               <h5>
                 {this.state.isLoading
                   ? this.props.t("updating")
-                  : window.raito.statusManager.lastCheck
+                  : serversManager.lastCheck
                   ? `${this.props.t("updated")} ${Math.round(
-                      (Date.now() - window.raito.statusManager.lastCheck!) /
-                        1000
+                      (Date.now() - serversManager.lastCheck!) / 1000
                     )} ${this.props.t("secondsAgo")}`
                   : this.props.t("noStatus")}
               </h5>
@@ -65,7 +67,7 @@ class OnlineStatus extends Component<
                     <th>{this.props.t("online")}</th>
                     <th>{this.props.t("latency")}</th>
                   </tr>
-                  {window.raito.availableDrivers.map((driver) => (
+                  {driversManager.available.map((driver) => (
                     <tr
                       key={driver.identifier}
                       className={driver.isDown ? "disabled" : ""}
@@ -98,7 +100,7 @@ class OnlineStatus extends Component<
                   onClick={async () => {
                     if (!this.state.isLoading) {
                       this.setState({ isLoading: true });
-                      await window.raito.statusManager.checkOnlineStatus(true);
+                      await serversManager.checkOnlineStatus(true);
                       this.setState({ isLoading: false });
                     }
                   }}

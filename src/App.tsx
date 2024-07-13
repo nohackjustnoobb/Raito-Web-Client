@@ -1,9 +1,12 @@
-import "./App.scss";
+import './App.scss';
 
-import { Component } from "react";
+import { Component } from 'react';
 
-import { liveQuery } from "dexie";
-import { withTranslation, WithTranslation } from "react-i18next";
+import { liveQuery } from 'dexie';
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
 import {
   mdiBookSearch,
@@ -12,20 +15,37 @@ import {
   mdiDotsHorizontalCircleOutline,
   mdiLibraryShelves,
   mdiRefresh,
-} from "@mdi/js";
-import Icon from "@mdi/react";
-import { Button } from "@mui/material";
+} from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button } from '@mui/material';
 
-import LazyImage from "./components/lazyImage/lazyImage";
-import db, { collection, history } from "./models/db";
-import { listenToEvents, RaitoEvents } from "./models/events";
-import { Manga, SimpleManga } from "./models/manga";
-import History from "./screens/history/history";
-import Library from "./screens/library/library";
-import Search from "./screens/search/search";
-import Settings from "./screens/settings/settings";
-import { AppIcon, wheelToScrollHorizontally } from "./utils/utils";
-import MangaPreview, { Tag } from "./components/mangaPreview/mangaPreview";
+import LazyImage from './components/lazyImage/lazyImage';
+import MangaPreview, { Tag } from './components/mangaPreview/mangaPreview';
+import downloadManager from './managers/downloadManager';
+import settingsManager from './managers/settingsManager';
+import syncManager from './managers/syncManager';
+import updatesManager from './managers/updatesManager';
+import db, {
+  collection,
+  history,
+} from './models/db';
+import {
+  listenToEvents,
+  RaitoEvents,
+} from './models/events';
+import {
+  DetailsManga,
+  Manga,
+} from './models/manga';
+import History from './screens/history/history';
+import Library from './screens/library/library';
+import Search from './screens/search/search';
+import Settings from './screens/settings/settings';
+import {
+  AppIcon,
+  translate,
+  wheelToScrollHorizontally,
+} from './utils/utils';
 
 enum StatusMode {
   None,
@@ -51,36 +71,26 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   render() {
     let status = null;
 
-    if (
-      window.raito.updateCollectionsState.isUpdating &&
-      window.raito.updateCollectionsState.currentState
-    )
+    if (updatesManager.state.isUpdating && updatesManager.state.currentState)
       status = `${this.props.t("updating")} ${
-        window.raito.updateCollectionsState.currentState
+        updatesManager.state.currentState
       }`;
 
-    if (
-      window.raito.syncManager.state.isSyncing &&
-      window.raito.syncManager.state.currentStatus
-    )
-      status = this.props.t(window.raito.syncManager.state.currentStatus);
+    if (syncManager.state.isSyncing && syncManager.state.currentStatus)
+      status = this.props.t(syncManager.state.currentStatus);
 
     if (status === null) {
       switch (this.state.mode) {
         case StatusMode.Sync:
-          if (window.raito.syncManager.state.lastSync)
+          if (syncManager.state.lastSync)
             status = `${this.props.t("synced")} 
-          ${Math.round(
-            (Date.now() - window.raito.syncManager.state.lastSync) / 1000
-          )} 
+          ${Math.round((Date.now() - syncManager.state.lastSync) / 1000)} 
           ${this.props.t("secondsAgo")}`;
           break;
         case StatusMode.Update:
-          if (window.raito.updateCollectionsState.lastUpdate)
+          if (updatesManager.state.lastUpdate)
             status = `${this.props.t("updated")} 
-        ${Math.round(
-          (Date.now() - window.raito.updateCollectionsState.lastUpdate) / 60000
-        )} 
+        ${Math.round((Date.now() - updatesManager.state.lastUpdate) / 60000)} 
         ${this.props.t("minutesAgo")}`;
           break;
       }
@@ -140,10 +150,7 @@ class App extends Component<
   }
 
   componentDidUpdate() {
-    if (
-      this.state.filter === Filters.Download &&
-      !window.raito.downloadManager.tasks.length
-    )
+    if (this.state.filter === Filters.Download && !downloadManager.tasks.length)
       this.setState({ filter: Filters.All });
   }
 
@@ -166,7 +173,7 @@ class App extends Component<
     );
     const previewHistory = filteredHistory
       .sort((a, b) => b.datetime - a.datetime)
-      .slice(0, window.raito.settingsState.numberOfRecordPreviews);
+      .slice(0, settingsManager.numberOfRecordPreviews);
 
     return (
       <div id="main">
@@ -204,21 +211,19 @@ class App extends Component<
                   onClick={async () => {
                     window.showLoader();
                     // load manga
-                    const result = await Manga.get(v.driver, v.id);
+                    const result = await DetailsManga.get(v.driver, v.id);
 
                     // pop the loader
                     window.hideLoader();
 
                     // show details
-                    if (result) (result as SimpleManga).pushDetails();
+                    if (result) (result as Manga).pushDetails();
                     else alert(`${v.driver}${this.props.t("isDown")}`);
                   }}
                 >
                   <LazyImage src={v.thumbnail} />
-                  <h4>{window.raito.translate(v.title)}</h4>
-                  <p>
-                    {window.raito.translate(`${v.chapterTitle!} / ${v.latest}`)}
-                  </p>
+                  <h4>{translate(v.title)}</h4>
+                  <p>{translate(`${v.chapterTitle!} / ${v.latest}`)}</p>
                 </li>
               ))}
               {this.state.history && (
@@ -238,7 +243,7 @@ class App extends Component<
                 .filter(
                   (v) =>
                     filters.indexOf(v) !== Filters.Download ||
-                    window.raito.downloadManager.tasks.length
+                    downloadManager.tasks.length
                 )
                 .map((v) => (
                   <li
@@ -254,17 +259,17 @@ class App extends Component<
                   </li>
                 ))}
             </ul>
-            <div onClick={() => window.raito.updateCollections()}>
+            <div onClick={() => updatesManager.update()}>
               <Icon path={mdiRefresh} size={1.25} />
             </div>
           </div>
           {this.state.filter === Filters.Download ? (
             <ul id="downloadTasks">
-              {window.raito.downloadManager.tasks.map((v, i) => (
+              {downloadManager.tasks.map((v, i) => (
                 <li key={i}>
                   <LazyImage src={v.manga.thumbnail} />
                   <div className="info">
-                    <b>{window.raito.translate(v.manga.title)}</b>
+                    <b>{translate(v.manga.title)}</b>
                     <p>
                       {this.props.t(
                         v.done ? "done" : v.started ? "downloading" : "waiting"
@@ -276,7 +281,7 @@ class App extends Component<
                         color="error"
                         size="small"
                         disabled={v.started && !v.done}
-                        onClick={() => window.raito.downloadManager.remove(i)}
+                        onClick={() => downloadManager.remove(i)}
                       >
                         {this.props.t("cancel")}
                       </Button>
@@ -286,7 +291,7 @@ class App extends Component<
                         onClick={() => {
                           if (v.done) {
                             v.save();
-                            window.raito.downloadManager.remove(i);
+                            downloadManager.remove(i);
                           } else {
                             v.showProgress();
                           }
@@ -327,7 +332,7 @@ class App extends Component<
                     (h) => h.id === manga.id && h.driver === manga.driver
                   );
 
-                  const mangaObject = SimpleManga.fromCollection(manga);
+                  const mangaObject = Manga.fromCollection(manga);
                   const tag = manga.isEnd
                     ? Tag.Ended
                     : history?.new

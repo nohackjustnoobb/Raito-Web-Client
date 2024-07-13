@@ -6,6 +6,7 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
+import user from "../../models/user";
 
 class CreateUser extends Component<
   WithTranslation,
@@ -36,7 +37,7 @@ class CreateUser extends Component<
   }
 
   async submit() {
-    const result = await window.raito.user.create(
+    const result = await user.create(
       this.state.email,
       this.state.password,
       this.state.key

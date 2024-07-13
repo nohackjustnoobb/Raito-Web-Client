@@ -13,15 +13,14 @@ import Loader from "./components/loader/loader";
 import Notification, {
   NotificationItem,
 } from "./components/notification/notification";
-import Driver from "./models/driver";
-import { dispatchEvent, RaitoEvents } from "./models/events";
-import { SimpleManga } from "./models/manga";
+import settingsManager, { ThemeMode } from "./managers/settingsManager";
+import { Manga } from "./models/manga";
 import RaitoManga from "./models/raitoManga";
-import { Theme } from "./models/settingsState";
 import Search from "./screens/search/search";
 import StackView, { Stack } from "./screens/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { getCssVariable, sleep } from "./utils/utils";
+import driversManager from "./managers/driversManager";
 
 // declare global variables
 declare global {
@@ -32,14 +31,11 @@ declare global {
     hideLoader: () => void;
     pushNotification: (item: NotificationItem) => void;
     stack: Stack;
-    raito: RaitoManga;
   }
 }
 
-// initialize the main engine
-window.raito = new RaitoManga();
 // check if url path is share
-window.raito.initialize().then(async () => {
+RaitoManga.initialize().then(async () => {
   if (
     window.location.pathname === "/share" ||
     window.location.pathname === "/share/"
@@ -50,37 +46,14 @@ window.raito.initialize().then(async () => {
     const id = params.get("id");
 
     if (driver && id) {
-      while (!Driver.getOrCreate(driver).initialized) await sleep(250);
+      while (!driversManager.getOrCreate(driver).initialized) await sleep(250);
 
       // show share and reset url
-      const result = await SimpleManga.get(driver, id);
-      if (result) (result as SimpleManga).pushDetails();
+      const result = await Manga.get(driver, id);
+      if (result) (result as Manga).pushDetails();
 
       window.history.replaceState({}, "", "/");
     }
-  }
-});
-
-// update the screen when screen rotate or resize
-window.addEventListener("resize", () =>
-  dispatchEvent(RaitoEvents.screenChanged)
-);
-window.addEventListener("orientationchange", () =>
-  dispatchEvent(RaitoEvents.screenChanged)
-);
-
-// reset the update and sync state when site is minimized
-document.addEventListener("visibilitychange", async () => {
-  window.raito.updateCollectionsState.isUpdating = false;
-  window.raito.syncManager.state.isSyncing = false;
-
-  // update the collections if not updated for 30 seconds
-  if (
-    document.visibilityState === "visible" &&
-    (!window.raito.updateCollectionsState.lastUpdate ||
-      Date.now() - window.raito.updateCollectionsState.lastUpdate > 30000)
-  ) {
-    await window.raito.updateCollections();
   }
 });
 
@@ -130,9 +103,9 @@ class Main extends Component<{}, { dark: boolean }> {
 
   render(): ReactNode {
     const useDarkMode =
-      window.raito.settingsState.themeModel === Theme.Auto
+      settingsManager.themeModel === ThemeMode.Auto
         ? this.state.dark
-        : window.raito.settingsState.themeModel === Theme.Dark;
+        : settingsManager.themeModel === ThemeMode.Dark;
 
     document.documentElement.setAttribute(
       "data-theme",

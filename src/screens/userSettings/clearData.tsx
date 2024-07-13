@@ -6,6 +6,7 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
+import user from "../../models/user";
 
 class ClearData extends Component<
   WithTranslation,
@@ -29,7 +30,7 @@ class ClearData extends Component<
   async submit() {
     if (window.confirm(this.props.t("clearDataConfirmation"))) {
       window.showLoader();
-      const result = await window.raito.user.clear(this.state.password);
+      const result = await user.clear(this.state.password);
       window.hideLoader();
 
       if (result) {

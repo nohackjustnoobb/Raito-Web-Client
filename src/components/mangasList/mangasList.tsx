@@ -1,6 +1,6 @@
 import { Component } from "react";
 import "./mangasList.scss";
-import { SimpleManga } from "../../models/manga";
+import { Manga } from "../../models/manga";
 import { InfinitySpin } from "react-loader-spinner";
 import { WithTranslation, withTranslation } from "react-i18next";
 import MangaPreview, { Tag } from "../mangaPreview/mangaPreview";
@@ -8,7 +8,7 @@ import MangaPreview, { Tag } from "../mangaPreview/mangaPreview";
 interface Props extends WithTranslation {
   setContent: (content: HTMLDivElement | null) => void;
   shouldLoadMore: () => void;
-  manga: Array<SimpleManga>;
+  manga: Array<Manga>;
   isLoading: boolean;
 }
 

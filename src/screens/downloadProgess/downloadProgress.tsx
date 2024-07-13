@@ -8,6 +8,7 @@ import { CSSTransition } from "react-transition-group";
 import { Button } from "@mui/material";
 
 import DownloadTask from "../../models/downloadTask";
+import downloadManager from "../../managers/downloadManager";
 
 interface Props extends WithTranslation {
   task: DownloadTask;
@@ -89,10 +90,10 @@ class DownloadProgress extends Component<Props> {
                   onClick={() => {
                     this.props.task.save();
 
-                    const index = window.raito.downloadManager.tasks.findIndex(
+                    const index = downloadManager.tasks.findIndex(
                       (v) => !v.done
                     );
-                    window.raito.downloadManager.remove(index);
+                    downloadManager.remove(index);
 
                     this.close();
                   }}

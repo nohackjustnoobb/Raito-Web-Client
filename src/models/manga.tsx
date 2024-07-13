@@ -4,12 +4,16 @@ import Details from "../screens/details/details";
 import Read from "../screens/read/read";
 import db, { collection, history } from "./db";
 import Driver from "./driver";
+import settingsManager from "../managers/settingsManager";
+import syncManager from "../managers/syncManager";
+import user from "./user";
+import driversManager from "../managers/driversManager";
 
 /**
  * A class for the base manga.
  *
  */
-class SimpleManga {
+class Manga {
   /**
    * The driver that this manga from.
    */
@@ -42,7 +46,7 @@ class SimpleManga {
    * @param data Object (required)
    */
   constructor(data: any) {
-    this.driver = Driver.getOrCreate(data.driver)!;
+    this.driver = driversManager.getOrCreate(data.driver)!;
     this.id = data.id;
     this.title = data.title;
     this.latest = data.latest;
@@ -79,7 +83,7 @@ class SimpleManga {
         // eslint-disable-next-line no-loop-func
         (async () => {
           // get the driver object
-          const driver = Driver.getOrCreate(driverID);
+          const driver = driversManager.getOrCreate(driverID);
 
           const chunkSize = driver!.recommendedChunkSize;
 
@@ -128,7 +132,7 @@ class SimpleManga {
    * @async
    * @returns
    */
-  async getDetails(): Promise<Manga> {
+  async getDetails(): Promise<DetailsManga> {
     // check if the manga has already cached.
     if (!this.driver.manga[this.id]) await this.driver.getManga([this.id]);
     return this.driver.manga[this.id];
@@ -141,8 +145,8 @@ class SimpleManga {
    * @param collection A collection instance. (required)
    * @returns
    */
-  static fromCollection(collection: collection): SimpleManga {
-    return new SimpleManga({
+  static fromCollection(collection: collection): Manga {
+    return new Manga({
       driver: collection.driver,
       id: collection.id,
       title: collection.title,
@@ -172,11 +176,11 @@ class SimpleManga {
    * @returns
    */
   async add(sync: boolean = true) {
-    if (window.raito.user.token && sync) {
+    if (user.token && syncManager.ok() && sync) {
       // sync with server
       if (
         !(
-          await window.raito.syncServer.post(
+          await syncManager.syncServer!.post(
             "collections",
             undefined,
             JSON.stringify([{ id: this.id, driver: this.driver.identifier }]),
@@ -199,7 +203,7 @@ class SimpleManga {
     if (!sync) return;
 
     // try get history
-    window.raito.syncManager.isHistoryChanged = true;
+    syncManager.isHistoryChanged = true;
     const history = await db.history.get([this.driver.identifier, this.id]);
     if (history) {
       // update only when latest is changed
@@ -233,11 +237,11 @@ class SimpleManga {
    * @returns
    */
   async remove() {
-    if (window.raito.user.token) {
+    if (user.token && !syncManager.ok()) {
       // sync with server
       if (
         !(
-          await window.raito.syncServer.fetch("DELETE", "collections", {
+          await syncManager.syncServer!.fetch("DELETE", "collections", {
             driver: this.driver.identifier,
             id: this.id,
           })
@@ -258,9 +262,12 @@ class SimpleManga {
    * @param id  The ID of the manga. (required)
    * @returns
    */
-  static async get(driverID: string, id: string): Promise<Manga | boolean> {
+  static async get(
+    driverID: string,
+    id: string
+  ): Promise<DetailsManga | boolean> {
     // get driver
-    const driver = Driver.getOrCreate(driverID)!;
+    const driver = driversManager.getOrCreate(driverID)!;
     // get manga
     return (await driver.getManga([id])) && driver.manga[id];
   }
@@ -275,7 +282,7 @@ class SimpleManga {
    */
   async save(chapter: Chapter, page: number) {
     // update or create history
-    window.raito.syncManager.isHistoryChanged = true;
+    syncManager.isHistoryChanged = true;
     await db.history.put({
       driver: this.driver.identifier,
       id: this.id,
@@ -300,9 +307,9 @@ interface Chapter {
  * A subclass of SimpleManga that contain the details info.
  *
  * @class
- * @extends {SimpleManga}
+ * @extends {Manga}
  */
-class Manga extends SimpleManga {
+class DetailsManga extends Manga {
   /**
    * Description of the manga.
    */
@@ -403,7 +410,7 @@ class Manga extends SimpleManga {
       driver: this.driver.identifier,
       id: chapterId,
       "extra-data": this.chapters.extraData,
-      proxy: forceProxy || window.raito.settingsState.useProxy ? "1" : "0",
+      proxy: forceProxy || settingsManager.useProxy ? "1" : "0",
     });
 
     if (!result.ok) {
@@ -432,5 +439,5 @@ class Manga extends SimpleManga {
   }
 }
 
-export { Manga, SimpleManga };
+export { DetailsManga, Manga };
 export type { Chapter };

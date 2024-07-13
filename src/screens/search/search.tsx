@@ -4,22 +4,23 @@ import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiChevronDown, mdiMagnify } from "@mdi/js";
+import { mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import MangasList from "../../components/mangasList/mangasList";
 import TopBar from "../../components/topBar/topBar";
-import Driver from "../../models/driver";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import { SimpleManga } from "../../models/manga";
-import { convertRemToPixels } from "../../utils/utils";
+import driversManager from "../../managers/driversManager";
+import { Manga } from "../../models/manga";
+import { convertRemToPixels, translate } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import MangasList from "../../components/mangasList/mangasList";
+import DriverSelector from "../../components/driverSelector/driverSelector";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {
   keyword?: string;
@@ -58,12 +59,12 @@ class Search extends Component<Props, State> {
 
   componentDidUpdate() {
     if (
-      window.raito.selectedDriver &&
-      this.driver !== window.raito.selectedDriver.identifier
+      driversManager.selected &&
+      this.driver !== driversManager.selected.identifier
     ) {
-      this.driver = window.raito.selectedDriver.identifier;
+      this.driver = driversManager.selected.identifier;
 
-      if (this.curSearch && !window.raito.selectedDriver.search[this.curSearch])
+      if (this.curSearch && !driversManager.selected.search[this.curSearch])
         this.loadMore();
     }
   }
@@ -77,8 +78,8 @@ class Search extends Component<Props, State> {
     if (this.searchInput) this.searchInput.blur();
 
     if (
-      !window.raito.selectedDriver ||
-      window.raito.selectedDriver.isDown ||
+      !driversManager.selected ||
+      driversManager.selected.isDown ||
       this.state.isLoading ||
       !this.content
     )
@@ -87,10 +88,10 @@ class Search extends Component<Props, State> {
     this.setState({ isLoading: true });
 
     var reached: boolean = false;
-    reached = !(await window.raito.selectedDriver!.getSearch(
+    reached = !(await driversManager.selected!.getSearch(
       this.state.keyword,
-      window.raito.selectedDriver!.search[this.state.keyword]
-        ? Object.keys(window.raito.selectedDriver!.search[this.state.keyword])
+      driversManager.selected!.search[this.state.keyword]
+        ? Object.keys(driversManager.selected!.search[this.state.keyword])
             .length + 1
         : 1
     ));
@@ -118,39 +119,21 @@ class Search extends Component<Props, State> {
   }
 
   render() {
-    var manga: Array<SimpleManga> = [];
+    var manga: Array<Manga> = [];
     if (
-      window.raito.selectedDriver &&
+      driversManager.selected &&
       this.curSearch &&
-      window.raito.selectedDriver.search[this.curSearch]
+      driversManager.selected.search[this.curSearch]
     ) {
-      for (const page in window.raito.selectedDriver.search[this.curSearch])
-        window.raito.selectedDriver.search[this.curSearch][page].forEach((v) =>
-          manga.push(window.raito.selectedDriver!.simpleManga[v])
+      for (const page in driversManager.selected.search[this.curSearch])
+        driversManager.selected.search[this.curSearch][page].forEach((v) =>
+          manga.push(driversManager.selected!.simpleManga[v])
         );
     }
 
     return (
       <div className="search">
-        <TopBar
-          close={this.props.close}
-          centerComponent={
-            <div className="drivers">
-              <select
-                value={window.raito.selectedDriver?.identifier}
-                onChange={async (event) => {
-                  // change the selected driver
-                  await Driver.select(event.target.value);
-                }}
-              >
-                {window.raito.availableDrivers?.map((v) => (
-                  <option key={v.identifier}>{v.identifier}</option>
-                ))}
-              </select>
-              <Icon path={mdiChevronDown} size={1} />
-            </div>
-          }
-        />
+        <TopBar close={this.props.close} centerComponent={<DriverSelector />} />
         <div className="searchBar">
           <input
             enterKeyHint="search"
@@ -171,12 +154,11 @@ class Search extends Component<Props, State> {
 
               // set timeout
               this.timeoutId = setTimeout(async () => {
-                if (this.state.keyword && window.raito.selectedDriver)
+                if (this.state.keyword && driversManager.selected)
                   this.setState({
-                    suggestions:
-                      await window.raito.selectedDriver.getSuggestions(
-                        this.state.keyword
-                      ),
+                    suggestions: await driversManager.selected.getSuggestions(
+                      this.state.keyword
+                    ),
                   });
               }, 500);
             }}
@@ -192,17 +174,17 @@ class Search extends Component<Props, State> {
                   <li
                     key={suggestion}
                     onClick={() => {
-                      if (window.raito.translate(suggestion)) {
+                      if (translate(suggestion)) {
                         this.setState(
                           {
-                            keyword: window.raito.translate(suggestion),
+                            keyword: translate(suggestion),
                           },
                           () => this.loadMore()
                         );
                       }
                     }}
                   >
-                    <span>{window.raito.translate(suggestion)}</span>
+                    <span>{translate(suggestion)}</span>
                   </li>
                 ))}
               </ul>

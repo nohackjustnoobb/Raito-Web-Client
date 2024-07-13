@@ -14,6 +14,7 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import serversManager from "../../managers/serversManager";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -49,7 +50,7 @@ class ManageServers extends Component<Props> {
         />
 
         <ul className="serverList">
-          {window.raito.sourceServers.map((v, i) => (
+          {serversManager.servers.map((v, i) => (
             <li key={i}>
               <div>
                 <b>{this.props.t("serverAddress")}: </b>

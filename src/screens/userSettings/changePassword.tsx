@@ -6,6 +6,7 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
+import user from "../../models/user";
 
 class ChangePassword extends Component<
   WithTranslation,
@@ -29,7 +30,7 @@ class ChangePassword extends Component<
 
   async submit() {
     window.showLoader();
-    const result = await window.raito.user.changePassword(
+    const result = await user.changePassword(
       this.state.newPassword,
       this.state.oldPassword
     );

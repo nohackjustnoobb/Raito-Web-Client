@@ -9,12 +9,13 @@ import DownloadTask, {
   DownloadOptions,
   DownloadTypes,
 } from "../../models/downloadTask";
-import { Chapter, Manga } from "../../models/manga";
-import { sleep } from "../../utils/utils";
+import downloadManager from "../../managers/downloadManager";
+import { Chapter, DetailsManga } from "../../models/manga";
+import { formatChapterTitle, sleep } from "../../utils/utils";
 import SelectDownloadTypes from "./selectDownloadTypes";
 
 interface Props extends WithTranslation {
-  manga: Manga;
+  manga: DetailsManga;
 }
 
 interface State {
@@ -44,7 +45,7 @@ class Download extends Component<Props> {
       type,
       options
     );
-    window.raito.downloadManager.push(task);
+    downloadManager.push(task);
     // wait for the task to start
     await sleep(100);
     if (task.started) task.showProgress();
@@ -160,7 +161,7 @@ class Download extends Component<Props> {
                         this.forceUpdate();
                       }}
                     >
-                      <p>{window.raito.formatChapterTitle(chapter.title)}</p>
+                      <p>{formatChapterTitle(chapter.title)}</p>
                     </li>
                   );
                 })}

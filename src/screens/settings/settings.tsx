@@ -15,6 +15,10 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import driversManager from "../../managers/driversManager";
+import settingsManager from "../../managers/settingsManager";
+import syncManager from "../../managers/syncManager";
+import user from "../../models/user";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";
 import ManageThemes from "../manageThemes/manageThemes";
@@ -43,8 +47,6 @@ class Settings extends React.Component<Props> {
   }
 
   render(): React.ReactNode {
-    const user = window.raito.user;
-
     return (
       <div className="settings">
         <TopBar
@@ -53,7 +55,7 @@ class Settings extends React.Component<Props> {
             <div
               onClick={() => {
                 if (window.confirm(this.props.t("settingsResetConfirmation")))
-                  window.raito.settingsState.reset();
+                  settingsManager.reset();
               }}
             >
               <Icon path={mdiCogSync} size={1} />
@@ -77,7 +79,7 @@ class Settings extends React.Component<Props> {
                       if (user.token) {
                         window.stack.push(<UserSettings />);
                       } else {
-                        window.raito.user.pushLogin();
+                        user.pushLogin();
                       }
                     }}
                   >
@@ -109,16 +111,15 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("defaultSource")}: </span>
                 <select
                   value={
-                    window.raito.settingsState.defaultDriver ??
-                    window.raito.availableDrivers[0].identifier
+                    settingsManager.defaultDriver ??
+                    driversManager.available[0].identifier
                   }
                   onChange={(event) => {
-                    window.raito.settingsState.defaultDriver =
-                      event.target.value;
-                    window.raito.settingsState.update();
+                    settingsManager.defaultDriver = event.target.value;
+                    settingsManager.update();
                   }}
                 >
-                  {window.raito.availableDrivers?.map((v) => (
+                  {driversManager.available?.map((v) => (
                     <option key={v.identifier}>{v.identifier}</option>
                   ))}
                 </select>
@@ -127,10 +128,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("forceTranslate")}: </span>
                 <Checkbox
-                  checked={window.raito.settingsState.forceTranslate}
+                  checked={settingsManager.forceTranslate}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.forceTranslate = checked;
-                    window.raito.settingsState.update();
+                    settingsManager.forceTranslate = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
@@ -138,10 +139,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("developerMode")}: </span>
                 <Checkbox
-                  checked={window.raito.settingsState.showDeveloperSettings}
+                  checked={settingsManager.showDeveloperSettings}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.showDeveloperSettings = checked;
-                    window.raito.settingsState.update();
+                    settingsManager.showDeveloperSettings = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
@@ -151,10 +152,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("formatChaptersTitle")}: </span>
                 <Checkbox
-                  checked={window.raito.settingsState.formatChapterTitle}
+                  checked={settingsManager.formatChapterTitle}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.formatChapterTitle = checked;
-                    window.raito.settingsState.update();
+                    settingsManager.formatChapterTitle = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
@@ -173,12 +174,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("darkTheme")}: </span>
                 <select
-                  value={window.raito.settingsState.themeModel}
+                  value={settingsManager.themeModel}
                   onChange={(event) => {
-                    window.raito.settingsState.themeModel = Number(
-                      event.target.value
-                    );
-                    window.raito.settingsState.update();
+                    settingsManager.themeModel = Number(event.target.value);
+                    settingsManager.update();
                     window.updateRoot();
                   }}
                 >
@@ -191,12 +190,12 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("numberOfRecordPreviews")}: </span>
                 <select
-                  value={window.raito.settingsState.numberOfRecordPreviews}
+                  value={settingsManager.numberOfRecordPreviews}
                   onChange={(event) => {
-                    window.raito.settingsState.numberOfRecordPreviews = Number(
+                    settingsManager.numberOfRecordPreviews = Number(
                       event.target.value
                     );
-                    window.raito.settingsState.update();
+                    settingsManager.update();
                   }}
                 >
                   {Array.from(Array(11), (_, i) => (
@@ -213,12 +212,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("mangaLayout")}: </span>
                 <select
-                  value={window.raito.settingsState.displayMode}
+                  value={settingsManager.displayMode}
                   onChange={(event) => {
-                    window.raito.settingsState.displayMode = Number(
-                      event.target.value
-                    );
-                    window.raito.settingsState.update();
+                    settingsManager.displayMode = Number(event.target.value);
+                    settingsManager.update();
                   }}
                 >
                   <option value={0}>{this.props.t("auto")}</option>
@@ -230,13 +227,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
                 <Checkbox
-                  checked={
-                    window.raito.settingsState.overscrollToLoadPreviousChapters
-                  }
+                  checked={settingsManager.overscrollToLoadPreviousChapters}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.overscrollToLoadPreviousChapters =
-                      checked;
-                    window.raito.settingsState.update();
+                    settingsManager.overscrollToLoadPreviousChapters = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
@@ -244,10 +238,10 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("snapToPage")}: </span>
                 <Checkbox
-                  checked={window.raito.settingsState.snapToPage}
+                  checked={settingsManager.snapToPage}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.snapToPage = checked;
-                    window.raito.settingsState.update();
+                    settingsManager.snapToPage = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
@@ -258,12 +252,12 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("imageCacheMaxAge")}: </span>
                 <select
-                  value={window.raito.settingsState.imageCacheMaxAge}
+                  value={settingsManager.imageCacheMaxAge}
                   onChange={(event) => {
-                    window.raito.settingsState.imageCacheMaxAge = Number(
+                    settingsManager.imageCacheMaxAge = Number(
                       event.target.value
                     );
-                    window.raito.settingsState.update();
+                    settingsManager.update();
                   }}
                 >
                   {Array.from(Array(8), (_, i) => (
@@ -279,22 +273,22 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("useProxy")}: </span>
                 <Checkbox
-                  checked={window.raito.settingsState.useProxy}
+                  checked={settingsManager.useProxy}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.useProxy = checked;
-                    window.raito.settingsState.update();
+                    settingsManager.useProxy = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>
 
-              {window.raito.settingsState.useProxy && (
+              {settingsManager.useProxy && (
                 <div className="options">
                   <span>{this.props.t("useBase64")}: </span>
                   <Checkbox
-                    checked={window.raito.settingsState.useBase64}
+                    checked={settingsManager.useBase64}
                     onChange={(_, checked) => {
-                      window.raito.settingsState.useBase64 = checked;
-                      window.raito.settingsState.update();
+                      settingsManager.useBase64 = checked;
+                      settingsManager.update();
                     }}
                   />
                 </div>
@@ -326,7 +320,7 @@ class Settings extends React.Component<Props> {
               </div>
             </div>
 
-            {window.raito.settingsState.showDeveloperSettings && (
+            {settingsManager.showDeveloperSettings && (
               <>
                 <h3>{this.props.t("developerSettings")}</h3>
                 <div className="subSettings">
@@ -357,10 +351,10 @@ class Settings extends React.Component<Props> {
                   <div className="options">
                     <span> {this.props.t("ignoreError")}: </span>
                     <Checkbox
-                      checked={window.raito.settingsState.ignoreError}
+                      checked={settingsManager.ignoreError}
                       onChange={(_, checked) => {
-                        window.raito.settingsState.ignoreError = checked;
-                        window.raito.settingsState.update();
+                        settingsManager.ignoreError = checked;
+                        settingsManager.update();
                       }}
                     />
                   </div>
@@ -368,10 +362,10 @@ class Settings extends React.Component<Props> {
                   <div className="options">
                     <span>{this.props.t("debugMode")}: </span>
                     <Checkbox
-                      checked={window.raito.settingsState.debugMode}
+                      checked={settingsManager.debugMode}
                       onChange={(_, checked) => {
-                        window.raito.settingsState.debugMode = checked;
-                        window.raito.settingsState.update();
+                        settingsManager.debugMode = checked;
+                        settingsManager.update();
                       }}
                     />
                   </div>
@@ -383,7 +377,7 @@ class Settings extends React.Component<Props> {
             <div className="subSettings">
               <div className="options">
                 <span>{this.props.t("syncServerVersion")}: </span>
-                <b>{window.raito.syncServer.version}</b>
+                <b>{syncManager.syncServer?.version || this.props.t("none")}</b>
               </div>
 
               <div className="options">

@@ -1,6 +1,7 @@
 import Login from "../screens/login/login";
 import db from "./db";
 import { dispatchEvent, RaitoEvents } from "./events";
+import syncManager from "../managers/syncManager";
 
 class User {
   token: string | null;
@@ -16,7 +17,9 @@ class User {
   }
 
   async login(email: string, password: string): Promise<boolean> {
-    var result = await window.raito.syncServer.post(
+    if (!syncManager.ok()) return false;
+
+    var result = await syncManager.syncServer!.post(
       "token",
       {},
       JSON.stringify({ email: email, password: password }),
@@ -32,7 +35,7 @@ class User {
       const collections = (await db.collections.toArray()).map(
         (collection) => ({ id: collection.id, driver: collection.driver })
       );
-      await window.raito.syncServer.post(
+      await syncManager.syncServer!.post(
         "collections",
         {},
         JSON.stringify(collections),
@@ -43,7 +46,7 @@ class User {
       localStorage.setItem("email", this.email!);
 
       // sync the collections and histories
-      window.raito.syncManager.sync();
+      syncManager.sync();
 
       dispatchEvent(RaitoEvents.settingsChanged);
     }
@@ -65,9 +68,9 @@ class User {
   }
 
   async getInfo() {
-    if (!this.token) return;
+    if (!this.token || !syncManager.syncServer) return;
 
-    const result = await window.raito.syncServer.get("me");
+    const result = await syncManager.syncServer.get("me");
     if (!result.ok) return;
 
     const json = await result.json();
@@ -77,10 +80,10 @@ class User {
   }
 
   async clear(password: string): Promise<boolean> {
-    if (!this.token) return false;
+    if (!this.token || !syncManager.ok()) return false;
 
     // delete remote data
-    const result = await window.raito.syncServer.post(
+    const result = await syncManager.syncServer!.post(
       "clear",
       {},
       JSON.stringify({ password: password }),
@@ -100,8 +103,10 @@ class User {
   }
 
   async create(email: string, password: string, key: string): Promise<boolean> {
+    if (!syncManager.syncServer) return false;
+
     return (
-      await window.raito.syncServer.post(
+      await syncManager.syncServer.post(
         "create",
         {},
         JSON.stringify({ email: email, password: password, key: key }),
@@ -115,10 +120,10 @@ class User {
     newPassword: string,
     oldPassword: string
   ): Promise<boolean> {
-    if (!this.token) return false;
+    if (!this.token || !syncManager.ok()) return false;
 
     return (
-      await window.raito.syncServer.post(
+      await syncManager.syncServer!.post(
         "me",
         {},
         JSON.stringify({ newPassword: newPassword, oldPassword: oldPassword }),
@@ -131,4 +136,6 @@ class User {
   pushLogin = () => window.stack.push(<Login />);
 }
 
-export default User;
+const user = new User();
+
+export default user;

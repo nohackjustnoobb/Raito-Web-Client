@@ -38,5 +38,6 @@ class RaitoDB extends Dexie {
 }
 
 const db = new RaitoDB();
+
 export default db;
 export type { collection, record as history };

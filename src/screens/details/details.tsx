@@ -25,19 +25,24 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import { Manga, SimpleManga } from "../../models/manga";
+import settingsManager from "../../managers/settingsManager";
+import { DetailsManga, Manga } from "../../models/manga";
+import {
+  formatChapterTitle,
+  translate,
+  wheelToScrollHorizontally,
+} from "../../utils/utils";
 import Download from "../download/download";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import { wheelToScrollHorizontally } from "../../utils/utils";
 
 interface Props extends WithTranslation, InjectedSwipeableProps {
-  manga: SimpleManga;
+  manga: Manga;
 }
 
 interface State {
-  manga: Manga | null;
+  manga: DetailsManga | null;
   extra: boolean;
   collected: boolean;
   history: history | null;
@@ -142,9 +147,7 @@ class Details extends Component<Props, State> {
             onClick={() => this.state.manga!.read(chapter.id)}
           >
             <p>
-              {this.state.isGrid
-                ? window.raito.formatChapterTitle(title)
-                : window.raito.translate(title)}
+              {this.state.isGrid ? formatChapterTitle(title) : translate(title)}
             </p>
           </li>
         );
@@ -235,10 +238,8 @@ class Details extends Component<Props, State> {
                         this.state.manga!.driver.server!.address
                       }share?driver=${this.state.manga!.driver.identifier}&id=${
                         this.state.manga!.id
-                      }&proxy=${
-                        window.raito.settingsState.useProxy ? "1" : "0"
-                      }`,
-                      title: window.raito.translate(this.state.manga!.title),
+                      }&proxy=${settingsManager.useProxy ? "1" : "0"}`,
+                      title: translate(this.state.manga!.title),
                     });
                   } catch {}
                 }}
@@ -254,8 +255,7 @@ class Details extends Component<Props, State> {
               )}
             </div>
             <h2 className="title">
-              {this.state.manga &&
-                window.raito.translate(this.state.manga.title)}
+              {this.state.manga && translate(this.state.manga.title)}
             </h2>
             <ul className="author">
               {this.state.manga &&
@@ -270,7 +270,7 @@ class Details extends Component<Props, State> {
               onClick={() => this.state.manga!.continue()}
             >
               {this.state.history?.chapterTitle
-                ? `${this.props.t("continue")} ${window.raito.translate(
+                ? `${this.props.t("continue")} ${translate(
                     this.state.history.chapterTitle
                   )}`
                 : this.props.t("startReading")}
@@ -308,8 +308,7 @@ class Details extends Component<Props, State> {
             <div className="description">
               <h3>{this.props.t("description")}</h3>
               <span>
-                {this.state.manga &&
-                  window.raito.translate(this.state.manga.description)}
+                {this.state.manga && translate(this.state.manga.description)}
               </span>
             </div>
             <div className="divider" />
@@ -337,8 +336,7 @@ class Details extends Component<Props, State> {
               <li>
                 <span className="title">{this.props.t("latest")}</span>
                 <span className="content">
-                  {this.state.manga &&
-                    window.raito.translate(this.state.manga.latest)}
+                  {this.state.manga && translate(this.state.manga.latest)}
                 </span>
               </li>
               {this.state.manga && this.state.manga.updateTime && (

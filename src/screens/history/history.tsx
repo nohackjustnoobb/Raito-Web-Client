@@ -11,17 +11,20 @@ import Icon from "@mdi/react";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import db, { history } from "../../models/db";
-import Driver from "../../models/driver";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import { Manga } from "../../models/manga";
-import { convertRemToPixels } from "../../utils/utils";
+import settingsManager from "../../managers/settingsManager";
+import syncManager from "../../managers/syncManager";
+import { DetailsManga } from "../../models/manga";
+import user from "../../models/user";
+import { convertRemToPixels, translate } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
+import driversManager from "../../managers/driversManager";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -90,9 +93,8 @@ class History extends React.Component<
             <div className="actions">
               <div
                 onClick={() => {
-                  if (!window.raito.user.token)
-                    return alert(this.props.t("notLoggedIn"));
-                  window.raito.syncManager.sync();
+                  if (!user.token) return alert(this.props.t("notLoggedIn"));
+                  syncManager.sync();
                 }}
               >
                 <Icon path={mdiCloudSync} size={1} />
@@ -129,7 +131,7 @@ class History extends React.Component<
                     onClick={async () => {
                       window.showLoader();
                       // load manga
-                      const result = await Manga.get(
+                      const result = await DetailsManga.get(
                         history.driver,
                         history.id
                       );
@@ -139,9 +141,11 @@ class History extends React.Component<
 
                       // show details
                       if (result) {
-                        (result as Manga).pushDetails();
+                        (result as DetailsManga).pushDetails();
                       } else {
-                        const driver = Driver.getOrCreate(history.driver);
+                        const driver = driversManager.getOrCreate(
+                          history.driver
+                        );
                         if (driver && driver.isDown)
                           return alert(
                             `${driver.identifier}${this.props.t("isDown")}`
@@ -151,19 +155,17 @@ class History extends React.Component<
                   />
 
                   <div className="info">
-                    <h3>{window.raito.translate(history.title)}</h3>
+                    <h3>{translate(history.title)}</h3>
                     <h4>
                       {this.props.t("lastSeen")}{" "}
-                      {window.raito.translate(history.chapterTitle!)}{" "}
-                      {this.props.t("page1")}
+                      {translate(history.chapterTitle!)} {this.props.t("page1")}
                       {history.page}
                       {this.props.t("page2")}
                     </h4>
                     <h5>
-                      {this.props.t("updatedTo")}{" "}
-                      {window.raito.translate(history.latest)}
+                      {this.props.t("updatedTo")} {translate(history.latest)}
                     </h5>
-                    {window.raito.settingsState.debugMode && (
+                    {settingsManager.debugMode && (
                       <div className="debugInfo">
                         <p>
                           {history.driver} <i>#{history.id}</i>
@@ -186,7 +188,7 @@ class History extends React.Component<
                     onClick={async () => {
                       window.showLoader();
                       // load manga
-                      const result = await Manga.get(
+                      const result = await DetailsManga.get(
                         history.driver,
                         history.id
                       );
@@ -195,9 +197,11 @@ class History extends React.Component<
                       window.hideLoader();
                       // show details
                       if (result) {
-                        (result as Manga).continue();
+                        (result as DetailsManga).continue();
                       } else {
-                        const driver = Driver.getOrCreate(history.driver);
+                        const driver = driversManager.getOrCreate(
+                          history.driver
+                        );
                         if (driver && driver.isDown)
                           return alert(
                             `${driver.identifier}${this.props.t("isDown")}`

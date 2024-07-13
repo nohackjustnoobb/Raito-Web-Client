@@ -1,10 +1,13 @@
 import { md5 } from "js-md5";
 
 import { sleep } from "../utils/utils";
-import db from "./db";
-import Driver from "./driver";
-import { dispatchEvent, RaitoEvents } from "./events";
-import { Manga } from "./manga";
+import db from "../models/db";
+import { dispatchEvent, RaitoEvents } from "../models/events";
+import { DetailsManga } from "../models/manga";
+import Server from "../models/server";
+import user from "../models/user";
+import settingsManager from "./settingsManager";
+import driversManager from "./driversManager";
 
 interface SyncState {
   isSyncing: boolean;
@@ -20,10 +23,28 @@ interface SyncHashes {
 
 class SyncManager {
   state: SyncState = { isSyncing: false };
+  syncServer: Server | null = null;
   isHistoryChanged: boolean = false;
 
-  constructor() {
-    this.trySync();
+  async initialize() {
+    // initialize the sync server
+    if (process.env.REACT_APP_SYNC_ADDRESS) {
+      this.syncServer = new Server(
+        process.env.REACT_APP_SYNC_ADDRESS,
+        null,
+        true
+      );
+
+      await this.syncServer.initialize();
+
+      // FIXME temp fix for crashing
+      setTimeout(this.trySync.bind(this), 1000);
+      // this.trySync();
+    }
+  }
+
+  ok() {
+    return Boolean(this.syncServer && !this.syncServer.isDown);
   }
 
   // sync every 30 seconds or 5 seconds if there are any history changed
@@ -33,8 +54,9 @@ class SyncManager {
         this.isHistoryChanged ||
         !this.state.lastSync ||
         (this.state.lastSync && this.state.lastSync + 30000 <= Date.now())
-      )
+      ) {
         await this.sync();
+      }
 
       await sleep(5000);
     }
@@ -67,15 +89,19 @@ class SyncManager {
   }
 
   async syncSettings() {
-    const result = await window.raito.syncServer.get("settings");
+    if (!this.ok()) return;
+
+    const result = await this.syncServer!.get("settings");
     if (result.ok) {
       const json = await result.json();
-      await window.raito.settingsState.useSettings(json.settings);
-      window.raito.settingsState.saveSettings(json.settings);
+      await settingsManager.useSettings(json.settings);
+      settingsManager.saveSettings(json.settings);
     }
   }
 
   async syncHistory() {
+    if (!this.ok()) return;
+
     // get the time of the lazy sync
     const date = localStorage.getItem("lastSync");
     const history = await db.history
@@ -93,7 +119,7 @@ class SyncManager {
     while (true) {
       query["page"] = page.toString();
 
-      const result: Response = await window.raito.syncServer.post(
+      const result: Response = await this.syncServer!.post(
         "history",
         query,
         JSON.stringify(history),
@@ -131,8 +157,10 @@ class SyncManager {
   }
 
   async syncCollections() {
+    if (!this.ok()) return;
+
     // get both local and remote collections
-    const result = await window.raito.syncServer.get("collections");
+    const result = await this.syncServer!.get("collections");
     if (!result.ok) return;
 
     const remoteCollections: Array<{ id: string; driver: string }> =
@@ -163,40 +191,45 @@ class SyncManager {
         addedManga.push({ driver: manga.driver, id: manga.id });
     }
 
-    await Manga.getBatch(addedManga);
+    await DetailsManga.getBatch(addedManga);
     addedManga.forEach((manga) =>
-      Driver.getOrCreate(manga.driver)?.simpleManga[manga.id]?.add(false)
+      driversManager
+        .getOrCreate(manga.driver)
+        ?.simpleManga[manga.id]?.add(false)
     );
+  }
+
+  setStatus(status?: string) {
+    this.state.currentStatus = status;
+    dispatchEvent(RaitoEvents.syncStateChanged);
   }
 
   async sync() {
     // check if logged in
-    if (!window.raito?.user.token || !window.raito.syncServer) return;
+    if (!user.token || !this.ok()) return;
 
     // prevent multiple syncing at a time
     if (this.state.isSyncing) return;
     this.state.isSyncing = true;
 
-    this.state.currentStatus = "checkingHashes";
-    dispatchEvent(RaitoEvents.syncStateChanged);
+    this.setStatus("checkingHashes");
 
     const hashes = await this.getHashes();
-    const result = await window.raito.syncServer.get("sync");
+    const result = await this.syncServer!.get("sync");
 
     if (result.ok) {
       const remoteHashes: SyncHashes = await result.json();
+
       if (remoteHashes.settings !== hashes.settings) {
         // update state
-        this.state.currentStatus = "syncingSettings";
-        dispatchEvent(RaitoEvents.syncStateChanged);
+        this.setStatus("syncingSettings");
 
         await this.syncSettings();
       }
 
       if (remoteHashes.history !== hashes.history) {
         // update state
-        this.state.currentStatus = "syncingHistory";
-        dispatchEvent(RaitoEvents.syncStateChanged);
+        this.setStatus("syncingHistory");
 
         // sync the history
         await this.syncHistory();
@@ -204,8 +237,7 @@ class SyncManager {
 
       if (remoteHashes.collections !== hashes.collections) {
         // update state
-        this.state.currentStatus = "syncingCollection";
-        dispatchEvent(RaitoEvents.syncStateChanged);
+        this.setStatus("syncingCollection");
 
         // sync the collections
         await this.syncCollections();
@@ -215,9 +247,10 @@ class SyncManager {
     this.state.isSyncing = false;
     this.isHistoryChanged = false;
     this.state.lastSync = Date.now();
-    this.state.currentStatus = undefined;
-    dispatchEvent(RaitoEvents.syncStateChanged);
+    this.setStatus();
   }
 }
 
-export default SyncManager;
+const syncManager = new SyncManager();
+
+export default syncManager;

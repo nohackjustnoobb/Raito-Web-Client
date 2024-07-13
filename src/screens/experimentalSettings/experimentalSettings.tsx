@@ -11,6 +11,7 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import settingsManager from "../../managers/settingsManager";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;
@@ -54,13 +55,10 @@ class ExperimentalSettings extends Component<{}, { show: boolean }> {
               <div className="options">
                 <span>UseZoomablePlugin:</span>
                 <Checkbox
-                  checked={
-                    window.raito.settingsState.experimentalUseZoomablePlugin
-                  }
+                  checked={settingsManager.experimentalUseZoomablePlugin}
                   onChange={(_, checked) => {
-                    window.raito.settingsState.experimentalUseZoomablePlugin =
-                      checked;
-                    window.raito.settingsState.update();
+                    settingsManager.experimentalUseZoomablePlugin = checked;
+                    settingsManager.update();
                   }}
                 />
               </div>

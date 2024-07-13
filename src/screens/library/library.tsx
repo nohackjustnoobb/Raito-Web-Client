@@ -4,17 +4,19 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiChevronDown, mdiMagnify } from "@mdi/js";
+import { mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import MangasList from "../../components/mangasList/mangasList";
 import TopBar from "../../components/topBar/topBar";
-import Driver, { Status } from "../../models/driver";
+import { Status } from "../../models/driver";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import { SimpleManga } from "../../models/manga";
+import driversManager from "../../managers/driversManager";
+import { Manga } from "../../models/manga";
 import {
   convertRemToPixels,
   wheelToScrollHorizontally,
@@ -23,7 +25,7 @@ import Search from "../search/search";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import MangasList from "../../components/mangasList/mangasList";
+import DriverSelector from "../../components/driverSelector/driverSelector";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -49,30 +51,28 @@ class Library extends Component<
 
   componentDidUpdate() {
     // check if the driver is changed
-    if (this.driver !== window.raito.selectedDriver?.identifier) {
+    if (this.driver !== driversManager.selected?.identifier) {
       // scroll back to the top
       if (this.content) this.content.scrollTop = 0;
 
       if (
-        !window.raito.selectedDriver?.supportedCategories.includes(
-          this.state.genre
-        )
+        !driversManager.selected?.supportedCategories.includes(this.state.genre)
       )
         this.setState({ genre: "All" });
 
       // update the cached driver
-      this.driver = window.raito.selectedDriver?.identifier;
+      this.driver = driversManager.selected?.identifier;
       this.forceUpdate();
       return;
     }
 
     // check if any manga fetched
     if (
-      window.raito.selectedDriver &&
+      driversManager.selected &&
       !this.state.isLoading &&
-      (!window.raito.selectedDriver.list[this.state.genre] ||
+      (!driversManager.selected.list[this.state.genre] ||
         !Object.keys(
-          window.raito.selectedDriver.list[this.state.genre][this.state.status]
+          driversManager.selected.list[this.state.genre][this.state.status]
         ).length)
     )
       this.loadMore();
@@ -85,8 +85,8 @@ class Library extends Component<
   // show loader when loading list
   async loadMore() {
     if (
-      !window.raito.selectedDriver ||
-      window.raito.selectedDriver.isDown ||
+      !driversManager.selected ||
+      driversManager.selected.isDown ||
       this.state.isLoading ||
       !this.content
     )
@@ -95,15 +95,13 @@ class Library extends Component<
     this.setState({ isLoading: true });
 
     var reached: boolean = false;
-    reached = !(await window.raito.selectedDriver!.getList(
+    reached = !(await driversManager.selected!.getList(
       this.state.genre,
       this.state.status,
-      window.raito.selectedDriver!.list[this.state.genre] &&
-        window.raito.selectedDriver!.list[this.state.genre][this.state.status]
+      driversManager.selected!.list[this.state.genre] &&
+        driversManager.selected!.list[this.state.genre][this.state.status]
         ? Object.keys(
-            window.raito.selectedDriver!.list[this.state.genre][
-              this.state.status
-            ]
+            driversManager.selected!.list[this.state.genre][this.state.status]
           ).length + 1
         : 1
     ));
@@ -130,42 +128,25 @@ class Library extends Component<
   }
 
   render(): ReactNode {
-    var manga: Array<SimpleManga> = [];
+    var manga: Array<Manga> = [];
     if (
-      window.raito.selectedDriver &&
-      window.raito.selectedDriver?.list[this.state.genre] &&
-      window.raito.selectedDriver?.list[this.state.genre][this.state.status]
+      driversManager.selected &&
+      driversManager.selected?.list[this.state.genre] &&
+      driversManager.selected?.list[this.state.genre][this.state.status]
     ) {
-      for (const page in window.raito.selectedDriver.list[this.state.genre][
+      for (const page in driversManager.selected.list[this.state.genre][
         this.state.status
       ])
-        window.raito.selectedDriver.list[this.state.genre][this.state.status][
+        driversManager.selected.list[this.state.genre][this.state.status][
           page
-        ].forEach((v) =>
-          manga.push(window.raito.selectedDriver!.simpleManga[v])
-        );
+        ].forEach((v) => manga.push(driversManager.selected!.simpleManga[v]));
     }
 
     return (
       <div className="library">
         <TopBar
           close={this.props.close}
-          centerComponent={
-            <div className="drivers">
-              <select
-                value={window.raito.selectedDriver?.identifier}
-                onChange={async (event) => {
-                  // change the selected driver
-                  await Driver.select(event.target.value);
-                }}
-              >
-                {window.raito.availableDrivers?.map((v) => (
-                  <option key={v.identifier}>{v.identifier}</option>
-                ))}
-              </select>
-              <Icon path={mdiChevronDown} size={1} />
-            </div>
-          }
+          centerComponent={<DriverSelector />}
           rightComponent={
             <div onClick={() => window.stack.push(<Search />)}>
               <Icon path={mdiMagnify} size={1} />
@@ -176,7 +157,7 @@ class Library extends Component<
           <div className="filter">
             <h3>{this.props.t("genre")}: </h3>
             <ul onWheel={wheelToScrollHorizontally("UL")}>
-              {window.raito.selectedDriver?.supportedCategories.map((v) => (
+              {driversManager.selected?.supportedCategories.map((v) => (
                 <li
                   key={v}
                   className={v === this.state.genre ? "selected" : ""}

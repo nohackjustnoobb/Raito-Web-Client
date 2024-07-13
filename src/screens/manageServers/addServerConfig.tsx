@@ -7,7 +7,8 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
-import Server from "../../models/server";
+import serversManager from "../../managers/serversManager";
+import settingsManager from "../../managers/settingsManager";
 
 class AddServerConfig extends Component<
   WithTranslation,
@@ -32,11 +33,11 @@ class AddServerConfig extends Component<
   async submit() {
     window.showLoader();
     const accessKey = this.state.accessKey || null;
-    const result = await Server.add(this.state.address, accessKey);
+    const result = await serversManager.add(this.state.address, accessKey);
     window.hideLoader();
 
     if (result) {
-      window.raito.settingsState.saveSettings();
+      settingsManager.saveSettings();
       this.close();
     } else {
       alert(this.props.t("failedToConnectToTheServer"));

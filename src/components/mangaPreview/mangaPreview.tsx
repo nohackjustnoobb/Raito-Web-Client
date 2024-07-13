@@ -1,7 +1,12 @@
-import { Component } from "react";
 import "./mangaPreview.scss";
-import { WithTranslation, withTranslation } from "react-i18next";
-import { SimpleManga } from "../../models/manga";
+
+import { Component } from "react";
+
+import { withTranslation, WithTranslation } from "react-i18next";
+
+import settingsManager from "../../managers/settingsManager";
+import { Manga } from "../../models/manga";
+import { translate } from "../../utils/utils";
 import LazyImage from "../lazyImage/lazyImage";
 
 enum Tag {
@@ -11,7 +16,7 @@ enum Tag {
 }
 
 interface Props extends WithTranslation {
-  manga: SimpleManga;
+  manga: Manga;
   tag: Tag;
   history?: string;
 }
@@ -33,7 +38,7 @@ class MangaPreview extends Component<Props> {
           {tagString && (
             <div className={tagString}>{this.props.t(tagString)}</div>
           )}
-          {window.raito.settingsState.debugMode && (
+          {settingsManager.debugMode && (
             <>
               <div className="driverID">
                 {this.props.manga.driver.identifier}
@@ -43,17 +48,16 @@ class MangaPreview extends Component<Props> {
           )}
         </div>
         <LazyImage src={this.props.manga.thumbnail} />
-        <h3>{window.raito.translate(this.props.manga.title)}</h3>
+        <h3>{translate(this.props.manga.title)}</h3>
         <h5>
           {this.props.history === undefined
             ? `${this.props.t("updatedTo")} ${
-                window.raito.translate(this.props.manga.latest) ||
-                this.props.t("None")
+                translate(this.props.manga.latest) || this.props.t("None")
               }`
             : this.props.history
-            ? `${window.raito.translate(
-                this.props.history
-              )} / ${window.raito.translate(this.props.manga.latest)}`
+            ? `${translate(this.props.history)} / ${translate(
+                this.props.manga.latest
+              )}`
             : this.props.t("notRead")}
         </h5>
       </div>

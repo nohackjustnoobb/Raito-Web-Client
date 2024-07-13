@@ -1,12 +1,22 @@
-import saveAs from "file-saver";
-import i18next from "i18next";
-import jsPDF from "jspdf";
-import JSZip from "jszip";
+import saveAs from 'file-saver';
+import i18next from 'i18next';
+import jsPDF from 'jspdf';
+import JSZip from 'jszip';
 
-import DownloadProgress from "../screens/downloadProgess/downloadProgress";
-import { retryFetch, sleep } from "../utils/utils";
-import { dispatchEvent, RaitoEvents } from "./events";
-import { Chapter, Manga } from "./manga";
+import DownloadProgress from '../screens/downloadProgess/downloadProgress';
+import {
+  retryFetch,
+  sleep,
+  translate,
+} from '../utils/utils';
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from './events';
+import {
+  Chapter,
+  DetailsManga,
+} from './manga';
 
 enum DownloadTypes {
   InApp,
@@ -33,7 +43,7 @@ class DownloadTask {
   result: { [title: string]: Blob } = {};
 
   constructor(
-    public manga: Manga,
+    public manga: DetailsManga,
     public content: Array<Chapter>,
     public type: DownloadTypes,
     public options?: DownloadOptions
@@ -45,7 +55,7 @@ class DownloadTask {
     this.started = false;
     for (const chapter of this.content)
       this.progress[chapter.id] = {
-        name: window.raito.translate(chapter.title),
+        name: translate(chapter.title),
       };
   }
 
@@ -145,7 +155,7 @@ class DownloadTask {
 
           if (urls.length !== 0) {
             await generatePDF(
-              window.raito.translate(`${this.manga.title} ${name}`),
+              translate(`${this.manga.title} ${name}`),
               urls,
               name
             );
@@ -178,7 +188,7 @@ class DownloadTask {
         for (const chapter of this.content)
           promises.push(
             (async () => {
-              const title = window.raito.translate(chapter.title);
+              const title = translate(chapter.title);
 
               this.progress[chapter.id] = {
                 name: title,
@@ -189,7 +199,7 @@ class DownloadTask {
 
               if (result.length !== 0) {
                 await generatePDF(
-                  window.raito.translate(`${this.manga.title} ${title}`),
+                  translate(`${this.manga.title} ${title}`),
                   result,
                   chapter.id
                 );
@@ -209,11 +219,11 @@ class DownloadTask {
       baseChapters: Array<Chapter>
     ) => Promise<void>
   ) {
-    const title = window.raito.translate(this.manga.title);
+    const title = translate(this.manga.title);
 
     try {
       const zip = new JSZip();
-      const rootFolder = zip.folder(window.raito.translate(this.manga.title));
+      const rootFolder = zip.folder(translate(this.manga.title));
 
       if (rootFolder) {
         const promises = [];
@@ -264,7 +274,7 @@ class DownloadTask {
       for (const chapter of filtered) {
         promises.push(
           (async () => {
-            const title = window.raito.translate(chapter.title);
+            const title = translate(chapter.title);
 
             this.progress[chapter.id] = {
               name: title,
@@ -328,7 +338,7 @@ class DownloadTask {
       for (const chapter of filtered) {
         promises.push(
           (async () => {
-            const title = window.raito.translate(chapter.title);
+            const title = translate(chapter.title);
 
             this.progress[chapter.id] = {
               name: title,

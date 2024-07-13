@@ -11,6 +11,7 @@ import { AppIcon } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
+import user from "../../models/user";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -24,7 +25,7 @@ class Login extends Component<Props, { email: string; password: string }> {
     if (!this.state.email || !this.state.password)
       return alert(this.props.t("wrongEmailorPassword"));
 
-    if (await window.raito.user.login(this.state.email, this.state.password)) {
+    if (await user.login(this.state.email, this.state.password)) {
       this.props.close();
 
       // let browser to save password

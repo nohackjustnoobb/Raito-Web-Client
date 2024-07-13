@@ -10,8 +10,8 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import { Chapter, Manga } from "../../models/manga";
-import { DisplayMode } from "../../models/settingsState";
+import settingsManager, { DisplayMode } from "../../managers/settingsManager";
+import { Chapter, DetailsManga } from "../../models/manga";
 import Menu from "./menu";
 import Warning from "./warning";
 
@@ -22,7 +22,7 @@ enum ShouldLoad {
 }
 
 interface Props {
-  manga: Manga;
+  manga: DetailsManga;
   chapterId: string;
   page?: number | null;
 }
@@ -348,7 +348,7 @@ class Read extends Component<Props, State> {
         // check if top is reached
         if (
           this.readRef &&
-          window.raito.settingsState.overscrollToLoadPreviousChapters &&
+          settingsManager.overscrollToLoadPreviousChapters &&
           !this.isOverScrolling &&
           (this.readRef.scrollTop < 0 ||
             (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
@@ -373,7 +373,7 @@ class Read extends Component<Props, State> {
   }
 
   zoomTo(scale: number, offset?: { x: number; y: number }) {
-    if (!window.raito.settingsState.experimentalUseZoomablePlugin) return;
+    if (!settingsManager.experimentalUseZoomablePlugin) return;
 
     // limit the scale
     if (scale > 2) scale = 2;
@@ -428,7 +428,7 @@ class Read extends Component<Props, State> {
 
       this.doubleClickTimeoutId = setTimeout(
         () => this.setState({ menu: !this.state.menu }),
-        window.raito.settingsState.experimentalUseZoomablePlugin ? 250 : 0
+        settingsManager.experimentalUseZoomablePlugin ? 250 : 0
       );
     }
 
@@ -449,9 +449,8 @@ class Read extends Component<Props, State> {
   render(): ReactNode {
     const isVertical = window.innerWidth < window.innerHeight;
     const isOnePage: boolean =
-      window.raito.settingsState.displayMode === DisplayMode.OnePage ||
-      (window.raito.settingsState.displayMode === DisplayMode.Auto &&
-        isVertical);
+      settingsManager.displayMode === DisplayMode.OnePage ||
+      (settingsManager.displayMode === DisplayMode.Auto && isVertical);
 
     const sortedChaptersId = Object.keys(this.state.chaptersUrls);
     const chaptersOrder = (
@@ -471,7 +470,7 @@ class Read extends Component<Props, State> {
           close={this.close.bind(this)}
           zoomIn={() => this.zoomTo(this.state.scale + 0.5)}
           zoomOut={() => this.zoomTo(this.state.scale - 0.5)}
-          zoom={window.raito.settingsState.experimentalUseZoomablePlugin}
+          zoom={settingsManager.experimentalUseZoomablePlugin}
           scale={this.state.scale}
           showOffset={!isOnePage}
           toggleOffset={this.toggleOffset.bind(this)}
@@ -499,9 +498,7 @@ class Read extends Component<Props, State> {
         >
           <div
             ref={(ref) => (this.readRef = ref)}
-            className={
-              window.raito.settingsState.snapToPage ? "read snapToPage" : "read"
-            }
+            className={settingsManager.snapToPage ? "read snapToPage" : "read"}
             onDoubleClick={(event) => {
               if (this.doubleClickTimeoutId) {
                 clearTimeout(this.doubleClickTimeoutId);

@@ -1,13 +1,28 @@
-import "./menu.scss";
+import './menu.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
-import { CSSTransition } from "react-transition-group";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
+import { CSSTransition } from 'react-transition-group';
 
-import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
-import Icon from "@mdi/react";
-import { Checkbox, Slider } from "@mui/material";
+import {
+  mdiChevronLeft,
+  mdiMinus,
+  mdiPlus,
+} from '@mdi/js';
+import Icon from '@mdi/react';
+import {
+  Checkbox,
+  Slider,
+} from '@mui/material';
+
+import { translate } from '../../utils/utils';
 
 interface Props extends WithTranslation {
   subscribe: (action: (page: number | null) => void) => void;
@@ -53,9 +68,7 @@ class Menu extends Component<Props, State> {
             <div className="upperMenu">
               <div className="close" onClick={() => this.props.close()}>
                 <Icon path={mdiChevronLeft} size={1.5} />
-                <h2>
-                  {this.props.title && window.raito.translate(this.props.title)}
-                </h2>
+                <h2>{this.props.title && translate(this.props.title)}</h2>
               </div>
               {this.props.showOffset && (
                 <div className="pageOffset">

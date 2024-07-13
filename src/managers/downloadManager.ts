@@ -2,8 +2,9 @@ import i18next from "i18next";
 
 import { mdiDownload } from "@mdi/js";
 
-import DownloadTask from "./downloadTask";
-import { dispatchEvent, RaitoEvents } from "./events";
+import { translate } from "../utils/utils";
+import DownloadTask from "../models/downloadTask";
+import { dispatchEvent, RaitoEvents } from "../models/events";
 
 class DownloadManager {
   tasks: Array<DownloadTask> = [];
@@ -23,9 +24,7 @@ class DownloadManager {
           await task.start();
           window.pushNotification({
             icon: mdiDownload,
-            mesg: `${window.raito.translate(task.manga.title)} ${i18next.t(
-              "done"
-            )}`,
+            mesg: `${translate(task.manga.title)} ${i18next.t("done")}`,
             actionText: i18next.t("save"),
             action: () => {
               task.save();
@@ -58,4 +57,6 @@ class DownloadManager {
   }
 }
 
-export default DownloadManager;
+const downloadManager = new DownloadManager();
+
+export default downloadManager;

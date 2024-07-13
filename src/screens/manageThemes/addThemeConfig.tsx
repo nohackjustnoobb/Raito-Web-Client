@@ -7,6 +7,7 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, TextField } from "@mui/material";
 
+import settingsManager from "../../managers/settingsManager";
 import Theme from "../../models/theme";
 
 class AddThemeConfig extends Component<
@@ -33,16 +34,12 @@ class AddThemeConfig extends Component<
     if (!this.state.name || !this.state.style)
       return alert(this.props.t("nameAndCSSEmpty"));
 
-    if (
-      window.raito.settingsState.themes.find((v) => v.name === this.state.name)
-    )
+    if (settingsManager.themes.find((v) => v.name === this.state.name))
       return alert(this.props.t("nameDuplicated"));
 
-    window.raito.settingsState.themes.push(
-      new Theme(this.state.name, this.state.style)
-    );
+    settingsManager.themes.push(new Theme(this.state.name, this.state.style));
 
-    window.raito.settingsState.saveSettings();
+    settingsManager.saveSettings();
     this.close();
   }
 

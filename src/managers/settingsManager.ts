@@ -1,7 +1,10 @@
-import Driver from "./driver";
-import { dispatchEvent, RaitoEvents } from "./events";
-import Server from "./server";
-import Theme from "./theme";
+import Driver from "../models/driver";
+import { dispatchEvent, RaitoEvents } from "../models/events";
+import Theme from "../models/theme";
+import user from "../models/user";
+import driversManager from "./driversManager";
+import serversManager from "./serversManager";
+import syncManager from "./syncManager";
 
 enum DisplayMode {
   Auto,
@@ -9,13 +12,13 @@ enum DisplayMode {
   TwoPages,
 }
 
-enum ThemeModel {
+enum ThemeMode {
   Auto,
   Dark,
   Light,
 }
 
-class SettingsState {
+class SettingsManager {
   // general settings
   defaultDriver: string | null = null;
   forceTranslate: boolean = true;
@@ -23,7 +26,7 @@ class SettingsState {
   imageCacheMaxAge: number = 7200;
 
   // appearance settings
-  themeModel: ThemeModel = ThemeModel.Auto;
+  themeModel: ThemeMode = ThemeMode.Auto;
   themes: Theme[] = [];
   formatChapterTitle: boolean = true;
   currentTheme: string | null = null;
@@ -138,11 +141,11 @@ class SettingsState {
   }
 
   reset() {
-    window.raito.settingsState = new SettingsState(false);
-    window.raito.settingsState.initialize();
+    settingsManager = new SettingsManager(false);
+    settingsManager.initialize();
 
     // update the settings
-    window.raito.settingsState.update();
+    settingsManager.update();
   }
 
   update() {
@@ -166,7 +169,9 @@ class SettingsState {
       if (settings["customServer"]) {
         const promises: Promise<boolean>[] = [];
         for (const config of settings["customServer"])
-          promises.push(Server.add(config.address, config.accessKey, false));
+          promises.push(
+            serversManager.add(config.address, config.accessKey, false)
+          );
         await Promise.all(promises);
       }
 
@@ -188,7 +193,7 @@ class SettingsState {
     const settings: any = {};
 
     settings["customServer"] = [];
-    for (const config of window.raito.sourceServers) {
+    for (const config of serversManager.servers) {
       if (!config.isDefaultServer)
         settings["customServer"].push({
           address: config.address,
@@ -199,8 +204,8 @@ class SettingsState {
     settings["themes"] = this.themes;
 
     const encodedSettings = btoa(JSON.stringify(settings));
-    if (window.raito.user.token) {
-      const result = await window.raito.syncServer.post(
+    if (user.token && syncManager.ok()) {
+      const result = await syncManager.syncServer!.post(
         "settings",
         {},
         JSON.stringify({ settings: encodedSettings }),
@@ -221,16 +226,18 @@ class SettingsState {
 
     // check if there are default driver
     if (!this.defaultDriver) {
-      if (!window.raito.availableDrivers.length) return false;
+      if (!driversManager.available.length) return false;
 
-      this.defaultDriver = window.raito.availableDrivers[0].identifier;
+      this.defaultDriver = driversManager.available[0].identifier;
       this.save();
     }
 
-    await Driver.select(this.defaultDriver);
+    await driversManager.select(this.defaultDriver);
     return true;
   }
 }
 
-export default SettingsState;
-export { DisplayMode, ThemeModel as Theme };
+let settingsManager = new SettingsManager();
+
+export default settingsManager;
+export { DisplayMode, ThemeMode };

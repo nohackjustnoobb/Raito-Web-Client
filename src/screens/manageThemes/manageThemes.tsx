@@ -14,6 +14,7 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import settingsManager from "../../managers/settingsManager";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -50,9 +51,9 @@ class ManageThemes extends Component<Props> {
             </div>
           }
         />
-        {window.raito.settingsState.themes.length ? (
+        {settingsManager.themes.length ? (
           <ul className="themes">
-            {window.raito.settingsState.themes.map((v, i) => (
+            {settingsManager.themes.map((v, i) => (
               <li key={i}>
                 <div>
                   <b>{this.props.t("themeName")}: </b>
@@ -61,13 +62,11 @@ class ManageThemes extends Component<Props> {
                 <div>
                   <b>{this.props.t("enable")}: </b>
                   <Checkbox
-                    checked={window.raito.settingsState.currentTheme === v.name}
+                    checked={settingsManager.currentTheme === v.name}
                     onChange={(_, checked) => {
-                      window.raito.settingsState.currentTheme = checked
-                        ? v.name
-                        : null;
+                      settingsManager.currentTheme = checked ? v.name : null;
 
-                      window.raito.settingsState.update();
+                      settingsManager.update();
                     }}
                   />
                 </div>
@@ -90,15 +89,14 @@ class ManageThemes extends Component<Props> {
                       if (!window.confirm(this.props.t("deleteConfirm")))
                         return;
 
-                      if (window.raito.settingsState.currentTheme === v.name)
-                        window.raito.settingsState.currentTheme = null;
-                      window.raito.settingsState.themes =
-                        window.raito.settingsState.themes.filter(
-                          (theme) => theme.name !== v.name
-                        );
+                      if (settingsManager.currentTheme === v.name)
+                        settingsManager.currentTheme = null;
+                      settingsManager.themes = settingsManager.themes.filter(
+                        (theme) => theme.name !== v.name
+                      );
 
-                      window.raito.settingsState.update();
-                      window.raito.settingsState.saveSettings();
+                      settingsManager.update();
+                      settingsManager.saveSettings();
                     }}
                   >
                     {this.props.t("delete")}

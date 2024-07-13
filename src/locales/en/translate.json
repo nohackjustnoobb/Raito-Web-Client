@@ -159,5 +159,7 @@
     "generating": "Generating",
     "check": "Check",
     "hide": "Hide",
-    "done": "Done"
+    "done": "Done",
+    "tagUpdated": "Updated",
+    "tagEnded": "Ended"
 }

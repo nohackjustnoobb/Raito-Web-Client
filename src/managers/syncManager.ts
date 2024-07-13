@@ -1,6 +1,6 @@
 import { md5 } from "js-md5";
 
-import db from "../models/db";
+import db, { Record } from "../models/db";
 import { dispatchEvent, RaitoEvents } from "../models/events";
 import { DetailsManga } from "../models/manga";
 import Server from "../models/server";
@@ -63,17 +63,30 @@ class SyncManager {
   }
 
   async getHashes(): Promise<SyncHashes> {
-    const record = await db.history
+    const dtCollection = await db.history
       .orderBy("datetime")
       .reverse()
       .limit(1)
       .toArray();
+    const dtRecord = dtCollection.length && dtCollection[0];
+
+    const udtCollection = await db.history
+      .orderBy("updateDatetime")
+      .reverse()
+      .limit(1)
+      .toArray();
+    const udtRecord = udtCollection.length && udtCollection[0];
+
+    let record: Record | null = dtRecord || udtRecord || null;
+    if (dtRecord && udtRecord)
+      record =
+        dtRecord.datetime > udtRecord.updateDatetime! ? dtRecord : udtRecord;
 
     let recordString = "";
-    if (record.length) {
-      recordString += record[0].driver;
-      recordString += record[0].id;
-      recordString += record[0].datetime;
+    if (record) {
+      recordString += record.driver;
+      recordString += record.id;
+      recordString += Math.max(record.datetime, record.updateDatetime || 0);
     }
 
     let collectionsString: string[] = [];
@@ -105,7 +118,13 @@ class SyncManager {
     // get the time of the lazy sync
     const date = localStorage.getItem("lastSync");
     const history = await db.history
-      .filter((v) => date === null || v.datetime >= Number(date))
+      .filter((v) =>
+        Boolean(
+          date === null ||
+            v.datetime >= Number(date) ||
+            (v.updateDatetime && v.updateDatetime >= Number(date))
+        )
+      )
       .toArray();
 
     // save the time
@@ -143,7 +162,8 @@ class SyncManager {
             latest: v.latest,
             page: v.page,
             datetime: v.datetime,
-            new: v.new,
+            isUpdated: v.isUpdated,
+            updateDatetime: v.updateDatetime,
           })
       );
 

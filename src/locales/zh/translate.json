@@ -159,5 +159,7 @@
     "generating": "生成中",
     "check": "查看",
     "hide": "隱藏",
-    "done": "完成"
+    "done": "完成",
+    "tagUpdated": "已更新",
+    "tagEnded": "已完結"
 }

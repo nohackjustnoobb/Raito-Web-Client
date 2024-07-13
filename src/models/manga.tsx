@@ -5,7 +5,7 @@ import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import Details from "../screens/details/details";
 import Read from "../screens/read/read";
-import db, { collection, history } from "./db";
+import db, { Collection, Record } from "./db";
 import Driver from "./driver";
 import user from "./user";
 
@@ -122,7 +122,7 @@ class Manga {
    * @async
    * @returns
    */
-  async getHistory(): Promise<history | undefined> {
+  async getHistory(): Promise<Record | undefined> {
     return await db.history.get([this.driver.identifier, this.id]);
   }
 
@@ -145,13 +145,13 @@ class Manga {
    * @param collection A collection instance. (required)
    * @returns
    */
-  static fromCollection(collection: collection): Manga {
+  static fromCollection(collection: Collection): Manga {
     return new Manga({
       driver: collection.driver,
       id: collection.id,
       title: collection.title,
       latest: collection.latest,
-      isEnded: collection.isEnd,
+      isEnded: collection.isEnded,
       thumbnail: collection.thumbnail,
     });
   }
@@ -195,7 +195,7 @@ class Manga {
       driver: this.driver.identifier,
       id: this.id,
       title: this.title,
-      isEnd: this.isEnded,
+      isEnded: this.isEnded,
       latest: this.latest,
       thumbnail: this.thumbnail,
     });
@@ -211,8 +211,8 @@ class Manga {
         thumbnail: this.thumbnail,
         title: this.title,
         latest: this.latest,
-        datetime: Date.now(),
-        new: false,
+        updateDateTime: Date.now(),
+        isUpdated: false,
       });
     } else {
       await db.history.add({
@@ -225,7 +225,8 @@ class Manga {
         chapterTitle: null,
         page: null,
         latest: this.latest,
-        new: false,
+        isUpdated: false,
+        updateDatetime: Date.now(),
       });
     }
   }
@@ -293,7 +294,8 @@ class Manga {
       chapterTitle: chapter.title,
       page: page,
       latest: this.latest,
-      new: false,
+      isUpdated: false,
+      updateDatetime: null,
     });
   }
 }

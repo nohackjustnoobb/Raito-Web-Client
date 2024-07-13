@@ -20,7 +20,7 @@ import Icon from "@mdi/react";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import settingsManager from "../../managers/settingsManager";
-import db, { history } from "../../models/db";
+import db, { Record } from "../../models/db";
 import {
   listenToEvents,
   RaitoEvents,
@@ -45,7 +45,7 @@ interface State {
   manga: DetailsManga | null;
   extra: boolean;
   collected: boolean;
-  history: history | null;
+  history: Record | null;
   isVertical: boolean;
   showTime: boolean;
   isDescending: boolean;

@@ -13,7 +13,7 @@ import TopBar from "../../components/topBar/topBar";
 import driversManager from "../../managers/driversManager";
 import settingsManager from "../../managers/settingsManager";
 import syncManager from "../../managers/syncManager";
-import db, { history } from "../../models/db";
+import db, { Record } from "../../models/db";
 import {
   listenToEvents,
   RaitoEvents,
@@ -30,7 +30,7 @@ interface Props extends InjectedSwipeableProps, WithTranslation {}
 
 class History extends React.Component<
   Props,
-  { history: Array<history>; limit: number }
+  { history: Array<Record>; limit: number }
 > {
   content: HTMLDivElement | null = null;
   raitoSubscription: RaitoSubscription | null = null;

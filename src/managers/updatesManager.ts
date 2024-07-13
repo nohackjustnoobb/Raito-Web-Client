@@ -41,8 +41,8 @@ class UpdatesManager {
     let counter: number = 0;
 
     // filter out items that are ended
-    const notEnd = collections.filter((v) => !v.isEnd);
-    const end = collections.filter((v) => v.isEnd);
+    const notEnd = collections.filter((v) => !v.isEnded);
+    const end = collections.filter((v) => v.isEnded);
 
     // function for updating the state
     const updateState = () => {

@@ -383,7 +383,7 @@ class Driver {
           driver: this.identifier,
           id: mangaObject.id,
           title: mangaObject.title,
-          isEnd: mangaObject.isEnded,
+          isEnded: mangaObject.isEnded,
           latest: mangaObject.latest,
           thumbnail: mangaObject.thumbnail,
         });
@@ -396,8 +396,8 @@ class Driver {
 
           syncManager.isHistoryChanged = true;
           await db.history.update([this.identifier, mangaObject.id], {
-            datetime: Date.now(),
-            new: true,
+            updateDatetime: Date.now(),
+            isUpdated: true,
             latest: mangaObject.latest,
             title: mangaObject.title,
             thumbnail: mangaObject.thumbnail,

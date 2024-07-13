@@ -11,8 +11,8 @@ import LazyImage from "../lazyImage/lazyImage";
 
 enum Tag {
   None = "",
-  Updated = "updated",
-  Ended = "ended",
+  Updated = "tagUpdated",
+  Ended = "tagEnded",
 }
 
 interface Props extends WithTranslation {

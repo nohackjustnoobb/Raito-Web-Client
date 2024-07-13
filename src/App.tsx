@@ -22,7 +22,7 @@ import downloadManager from "./managers/downloadManager";
 import settingsManager from "./managers/settingsManager";
 import syncManager from "./managers/syncManager";
 import updatesManager from "./managers/updatesManager";
-import db, { collection, history } from "./models/db";
+import db, { Collection, Record } from "./models/db";
 import { listenToEvents, RaitoEvents } from "./models/events";
 import { DetailsManga, Manga } from "./models/manga";
 import History from "./screens/history/history";
@@ -101,7 +101,7 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   }
 }
 
-const filters = ["all", "update", "end", "download"];
+const filters = ["all", "tagUpdated", "tagEnded", "download"];
 enum Filters {
   All,
   Update,
@@ -111,7 +111,7 @@ enum Filters {
 
 class App extends Component<
   WithTranslation,
-  { history: Array<history>; collections: Array<collection>; filter: Filters }
+  { history: Array<Record>; collections: Array<Collection>; filter: Filters }
 > {
   constructor(props: WithTranslation) {
     super(props);
@@ -145,9 +145,9 @@ class App extends Component<
           const record = this.state.history.find(
             (h) => h.id === v.id && h.driver === v.driver
           );
-          return record?.new;
+          return record?.isUpdated;
         case Filters.End:
-          return v.isEnd;
+          return v.isEnded;
         default:
           return true;
       }
@@ -308,7 +308,16 @@ class App extends Component<
                   // check if the history is existing
                   if (!aHistory || !bHistory) return 0;
 
-                  return bHistory.datetime - aHistory.datetime;
+                  const aDateTime = Math.max(
+                    aHistory.datetime,
+                    aHistory.updateDatetime || 0
+                  );
+                  const bDateTime = Math.max(
+                    bHistory.datetime,
+                    bHistory.updateDatetime || 0
+                  );
+
+                  return bDateTime - aDateTime;
                 })
                 .map((manga) => {
                   // get the history of the manga
@@ -317,9 +326,9 @@ class App extends Component<
                   );
 
                   const mangaObject = Manga.fromCollection(manga);
-                  const tag = manga.isEnd
+                  const tag = manga.isEnded
                     ? Tag.Ended
-                    : history?.new
+                    : history?.isUpdated
                     ? Tag.Updated
                     : Tag.None;
 

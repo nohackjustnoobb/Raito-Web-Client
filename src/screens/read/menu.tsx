@@ -1,28 +1,15 @@
-import './menu.scss';
+import "./menu.scss";
 
-import {
-  Component,
-  ReactNode,
-} from 'react';
+import { Component, ReactNode } from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
-import { CSSTransition } from 'react-transition-group';
+import { withTranslation, WithTranslation } from "react-i18next";
+import { CSSTransition } from "react-transition-group";
 
-import {
-  mdiChevronLeft,
-  mdiMinus,
-  mdiPlus,
-} from '@mdi/js';
-import Icon from '@mdi/react';
-import {
-  Checkbox,
-  Slider,
-} from '@mui/material';
+import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
+import Icon from "@mdi/react";
+import { Checkbox, Slider } from "@mui/material";
 
-import { translate } from '../../utils/utils';
+import { translate } from "../../utils/utils";
 
 interface Props extends WithTranslation {
   subscribe: (action: (page: number | null) => void) => void;

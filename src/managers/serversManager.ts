@@ -1,6 +1,6 @@
-import { sleep } from "../utils/utils";
 import Driver from "../models/driver";
 import Server from "../models/server";
+import { sleep } from "../utils/utils";
 import driversManager from "./driversManager";
 
 class ServersManager {

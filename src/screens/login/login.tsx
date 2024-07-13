@@ -7,11 +7,11 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { Button, TextField } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
+import user from "../../models/user";
 import { AppIcon } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import user from "../../models/user";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 

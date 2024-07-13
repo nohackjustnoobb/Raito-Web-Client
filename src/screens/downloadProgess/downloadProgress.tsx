@@ -7,8 +7,8 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button } from "@mui/material";
 
-import DownloadTask from "../../models/downloadTask";
 import downloadManager from "../../managers/downloadManager";
+import DownloadTask from "../../models/downloadTask";
 
 interface Props extends WithTranslation {
   task: DownloadTask;

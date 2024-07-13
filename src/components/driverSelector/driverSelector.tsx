@@ -1,11 +1,11 @@
 import "./driverSelector.scss";
 
 import { FunctionComponent, useEffect, useReducer } from "react";
+
 import { mdiChevronDown } from "@mdi/js";
 import Icon from "@mdi/react";
 
 import driversManager from "../../managers/driversManager";
-import Driver from "../../models/driver";
 import { listenToEvents, RaitoEvents } from "../../models/events";
 
 const DriverSelector: FunctionComponent = () => {

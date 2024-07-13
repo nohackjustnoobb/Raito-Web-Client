@@ -1,22 +1,12 @@
-import saveAs from 'file-saver';
-import i18next from 'i18next';
-import jsPDF from 'jspdf';
-import JSZip from 'jszip';
+import saveAs from "file-saver";
+import i18next from "i18next";
+import jsPDF from "jspdf";
+import JSZip from "jszip";
 
-import DownloadProgress from '../screens/downloadProgess/downloadProgress';
-import {
-  retryFetch,
-  sleep,
-  translate,
-} from '../utils/utils';
-import {
-  dispatchEvent,
-  RaitoEvents,
-} from './events';
-import {
-  Chapter,
-  DetailsManga,
-} from './manga';
+import DownloadProgress from "../screens/downloadProgess/downloadProgress";
+import { retryFetch, sleep, translate } from "../utils/utils";
+import { dispatchEvent, RaitoEvents } from "./events";
+import { Chapter, DetailsManga } from "./manga";
 
 enum DownloadTypes {
   InApp,

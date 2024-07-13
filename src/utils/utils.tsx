@@ -2,8 +2,8 @@ import { WheelEvent } from "react";
 
 import chinese from "s2t-chinese";
 
-import Driver from "../models/driver";
 import settingsManager from "../managers/settingsManager";
+import Driver from "../models/driver";
 import user from "../models/user";
 import { ReactComponent as Icon } from "./icon.svg";
 

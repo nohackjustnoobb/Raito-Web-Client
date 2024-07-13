@@ -10,21 +10,21 @@ import Icon from "@mdi/react";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
+import driversManager from "../../managers/driversManager";
+import settingsManager from "../../managers/settingsManager";
+import syncManager from "../../managers/syncManager";
 import db, { history } from "../../models/db";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager from "../../managers/settingsManager";
-import syncManager from "../../managers/syncManager";
 import { DetailsManga } from "../../models/manga";
 import user from "../../models/user";
 import { convertRemToPixels, translate } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import driversManager from "../../managers/driversManager";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 

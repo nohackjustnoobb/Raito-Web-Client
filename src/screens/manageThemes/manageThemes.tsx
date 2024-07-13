@@ -9,12 +9,12 @@ import Icon from "@mdi/react";
 import { Button, Checkbox } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
+import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager from "../../managers/settingsManager";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";

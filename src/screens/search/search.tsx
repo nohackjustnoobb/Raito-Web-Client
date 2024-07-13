@@ -7,20 +7,20 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { mdiMagnify } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import DriverSelector from "../../components/driverSelector/driverSelector";
 import MangasList from "../../components/mangasList/mangasList";
 import TopBar from "../../components/topBar/topBar";
+import driversManager from "../../managers/driversManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import driversManager from "../../managers/driversManager";
 import { Manga } from "../../models/manga";
 import { convertRemToPixels, translate } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import DriverSelector from "../../components/driverSelector/driverSelector";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {
   keyword?: string;

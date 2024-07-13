@@ -1,8 +1,8 @@
-import { sleep } from "../utils/utils";
 import db from "../models/db";
 import { dispatchEvent, RaitoEvents } from "../models/events";
 import { DetailsManga } from "../models/manga";
 import user from "../models/user";
+import { sleep } from "../utils/utils";
 import syncManager from "./syncManager";
 
 interface UpdateCollectionsState {

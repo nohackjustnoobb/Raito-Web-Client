@@ -1,13 +1,13 @@
 import i18next from "i18next";
 
+import driversManager from "../managers/driversManager";
+import settingsManager from "../managers/settingsManager";
+import syncManager from "../managers/syncManager";
 import Details from "../screens/details/details";
 import Read from "../screens/read/read";
 import db, { collection, history } from "./db";
 import Driver from "./driver";
-import settingsManager from "../managers/settingsManager";
-import syncManager from "../managers/syncManager";
 import user from "./user";
-import driversManager from "../managers/driversManager";
 
 /**
  * A class for the base manga.

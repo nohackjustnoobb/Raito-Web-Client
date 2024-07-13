@@ -3,7 +3,7 @@ import serversManager from "../managers/serversManager";
 import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import updatesManager from "../managers/updatesManager";
-import { RaitoEvents, dispatchEvent } from "./events";
+import { dispatchEvent, RaitoEvents } from "./events";
 
 class RaitoManga {
   static async initialize() {

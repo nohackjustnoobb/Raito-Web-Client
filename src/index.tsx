@@ -13,6 +13,7 @@ import Loader from "./components/loader/loader";
 import Notification, {
   NotificationItem,
 } from "./components/notification/notification";
+import driversManager from "./managers/driversManager";
 import settingsManager, { ThemeMode } from "./managers/settingsManager";
 import { Manga } from "./models/manga";
 import RaitoManga from "./models/raitoManga";
@@ -20,7 +21,6 @@ import Search from "./screens/search/search";
 import StackView, { Stack } from "./screens/stack";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { getCssVariable, sleep } from "./utils/utils";
-import driversManager from "./managers/driversManager";
 
 // declare global variables
 declare global {

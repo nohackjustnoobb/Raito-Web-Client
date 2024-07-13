@@ -2,9 +2,9 @@ import i18next from "i18next";
 
 import { mdiDownload } from "@mdi/js";
 
-import { translate } from "../utils/utils";
 import DownloadTask from "../models/downloadTask";
 import { dispatchEvent, RaitoEvents } from "../models/events";
+import { translate } from "../utils/utils";
 
 class DownloadManager {
   tasks: Array<DownloadTask> = [];

@@ -1,4 +1,3 @@
-import Driver from "../models/driver";
 import { dispatchEvent, RaitoEvents } from "../models/events";
 import Theme from "../models/theme";
 import user from "../models/user";

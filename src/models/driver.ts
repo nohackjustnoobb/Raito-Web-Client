@@ -1,11 +1,8 @@
-import i18next from "i18next";
-
+import settingsManager from "../managers/settingsManager";
+import syncManager from "../managers/syncManager";
 import { tryInitialize } from "../utils/utils";
 import db from "./db";
 import { dispatchEvent, RaitoEvents } from "./events";
-import driversManager from "../managers/driversManager";
-import settingsManager from "../managers/settingsManager";
-import syncManager from "../managers/syncManager";
 import { DetailsManga, Manga } from "./manga";
 import Server from "./server";
 

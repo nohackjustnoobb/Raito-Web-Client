@@ -1,13 +1,13 @@
 import { md5 } from "js-md5";
 
-import { sleep } from "../utils/utils";
 import db from "../models/db";
 import { dispatchEvent, RaitoEvents } from "../models/events";
 import { DetailsManga } from "../models/manga";
 import Server from "../models/server";
 import user from "../models/user";
-import settingsManager from "./settingsManager";
+import { sleep } from "../utils/utils";
 import driversManager from "./driversManager";
+import settingsManager from "./settingsManager";
 
 interface SyncState {
   isSyncing: boolean;

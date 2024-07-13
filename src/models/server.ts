@@ -1,8 +1,7 @@
-import { errorHandler } from "../utils/utils";
-import Driver from "./driver";
 import driversManager from "../managers/driversManager";
 import serversManager from "../managers/serversManager";
 import settingsManager from "../managers/settingsManager";
+import { errorHandler } from "../utils/utils";
 import user from "./user";
 
 class Server {

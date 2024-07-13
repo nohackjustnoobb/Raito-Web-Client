@@ -4,12 +4,12 @@ import { Component, ReactNode } from "react";
 
 import { TailSpin } from "react-loader-spinner";
 
+import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager from "../../managers/settingsManager";
 import { sleep } from "../../utils/utils";
 
 type Props = {

@@ -7,8 +7,8 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
-import db from "../../models/db";
 import syncManager from "../../managers/syncManager";
+import db from "../../models/db";
 import user from "../../models/user";
 import makeSwipeable, {
   InjectedSwipeableProps,

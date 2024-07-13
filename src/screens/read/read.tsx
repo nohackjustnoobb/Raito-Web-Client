@@ -5,12 +5,12 @@ import { Component, Fragment, ReactNode } from "react";
 import { CSSTransition } from "react-transition-group";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
+import settingsManager, { DisplayMode } from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager, { DisplayMode } from "../../managers/settingsManager";
 import { Chapter, DetailsManga } from "../../models/manga";
 import Menu from "./menu";
 import Warning from "./warning";

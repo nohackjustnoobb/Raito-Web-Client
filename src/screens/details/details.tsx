@@ -19,13 +19,13 @@ import Icon from "@mdi/react";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
+import settingsManager from "../../managers/settingsManager";
 import db, { history } from "../../models/db";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager from "../../managers/settingsManager";
 import { DetailsManga, Manga } from "../../models/manga";
 import {
   formatChapterTitle,

@@ -6,12 +6,12 @@ import { CSSTransition } from "react-transition-group";
 
 import { Button, Checkbox } from "@mui/material";
 
+import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import settingsManager from "../../managers/settingsManager";
 
 class ExperimentalSettings extends Component<{}, { show: boolean }> {
   timeout: number = 500;

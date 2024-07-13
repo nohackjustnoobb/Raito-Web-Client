@@ -10,14 +10,14 @@ import { Button, Checkbox } from "@mui/material";
 
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
+import driversManager from "../../managers/driversManager";
+import settingsManager from "../../managers/settingsManager";
+import syncManager from "../../managers/syncManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import driversManager from "../../managers/driversManager";
-import settingsManager from "../../managers/settingsManager";
-import syncManager from "../../managers/syncManager";
 import user from "../../models/user";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";

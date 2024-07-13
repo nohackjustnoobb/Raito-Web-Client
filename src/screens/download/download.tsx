@@ -5,11 +5,11 @@ import { Component } from "react";
 import { withTranslation, WithTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
+import downloadManager from "../../managers/downloadManager";
 import DownloadTask, {
   DownloadOptions,
   DownloadTypes,
 } from "../../models/downloadTask";
-import downloadManager from "../../managers/downloadManager";
 import { Chapter, DetailsManga } from "../../models/manga";
 import { formatChapterTitle, sleep } from "../../utils/utils";
 import SelectDownloadTypes from "./selectDownloadTypes";

@@ -1,12 +1,9 @@
-import './App.scss';
+import "./App.scss";
 
-import { Component } from 'react';
+import { Component } from "react";
 
-import { liveQuery } from 'dexie';
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
+import { liveQuery } from "dexie";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 import {
   mdiBookSearch,
@@ -15,37 +12,24 @@ import {
   mdiDotsHorizontalCircleOutline,
   mdiLibraryShelves,
   mdiRefresh,
-} from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button } from '@mui/material';
+} from "@mdi/js";
+import Icon from "@mdi/react";
+import { Button } from "@mui/material";
 
-import LazyImage from './components/lazyImage/lazyImage';
-import MangaPreview, { Tag } from './components/mangaPreview/mangaPreview';
-import downloadManager from './managers/downloadManager';
-import settingsManager from './managers/settingsManager';
-import syncManager from './managers/syncManager';
-import updatesManager from './managers/updatesManager';
-import db, {
-  collection,
-  history,
-} from './models/db';
-import {
-  listenToEvents,
-  RaitoEvents,
-} from './models/events';
-import {
-  DetailsManga,
-  Manga,
-} from './models/manga';
-import History from './screens/history/history';
-import Library from './screens/library/library';
-import Search from './screens/search/search';
-import Settings from './screens/settings/settings';
-import {
-  AppIcon,
-  translate,
-  wheelToScrollHorizontally,
-} from './utils/utils';
+import LazyImage from "./components/lazyImage/lazyImage";
+import MangaPreview, { Tag } from "./components/mangaPreview/mangaPreview";
+import downloadManager from "./managers/downloadManager";
+import settingsManager from "./managers/settingsManager";
+import syncManager from "./managers/syncManager";
+import updatesManager from "./managers/updatesManager";
+import db, { collection, history } from "./models/db";
+import { listenToEvents, RaitoEvents } from "./models/events";
+import { DetailsManga, Manga } from "./models/manga";
+import History from "./screens/history/history";
+import Library from "./screens/library/library";
+import Search from "./screens/search/search";
+import Settings from "./screens/settings/settings";
+import { AppIcon, translate, wheelToScrollHorizontally } from "./utils/utils";
 
 enum StatusMode {
   None,

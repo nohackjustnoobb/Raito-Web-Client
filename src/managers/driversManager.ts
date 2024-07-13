@@ -1,8 +1,8 @@
-import { sleep } from "../utils/utils";
-import Driver from "../models/driver";
-import Server from "../models/server";
 import i18next from "../locales/i18n";
-import { RaitoEvents, dispatchEvent } from "../models/events";
+import Driver from "../models/driver";
+import { dispatchEvent, RaitoEvents } from "../models/events";
+import Server from "../models/server";
+import { sleep } from "../utils/utils";
 
 class DriversManager {
   available: Array<Driver> = [];

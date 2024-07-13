@@ -1,8 +1,11 @@
-import { Component } from "react";
 import "./mangasList.scss";
-import { Manga } from "../../models/manga";
+
+import { Component } from "react";
+
+import { withTranslation, WithTranslation } from "react-i18next";
 import { InfinitySpin } from "react-loader-spinner";
-import { WithTranslation, withTranslation } from "react-i18next";
+
+import { Manga } from "../../models/manga";
 import MangaPreview, { Tag } from "../mangaPreview/mangaPreview";
 
 interface Props extends WithTranslation {

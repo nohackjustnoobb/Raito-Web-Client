@@ -8,15 +8,12 @@ import { withTranslation, WithTranslation } from "react-i18next";
 import {
   mdiBookmark,
   mdiBookmarkOffOutline,
-  mdiDotsGrid,
   mdiDownload,
   mdiExportVariant,
-  mdiOrderNumericAscending,
-  mdiOrderNumericDescending,
-  mdiViewList,
 } from "@mdi/js";
 import Icon from "@mdi/react";
 
+import ChaptersList from "../../components/chaptersList/chaptersList";
 import LazyImage from "../../components/lazyImage/lazyImage";
 import TopBar from "../../components/topBar/topBar";
 import settingsManager from "../../managers/settingsManager";
@@ -27,11 +24,7 @@ import {
   RaitoSubscription,
 } from "../../models/events";
 import { DetailsManga, Manga } from "../../models/manga";
-import {
-  formatChapterTitle,
-  translate,
-  wheelToScrollHorizontally,
-} from "../../utils/utils";
+import { translate, wheelToScrollHorizontally } from "../../utils/utils";
 import Download from "../download/download";
 import makeSwipeable, {
   InjectedSwipeableProps,
@@ -43,25 +36,23 @@ interface Props extends WithTranslation, InjectedSwipeableProps {
 
 interface State {
   manga: DetailsManga | null;
-  extra: boolean;
+  extraSelected: boolean;
   collected: boolean;
   history: Record | null;
   isVertical: boolean;
   showTime: boolean;
   isDescending: boolean;
-  isGrid: boolean;
 }
 
 class Details extends Component<Props, State> {
   state: State = {
     manga: null,
-    extra: false,
+    extraSelected: false,
     collected: false,
     history: null,
     isVertical: window.innerWidth < window.innerHeight,
     showTime: false,
     isDescending: true,
-    isGrid: true,
   };
   collectionsSubscription: Subscription | null = null;
   historySubscription: Subscription | null = null;
@@ -80,7 +71,7 @@ class Details extends Component<Props, State> {
     this.setState(
       {
         manga: manga,
-        extra: !manga.chapters.serial.length,
+        extraSelected: !manga.chapters.serial.length,
       },
       () => {
         // setup observers for current manga state
@@ -104,7 +95,7 @@ class Details extends Component<Props, State> {
                 (v) => v.id === result.chapterId
               )
             )
-              this.setState({ extra: true });
+              this.setState({ extraSelected: true });
 
             this.setState({ history: result }, () =>
               this.scrollToHighlighted()
@@ -126,97 +117,21 @@ class Details extends Component<Props, State> {
 
   scrollToHighlighted() {
     const elem = document.getElementsByClassName("highlighted");
-    if (elem.length && !this.state.isVertical) elem[0].scrollIntoView();
+    if (elem.length && !this.state.isVertical)
+      elem[0].scrollIntoView({ block: "nearest" });
   }
 
   render(): ReactNode {
-    const chaptersList =
-      this.state.manga &&
-      (this.state.extra
-        ? this.state.manga.chapters.extra
-        : this.state.manga.chapters.serial
-      ).map((chapter) => {
-        const title = chapter.title;
-
-        return (
-          <li
-            key={chapter.id}
-            className={
-              this.state.history?.chapterId === chapter.id ? "highlighted" : ""
-            }
-            onClick={() => this.state.manga!.read(chapter.id)}
-          >
-            <p>
-              {this.state.isGrid ? formatChapterTitle(title) : translate(title)}
-            </p>
-          </li>
-        );
-      });
-
-    if (chaptersList && !this.state.isDescending) chaptersList.reverse();
-
-    const chapters = (
-      <>
-        <div className="controller">
-          <span
-            onClick={() =>
-              this.setState({ isDescending: !this.state.isDescending })
-            }
-          >
-            <Icon
-              path={
-                this.state.isDescending
-                  ? mdiOrderNumericDescending
-                  : mdiOrderNumericAscending
-              }
-              size={1}
-            />
-          </span>
-          <ul className="serialSelector">
-            <div
-              className={
-                "background " + (this.state.extra ? "extra" : "serial")
-              }
-            />
-            <li
-              onClick={() => this.setState({ extra: false })}
-              className={
-                !this.state.manga?.chapters.serial.length
-                  ? "disabled"
-                  : this.state.extra
-                  ? ""
-                  : "selected"
-              }
-            >
-              {this.props.t("serial")}
-            </li>
-            <li
-              onClick={() => {
-                if (this.state.manga?.chapters.extra.length)
-                  this.setState({ extra: true });
-              }}
-              className={
-                !this.state.manga?.chapters.extra.length
-                  ? "disabled"
-                  : this.state.extra
-                  ? "selected"
-                  : ""
-              }
-            >
-              {this.props.t("extra")}
-            </li>
-          </ul>
-          <span onClick={() => this.setState({ isGrid: !this.state.isGrid })}>
-            <Icon
-              path={this.state.isGrid ? mdiDotsGrid : mdiViewList}
-              size={1}
-            />
-          </span>
-        </div>
-        <ul className={`chapters ${this.state.isGrid ? "grid" : "list"}`}>
-          {chaptersList}
-        </ul>
-      </>
+    const manga = this.state.manga;
+    const chaptersList = manga && (
+      <ChaptersList
+        manga={manga}
+        highlighted={
+          this.state.history?.chapterId ? [this.state.history.chapterId] : []
+        }
+        onClick={(id) => manga!.read(id)}
+        safeArea={{ top: !this.state.isVertical, bottom: true }}
+      />
     );
 
     return (
@@ -234,12 +149,12 @@ class Details extends Component<Props, State> {
                   // share it
                   try {
                     await navigator.share({
-                      url: `${
-                        this.state.manga!.driver.server!.address
-                      }share?driver=${this.state.manga!.driver.identifier}&id=${
-                        this.state.manga!.id
-                      }&proxy=${settingsManager.useProxy ? "1" : "0"}`,
-                      title: translate(this.state.manga!.title),
+                      url: `${manga!.driver.server!.address}share?driver=${
+                        manga!.driver.identifier
+                      }&id=${manga!.id}&proxy=${
+                        settingsManager.useProxy ? "1" : "0"
+                      }`,
+                      title: translate(manga!.title),
                     });
                   } catch {}
                 }}
@@ -250,25 +165,18 @@ class Details extends Component<Props, State> {
           />
           <div className="scrollable">
             <div className="thumbnail">
-              {this.state.manga && (
-                <LazyImage src={this.state.manga.thumbnail} />
-              )}
+              {manga && <LazyImage src={manga.thumbnail} />}
             </div>
-            <h2 className="title">
-              {this.state.manga && translate(this.state.manga.title)}
-            </h2>
+            <h2 className="title">{manga && translate(manga.title)}</h2>
             <ul className="author">
-              {this.state.manga &&
-                this.state.manga.authors.map((name) => (
+              {manga &&
+                manga.authors.map((name) => (
                   <li key={name} onClick={() => window.search(name)}>
                     {name}
                   </li>
                 ))}
             </ul>
-            <div
-              className="continue"
-              onClick={() => this.state.manga!.continue()}
-            >
+            <div className="continue" onClick={() => manga!.continue()}>
               {this.state.history?.chapterTitle
                 ? `${this.props.t("continue")} ${translate(
                     this.state.history.chapterTitle
@@ -278,11 +186,8 @@ class Details extends Component<Props, State> {
             <ul className="otherButtons">
               <li
                 onClick={() => {
-                  if (this.state.collected) {
-                    this.state.manga?.remove();
-                  } else {
-                    this.state.manga?.add();
-                  }
+                  if (this.state.collected) manga?.remove();
+                  else manga?.add();
                 }}
               >
                 <Icon
@@ -296,9 +201,7 @@ class Details extends Component<Props, State> {
                 </span>
               </li>
               <li
-                onClick={() =>
-                  window.stack.push(<Download manga={this.state.manga!} />)
-                }
+                onClick={() => window.stack.push(<Download manga={manga!} />)}
               >
                 <Icon path={mdiDownload} size={1.25} />{" "}
                 <span>{this.props.t("download")}</span>
@@ -307,17 +210,15 @@ class Details extends Component<Props, State> {
             <div className="divider" />
             <div className="description">
               <h3>{this.props.t("description")}</h3>
-              <span>
-                {this.state.manga && translate(this.state.manga.description)}
-              </span>
+              <span>{manga && translate(manga.description)}</span>
             </div>
             <div className="divider" />
             <ul className="info" onWheel={wheelToScrollHorizontally("UL")}>
               <li>
                 <span className="title">{this.props.t("genre")}</span>
                 <span className="content">
-                  {this.state.manga && this.state.manga.categories.length
-                    ? this.state.manga.categories
+                  {manga && manga.categories.length
+                    ? manga.categories
                         .map((category) => this.props.t(category))
                         .join(" ")
                     : this.props.t("none")}
@@ -327,19 +228,17 @@ class Details extends Component<Props, State> {
               <li>
                 <span className="title">{this.props.t("status")}</span>
                 <span className="content">
-                  {this.props.t(
-                    this.state.manga?.isEnded ? "ended" : "onGoing"
-                  )}
+                  {this.props.t(manga?.isEnded ? "ended" : "onGoing")}
                 </span>
               </li>
               <li className="vDivider" />
               <li>
                 <span className="title">{this.props.t("latest")}</span>
                 <span className="content">
-                  {this.state.manga && translate(this.state.manga.latest)}
+                  {manga && translate(manga.latest)}
                 </span>
               </li>
-              {this.state.manga && this.state.manga.updateTime && (
+              {manga && manga.updateTime && (
                 <>
                   <li className="vDivider" />
                   <li
@@ -350,14 +249,14 @@ class Details extends Component<Props, State> {
                   >
                     <span className="title">{this.props.t("updateTime")}</span>
                     <span className="content">
-                      {this.state.manga.updateTime.toLocaleString(undefined, {
+                      {manga.updateTime.toLocaleString(undefined, {
                         month: "2-digit",
                         day: "2-digit",
                         year: "numeric",
                       })}
                       <br />
                       {this.state.showTime &&
-                        this.state.manga.updateTime.toLocaleString(undefined, {
+                        manga.updateTime.toLocaleString(undefined, {
                           hour12: true,
                           hour: "2-digit",
                           minute: "2-digit",
@@ -371,23 +270,27 @@ class Details extends Component<Props, State> {
               <li>
                 <span className="title">{this.props.t("source")}</span>
                 <span className="content">
-                  {this.state.manga && this.state.manga.driver.identifier}
+                  {manga && manga.driver.identifier}
                 </span>
               </li>
               <li className="vDivider" />
               <li>
                 <span className="title">ID</span>
-                <span className="content">
-                  {this.state.manga && this.state.manga.id}
-                </span>
+                <span className="content">{manga && manga.id}</span>
               </li>
             </ul>
-            <div className="divider" style={{ marginTop: "1rem" }} />
-            {this.state.isVertical && chapters}
+            <div
+              className="divider"
+              style={{
+                marginTop: "1rem",
+                marginBottom: this.state.isVertical ? "0" : "1rem",
+              }}
+            />
+            {this.state.isVertical && chaptersList}
           </div>
         </div>
         {!this.state.isVertical && (
-          <div className="rightContent">{chapters}</div>
+          <div className="rightContent">{chaptersList}</div>
         )}
       </div>
     );

@@ -491,14 +491,18 @@ class Read extends Component<Props, State> {
         />
         <CSSTransition
           in={this.state.show}
-          classNames="read"
+          classNames="slide-x"
           timeout={this.timeout}
           unmountOnExit
           mountOnEnter
         >
           <div
             ref={(ref) => (this.readRef = ref)}
-            className={settingsManager.snapToPage ? "read snapToPage" : "read"}
+            className={
+              settingsManager.snapToPage
+                ? "read snapToPage slide-x"
+                : "read slide-x"
+            }
             onDoubleClick={(event) => {
               if (this.doubleClickTimeoutId) {
                 clearTimeout(this.doubleClickTimeoutId);

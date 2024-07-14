@@ -9,8 +9,6 @@
   padding-right: max(1rem, env(safe-area-inset-right));
   padding-left: max(1rem, env(safe-area-inset-left));
   background-color: var(--color-background);
-  color: var(--color-text);
-
   .actions {
     display: flex;
     gap: 0.5rem;
@@ -32,7 +30,6 @@
     width: 100%;
     opacity: 0.5;
     font-size: 1.5rem;
-    color: var(--color-text);
   }
 
   .historyWrapper {
@@ -83,7 +80,6 @@
         margin: 0;
         margin-bottom: 1rem;
         font-weight: bold;
-        color: var(--color-text);
       }
 
       h4 {
@@ -91,7 +87,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         margin: 0;
-        color: var(--color-text);
         opacity: 0.4;
         font-weight: normal;
       }
@@ -101,7 +96,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         margin: 0;
-        color: var(--color-text);
         opacity: 0.3;
         font-weight: normal;
       }
@@ -121,7 +115,6 @@
     .continue {
       cursor: pointer;
       flex-shrink: 0;
-      color: var(--color-text);
     }
   }
 }

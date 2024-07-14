@@ -1,7 +1,6 @@
 #main {
   height: 100vh;
   width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
-  color: var(--color-text);
   margin-left: env(safe-area-inset-left);
   margin-right: env(safe-area-inset-right);
 
@@ -281,7 +280,6 @@
       margin: 0;
       opacity: 0.5;
       font-size: 1.5rem;
-      color: var(--color-text);
 
       p {
         transform: translateY(-3rem);

@@ -1,74 +1,40 @@
-.onlineStatus-enter {
-  opacity: 0;
-}
+.onlineStatus {
+  background-color: var(--color-background);
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  gap: 0.5rem;
 
-.onlineStatus-enter-active {
-  opacity: 1;
-  transition: opacity 250ms;
-}
+  h5 {
+    margin: 0;
+    padding: 0;
+    opacity: 0.4;
+  }
 
-.onlineStatus-exit-active {
-  opacity: 0;
-  transition: opacity 250ms;
-}
+  table {
+    width: 100%;
+    table-layout: fixed;
 
-.onlineStatusWrapper {
-  .onlineStatus {
-    height: 100vh;
-    width: 100vw;
+    .disabled {
+      color: red;
+    }
+
+    td {
+      text-align: center;
+    }
+  }
+
+  span {
     display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .background {
-      background-color: #00000044;
-      height: 100vh;
-      width: 100vw;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .onlineStatusContent {
-      background-color: var(--color-background);
-      color: var(--color-text);
-      padding: 2rem;
-      position: relative;
-      z-index: 2;
-      border-radius: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      margin: 1rem;
-      max-width: 400px;
-      gap: 0.5rem;
-
-      h5 {
-        margin: 0;
-        padding: 0;
-        opacity: 0.4;
-      }
-
-      table {
-        width: 100%;
-        table-layout: fixed;
-
-        .disabled {
-          color: red;
-        }
-
-        td {
-          text-align: center;
-        }
-      }
-
-      span {
-        display: flex;
-        width: 100%;
-        gap: 1rem;
-      }
-    }
+    width: 100%;
+    gap: 1rem;
   }
 }

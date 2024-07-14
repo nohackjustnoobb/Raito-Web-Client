@@ -8,20 +8,6 @@
   }
 }
 
-.read-enter {
-  transform: translateX(100%);
-}
-
-.read-enter-active {
-  transform: translateX(0);
-  transition: transform 500ms;
-}
-
-.read-exit-active {
-  transform: translateX(100%);
-  transition: transform 500ms;
-}
-
 .snapToPage {
   scroll-snap-type: y mandatory;
 }

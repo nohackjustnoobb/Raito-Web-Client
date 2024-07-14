@@ -41,13 +41,13 @@ const makeSwipeable = <P extends InjectedSwipeableProps>(
         <div className="swipeableWrapper">
           <CSSTransition
             in={this.state.show}
-            classNames="swipeable"
+            classNames="slide-x"
             timeout={this.timeout}
             unmountOnExit
             mountOnEnter
           >
             <div
-              className="swipeable"
+              className="swipeable slide-x"
               ref={(ref) => (this.ref = ref)}
               onTouchStart={(event) => {
                 const startX = event.changedTouches[0].pageX;

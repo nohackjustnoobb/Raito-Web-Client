@@ -26,7 +26,6 @@
       max(1rem, env(safe-area-inset-left))
   );
   background-color: var(--color-background);
-  color: var(--color-text);
   backdrop-filter: blur(5px);
   padding: 1rem;
   padding-right: max(1rem, env(safe-area-inset-right));
@@ -146,7 +145,6 @@
       max(1rem, env(safe-area-inset-left))
   );
   background-color: var(--color-background);
-  color: var(--color-text);
   backdrop-filter: blur(5px);
   padding: 1rem;
   padding-right: max(1rem, env(safe-area-inset-right));

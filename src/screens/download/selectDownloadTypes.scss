@@ -1,74 +1,36 @@
-.downloadTypesWrapper {
-  height: 100vh;
-  width: 100vw;
+.downloadTypes {
+  background-color: var(--color-background);
+  border-radius: 1rem;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  padding: 1rem;
+  z-index: 2;
 
-  .downloadTypes-enter {
-    opacity: 0;
+  h5 {
+    color: red;
+    margin: 0;
+    text-align: center;
+    margin-bottom: 1rem;
   }
 
-  .downloadTypes-enter-active {
-    transition: opacity 500ms;
-    opacity: 1;
-  }
-
-  .downloadTypes-exit-active {
-    opacity: 0;
-    transition: opacity 500ms;
-  }
-
-  .background {
-    height: 100%;
-    width: 100%;
-    background-color: #00000044;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .downloadTypes {
-    position: relative;
-    height: 100%;
-    width: 100%;
+  span {
+    gap: 1rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
   }
 
-  .content {
-    background-color: var(--color-background);
-    border-radius: 1rem;
-    width: 100%;
-    margin: 1rem;
-    max-width: 400px;
-    color: var(--color-text);
-    padding: 1rem;
-    z-index: 2;
-
-    h5 {
-      color: red;
-      margin: 0;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
+  .options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    height: 1.75rem;
+    justify-content: space-between;
 
     span {
-      gap: 1rem;
-      display: flex;
-      width: 100%;
-    }
-
-    .options {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      height: 1.75rem;
-      justify-content: space-between;
-
-      span {
-        width: auto;
-        color: var(--color-text);
-      }
+      width: auto;
+      color: var(--color-text);
     }
   }
 }

@@ -8,7 +8,6 @@
   padding-left: max(1rem, env(safe-area-inset-left));
   padding-bottom: max(env(safe-area-inset-bottom), 1rem);
   background-color: var(--color-background);
-  color: var(--color-text);
   display: flex;
   flex-direction: column;
 
@@ -28,7 +27,6 @@
     width: 100%;
     opacity: 0.5;
     font-size: 1.5rem;
-    color: var(--color-text);
   }
 
   .themes {

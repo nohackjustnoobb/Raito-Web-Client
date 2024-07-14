@@ -3,39 +3,37 @@ import "./download.scss";
 import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
-import { CSSTransition } from "react-transition-group";
 
+import ChaptersList from "../../components/chaptersList/chaptersList";
 import downloadManager from "../../managers/downloadManager";
 import DownloadTask, {
   DownloadOptions,
   DownloadTypes,
 } from "../../models/downloadTask";
 import { Chapter, DetailsManga } from "../../models/manga";
-import { formatChapterTitle, sleep } from "../../utils/utils";
+import { sleep } from "../../utils/utils";
+import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 import SelectDownloadTypes from "./selectDownloadTypes";
 
-interface Props extends WithTranslation {
+interface Props extends WithTranslation, InjectedPopableProps {
   manga: DetailsManga;
 }
 
 interface State {
-  show: boolean;
-  extra: boolean;
+  isExtraSelected: boolean;
 }
-
 class Download extends Component<Props> {
-  state: State = { show: false, extra: false };
+  state: State = {
+    isExtraSelected: false,
+  };
   // timeout of the transition
   timeout: number = 500;
   selected: Array<Chapter> = [];
 
-  close() {
-    this.setState({ show: false });
-    setTimeout(() => window.stack.pop(), this.timeout);
-  }
-
   componentDidMount() {
-    this.setState({ show: true });
+    this.setState({
+      isExtraSelected: !this.props.manga.chapters.serial.length,
+    });
   }
 
   async createDownloadTask(type: DownloadTypes, options?: DownloadOptions) {
@@ -52,126 +50,63 @@ class Download extends Component<Props> {
   }
 
   render() {
+    const manga = this.props.manga;
+    const chapters = this.state.isExtraSelected
+      ? manga.chapters.extra
+      : manga.chapters.serial;
+
     return (
-      <div className="downloadWrapper">
-        <CSSTransition
-          in={this.state.show}
-          classNames="background"
-          timeout={this.timeout}
-          unmountOnExit
-          mountOnEnter
-        >
-          <div className="background" />
-        </CSSTransition>
-        <CSSTransition
-          in={this.state.show}
-          classNames="download"
-          timeout={this.timeout}
-          unmountOnExit
-          mountOnEnter
-        >
-          <div className="download">
-            <div className="closeArea" onClick={() => this.close()} />
-            <div className="content">
-              <div className="controller">
-                <span onClick={() => this.close()}>
-                  {this.props.t("cancel")}
-                </span>
-                <b
-                  onClick={() => {
-                    const chapters = this.state.extra
-                      ? this.props.manga.chapters.extra
-                      : this.props.manga.chapters.serial;
-                    const isSelected = (chapter: Chapter) =>
-                      this.selected
-                        .map((chapter) => chapter.id)
-                        .includes(chapter.id);
+      <div className="download">
+        <div className="topActions">
+          <span onClick={() => this.props.close()}>
+            {this.props.t("cancel")}
+          </span>
+          <b
+            onClick={() => {
+              const isSelected = (chapter: Chapter) =>
+                this.selected.map((chapter) => chapter.id).includes(chapter.id);
 
-                    if (chapters.some((id) => isSelected(id)))
-                      this.selected = this.selected.filter(
-                        (id) => !chapters.includes(id)
-                      );
-                    else this.selected.push(...chapters);
+              if (chapters.some((id) => isSelected(id)))
+                this.selected = this.selected.filter(
+                  (id) => !chapters.includes(id)
+                );
+              else this.selected.push(...chapters);
 
-                    this.forceUpdate();
-                  }}
-                >
-                  {this.props.t("selectChapters")}
-                </b>
-                <span
-                  onClick={() => {
-                    if (!this.selected.length)
-                      return alert(this.props.t("noSelectedChapters"));
-                    window.stack.push(
-                      <SelectDownloadTypes
-                        createDownloadTask={this.createDownloadTask.bind(this)}
-                      />
-                    );
-                  }}
-                >
-                  {this.props.t("download")}
-                </span>
-              </div>
-              <ul className="serialSelector">
-                <div
-                  className={
-                    "background " + (this.state.extra ? "extra" : "serial")
-                  }
+              this.forceUpdate();
+            }}
+          >
+            {this.props.t("selectChapters")}
+          </b>
+          <span
+            onClick={() => {
+              if (!this.selected.length)
+                return alert(this.props.t("noSelectedChapters"));
+              window.stack.push(
+                <SelectDownloadTypes
+                  createDownloadTask={this.createDownloadTask.bind(this)}
                 />
-                <li
-                  onClick={() => this.setState({ extra: false })}
-                  className={this.state.extra ? "" : "selected"}
-                >
-                  {this.props.t("serial")}
-                </li>
-                <li
-                  onClick={() => {
-                    if (this.props.manga?.chapters.extra.length)
-                      this.setState({ extra: true });
-                  }}
-                  className={
-                    !this.props.manga?.chapters.extra.length
-                      ? "disabled"
-                      : this.state.extra
-                      ? "selected"
-                      : ""
-                  }
-                >
-                  {this.props.t("extra")}
-                </li>
-              </ul>
-              <ul className="chapters">
-                {(this.state.extra
-                  ? this.props.manga.chapters.extra
-                  : this.props.manga.chapters.serial
-                ).map((chapter) => {
-                  const found = this.selected.find((v) => v.id === chapter.id);
+              );
+            }}
+          >
+            {this.props.t("download")}
+          </span>
+        </div>
+        <ChaptersList
+          manga={manga}
+          setExtraSelected={(v) => this.setState({ isExtraSelected: v })}
+          onClick={(id) => {
+            const found = this.selected.find((v) => v.id === id);
 
-                  return (
-                    <li
-                      key={chapter.id}
-                      className={found ? "highlighted" : ""}
-                      onClick={() => {
-                        if (!found) this.selected.push(chapter);
-                        else
-                          this.selected = this.selected.filter(
-                            (v) => v.id !== chapter.id
-                          );
+            if (!found) this.selected.push(chapters.find((v) => v.id === id)!);
+            else this.selected = this.selected.filter((v) => v.id !== id);
 
-                        this.forceUpdate();
-                      }}
-                    >
-                      <p>{formatChapterTitle(chapter.title)}</p>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </CSSTransition>
+            this.forceUpdate();
+          }}
+          highlighted={this.selected.map((v) => v.id)}
+        />
       </div>
     );
   }
 }
 
-export default withTranslation()(Download);
+export default makePopable(withTranslation()(Download), "slide-y");

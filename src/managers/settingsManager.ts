@@ -34,7 +34,7 @@ class SettingsManager {
   // reader settings
   displayMode: DisplayMode = DisplayMode.Auto;
   overscrollToLoadPreviousChapters: boolean = true;
-  snapToPage: boolean = false;
+  snapToPage: boolean = true;
 
   // server settings
   useProxy: boolean = true;

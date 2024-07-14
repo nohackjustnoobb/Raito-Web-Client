@@ -7,11 +7,28 @@
   height: 100vh;
   justify-content: center;
   align-items: center;
-  background-color: #00000022;
 
-  div {
+  .loader-enter {
+    transform: scale(0);
+  }
+
+  .loader-exit,
+  .loader-enter-done {
+    transform: scale(0.75);
+  }
+
+  .loader-enter-active {
+    transition: transform 250ms;
+    transform: scale(0.75);
+  }
+
+  .loader-exit-active {
+    transform: scale(0);
+    transition: transform 250ms;
+  }
+
+  .loader {
     background-color: var(--color-background);
-    color: var(--color-text);
     opacity: 0.8;
     backdrop-filter: blur(5px);
     aspect-ratio: 1;
@@ -21,6 +38,5 @@
     align-items: center;
     flex-direction: column;
     font-size: 1.5rem;
-    transform: scale(0.75);
   }
 }

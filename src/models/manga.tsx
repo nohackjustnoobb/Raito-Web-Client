@@ -305,6 +305,12 @@ interface Chapter {
   id: string;
 }
 
+interface Chapters {
+  serial: Array<Chapter>;
+  extra: Array<Chapter>;
+  extraData: string;
+}
+
 /**
  * A subclass of SimpleManga that contain the details info.
  *
@@ -323,11 +329,7 @@ class DetailsManga extends Manga {
   /**
    * All the chapters that the manga has.
    */
-  chapters: {
-    serial: Array<Chapter>;
-    extra: Array<Chapter>;
-    extraData: string;
-  };
+  chapters: Chapters;
   /**
    * The authors of the manga.
    */
@@ -442,4 +444,4 @@ class DetailsManga extends Manga {
 }
 
 export { DetailsManga, Manga };
-export type { Chapter };
+export type { Chapter, Chapters };

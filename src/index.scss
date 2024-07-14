@@ -11,6 +11,15 @@ body {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
   background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.MuiFormLabel-root:not(.Mui-focused) {
+  color: var(--color-chapters-text);
+}
+
+:not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-chapters-text);
 }
 
 #root {
@@ -42,7 +51,6 @@ html[data-theme="dark"] {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: var(--color-text);
   width: 100vw;
   height: 100vh;
   gap: 1rem;
@@ -84,7 +92,6 @@ html[data-theme="dark"] {
     border-color: var(--color-text);
     border-width: 1.5px;
     border-style: solid;
-    color: var(--color-text);
     font-weight: bold;
     cursor: pointer;
 
@@ -92,4 +99,69 @@ html[data-theme="dark"] {
       opacity: 0.7;
     }
   }
+}
+
+.background {
+  height: 100%;
+  width: 100%;
+  background-color: #00000044;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  transition: opacity 500ms;
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+.scale-enter {
+  transform: scale(0);
+}
+
+.scale-enter-active {
+  transition: transform 500ms;
+  transform: scale(1);
+}
+
+.scale-exit-active {
+  transform: scale(0);
+  transition: transform 500ms;
+}
+
+.slide-y-enter {
+  transform: translateY(100%);
+}
+
+.slide-y-enter-active {
+  transform: translateY(0);
+  transition: transform 500ms;
+}
+
+.slide-y-exit-active {
+  transform: translateY(100%);
+  transition: transform 500ms;
+}
+
+.slide-x-enter {
+  transform: translateX(100%);
+}
+
+.slide-x-enter-active {
+  transform: translateX(0);
+  transition: transform 500ms;
+}
+
+.slide-x-exit-active {
+  transform: translateX(100%);
+  transition: transform 500ms;
 }

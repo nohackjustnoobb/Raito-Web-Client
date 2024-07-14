@@ -38,7 +38,7 @@ class SyncManager {
       await this.syncServer.initialize();
 
       // FIXME temp fix for crashing
-      setTimeout(this.trySync.bind(this), 1000);
+      setTimeout(this.trySync.bind(this), 5000);
       // this.trySync();
     }
   }

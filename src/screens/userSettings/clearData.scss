@@ -1,67 +1,33 @@
-.clearData-enter {
-  opacity: 0;
-}
+.clearData {
+  background-color: var(--color-background);
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  gap: 1rem;
 
-.clearData-enter-active {
-  opacity: 1;
-  transition: opacity 250ms;
-}
+  .MuiFormLabel-root:not(.Mui-focused) {
+    color: var(--color-chapters-text);
+  }
 
-.clearData-exit-active {
-  opacity: 0;
-  transition: opacity 250ms;
-}
+  :not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
+    border-color: var(--color-chapters-text);
+  }
 
-.clearDataWrapper {
-  .clearData {
-    height: 100vh;
-    width: 100vw;
+  .MuiInputBase-input {
+    color: var(--color-text);
+  }
+
+  span {
+    gap: 1rem;
     display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .clearDataContent {
-      background-color: var(--color-background);
-      color: var(--color-text);
-      padding: 1rem;
-      position: relative;
-      z-index: 2;
-      border-radius: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      margin: 1rem;
-      max-width: 400px;
-      gap: 1rem;
-
-      .MuiFormLabel-root:not(.Mui-focused) {
-        color: var(--color-chapters-text);
-      }
-
-      :not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
-        border-color: var(--color-chapters-text);
-      }
-
-      .MuiInputBase-input {
-        color: var(--color-text);
-      }
-
-      span {
-        gap: 1rem;
-        display: flex;
-        width: 100%;
-      }
-    }
-
-    .background {
-      background-color: #00000044;
-      height: 100vh;
-      width: 100vw;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+    width: 100%;
   }
 }

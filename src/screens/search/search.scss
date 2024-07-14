@@ -9,8 +9,6 @@
   padding-right: max(1rem, env(safe-area-inset-right));
   padding-left: max(1rem, env(safe-area-inset-left));
   background-color: var(--color-background);
-  color: var(--color-text);
-
   .topBar {
     div,
     select {
@@ -37,7 +35,6 @@
       height: 2rem;
       border-radius: 0.75rem;
       background-color: var(--color-search-background);
-      color: var(--color-text);
     }
 
     .icon {
@@ -71,7 +68,6 @@
         text-overflow: ellipsis;
         width: calc(100% - 1rem);
         font-weight: normal;
-        color: var(--color-text);
       }
 
       :last-child {

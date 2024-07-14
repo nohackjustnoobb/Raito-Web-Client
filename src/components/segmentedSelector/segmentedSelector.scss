@@ -25,6 +25,11 @@
       font-weight: bold;
       cursor: auto;
     }
+
+    .disabled {
+      opacity: 0.25;
+      cursor: auto;
+    }
   }
 
   .hover {

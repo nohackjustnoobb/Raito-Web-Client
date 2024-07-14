@@ -177,11 +177,13 @@ class Details extends Component<Props, State> {
                 ))}
             </ul>
             <div className="continue" onClick={() => manga!.continue()}>
-              {this.state.history?.chapterTitle
-                ? `${this.props.t("continue")} ${translate(
-                    this.state.history.chapterTitle
-                  )}`
-                : this.props.t("startReading")}
+              {this.props.t(
+                this.state.history?.chapterTitle ? "continue" : "startReading"
+              )}
+              <span>
+                {this.state.history?.chapterTitle &&
+                  translate(this.state.history.chapterTitle)}
+              </span>
             </div>
             <ul className="otherButtons">
               <li

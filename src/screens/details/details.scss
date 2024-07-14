@@ -100,11 +100,20 @@
       font-size: 1.25rem;
       font-weight: bold;
       padding: 0.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
       margin-top: 1rem;
       display: flex;
       justify-content: center;
       border-radius: 2.5rem;
       cursor: pointer;
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-left: 0.5rem;
+      }
     }
 
     .otherButtons {
@@ -157,6 +166,7 @@
         text-align: justify;
         color: var(--color-chapters-text);
         white-space: pre-line;
+        user-select: text;
       }
     }
 

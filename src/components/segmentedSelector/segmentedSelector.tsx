@@ -38,7 +38,7 @@ const SegmentedSelector: FunctionComponent<Props> = (props) => {
         {props.options.map((option) => (
           <li
             key={option.value}
-            onClick={() => props.onChange(option.value)}
+            onClick={() => option.disabled || props.onChange(option.value)}
             className={
               option.disabled === undefined || option.disabled
                 ? "disabled"

@@ -161,5 +161,7 @@
     "hide": "Hide",
     "done": "Done",
     "tagUpdated": "Updated",
-    "tagEnded": "Ended"
+    "tagEnded": "Ended",
+    "noNextOne": "No Next Chapter",
+    "noPreviousOne": "No Previous Chapter"
 }

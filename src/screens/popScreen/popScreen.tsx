@@ -9,9 +9,17 @@ export interface InjectedPopableProps {
   timeout: number;
 }
 
+interface PopScreenOptions {
+  containerTransition?: string;
+  dismissible?: boolean;
+}
+
 const makePopable = <P extends InjectedPopableProps>(
   WrappedComponent: React.ComponentType<P>,
-  containerTransition: string = "scale",
+  options: PopScreenOptions = {
+    containerTransition: "scale",
+    dismissible: true,
+  },
   preload?: (props: Omit<P, keyof InjectedPopableProps>) => Promise<boolean>
 ) =>
   class PopableScreen extends Component<
@@ -46,13 +54,19 @@ const makePopable = <P extends InjectedPopableProps>(
           </CSSTransition>
           <CSSTransition
             in={this.state.show}
-            classNames={containerTransition}
+            classNames={options.containerTransition || "scale"}
             timeout={this.timeout}
             unmountOnExit
             mountOnEnter
           >
-            <div className={`popableContainer ${containerTransition}`}>
-              <div className="closeArea" onClick={() => this.close()} />
+            <div className={`popableContainer ${options.containerTransition}`}>
+              <div
+                className="closeArea"
+                onClick={() =>
+                  (options.dismissible === undefined || options.dismissible) &&
+                  this.close()
+                }
+              />
               <WrappedComponent
                 {...(this.props as P)}
                 timeout={this.timeout}

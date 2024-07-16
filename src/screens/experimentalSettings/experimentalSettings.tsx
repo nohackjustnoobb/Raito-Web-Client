@@ -43,6 +43,16 @@ class ExperimentalSettings extends Component<
             }}
           />
         </div>
+        <div className="options">
+          <span>UseExperimentalRead:</span>
+          <Checkbox
+            checked={settingsManager.experimentalRead}
+            onChange={(_, checked) => {
+              settingsManager.experimentalRead = checked;
+              settingsManager.update();
+            }}
+          />
+        </div>
         <Button
           variant={"outlined"}
           size="small"

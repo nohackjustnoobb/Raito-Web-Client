@@ -107,11 +107,11 @@
       justify-content: center;
       border-radius: 2.5rem;
       cursor: pointer;
+      white-space: nowrap;
 
       span {
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
         margin-left: 0.5rem;
       }
     }

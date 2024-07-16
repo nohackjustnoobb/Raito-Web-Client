@@ -13,7 +13,7 @@ import {
 } from "../../models/events";
 import { Chapter, DetailsManga } from "../../models/manga";
 import Menu from "./menu";
-import Warning from "./warning";
+import Warning, { WarningType } from "./warning";
 
 enum ShouldLoad {
   next,
@@ -214,7 +214,7 @@ class Read extends Component<Props, State> {
     window.removeEventListener("touchmove", this.onTouchMove.bind(this));
   }
 
-  shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+  shouldComponentUpdate(_: Props, nextState: State): boolean {
     if (this.menuAction) this.menuAction(nextState.page);
 
     return nextState.page === this.state.page || nextState.id !== this.state.id;
@@ -260,11 +260,15 @@ class Read extends Component<Props, State> {
     // check if out of range
     if (!id) {
       this.lastLoad = setLastLoad ? Date.now() : null;
-      return window.stack.push(<Warning noNextOne={next} />);
+      return window.stack.push(
+        <Warning
+          type={next ? WarningType.NoNextOne : WarningType.NoPreviousOne}
+        />
+      );
     }
 
     // get the urls
-    var urls = await this.props.manga.getChapter(id);
+    var urls = await this.props.manga.getChapterUrls(id);
     this.setState(
       (prevState) => ({
         chaptersUrls: {
@@ -347,15 +351,14 @@ class Read extends Component<Props, State> {
 
         // check if top is reached
         if (
-          this.readRef &&
           settingsManager.overscrollToLoadPreviousChapters &&
           !this.isOverScrolling &&
-          (this.readRef.scrollTop < 0 ||
-            (event && this.readRef.scrollTop === 0 && event.deltaY < 0))
+          (this.readRef!.scrollTop < 0 ||
+            (event && this.readRef!.scrollTop === 0 && event.deltaY < 0))
         ) {
           await this.loadMore(false);
 
-          if (this.readRef.scrollTop < 0) this.isOverScrolling = true;
+          if (this.readRef!.scrollTop < 0) this.isOverScrolling = true;
         }
 
         this.timeoutId = null;

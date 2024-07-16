@@ -46,6 +46,7 @@ class SettingsManager {
 
   // experimental functions
   experimentalUseZoomablePlugin: boolean = false;
+  experimentalRead: boolean = false;
 
   saveBool(key: string, value: boolean) {
     localStorage.setItem(key, value ? "1" : "0");
@@ -101,6 +102,8 @@ class SettingsManager {
       this.experimentalUseZoomablePlugin =
         this.loadBool("experimentalUseZoomablePlugin") ??
         this.experimentalUseZoomablePlugin;
+      this.experimentalRead =
+        this.loadBool("experimentalRead") ?? this.experimentalRead;
     }
   }
 
@@ -137,6 +140,7 @@ class SettingsManager {
       "experimentalUseZoomablePlugin",
       this.experimentalUseZoomablePlugin
     );
+    this.saveBool("experimentalRead", this.experimentalRead);
   }
 
   reset() {

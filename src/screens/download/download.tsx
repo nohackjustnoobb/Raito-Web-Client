@@ -109,4 +109,6 @@ class Download extends Component<Props> {
   }
 }
 
-export default makePopable(withTranslation()(Download), "slide-y");
+export default makePopable(withTranslation()(Download), {
+  containerTransition: "slide-y",
+});

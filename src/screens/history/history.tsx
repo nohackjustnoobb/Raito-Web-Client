@@ -159,7 +159,7 @@ class History extends React.Component<
                     <h4>
                       {this.props.t("lastSeen")}{" "}
                       {translate(history.chapterTitle!)} {this.props.t("page1")}
-                      {history.page}
+                      {history.page! + 1}
                       {this.props.t("page2")}
                     </h4>
                     <h5>

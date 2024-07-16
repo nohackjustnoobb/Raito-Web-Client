@@ -139,7 +139,7 @@ class DownloadTask {
           for (const chapter of sortedChapters
             .filter((v1) => this.content.find((v2) => v1.id === v2.id))
             .reverse()) {
-            const result = await this.manga.getChapter(chapter.id, true);
+            const result = await this.manga.getChapterUrls(chapter.id, true);
             if (result.length !== 0) urls.push(...result);
           }
 
@@ -185,7 +185,7 @@ class DownloadTask {
                 text: i18next.t("fetchingInfo"),
               };
 
-              const result = await this.manga.getChapter(chapter.id, true);
+              const result = await this.manga.getChapterUrls(chapter.id, true);
 
               if (result.length !== 0) {
                 await generatePDF(
@@ -270,7 +270,7 @@ class DownloadTask {
               name: title,
               text: i18next.t("fetchingInfo"),
             };
-            const result = await this.manga.getChapter(chapter.id, true);
+            const result = await this.manga.getChapterUrls(chapter.id, true);
 
             if (result.length !== 0 && folder) {
               const chapterFolder = folder.folder(title);
@@ -334,7 +334,7 @@ class DownloadTask {
               name: title,
               text: i18next.t("fetchingInfo"),
             };
-            const result = await this.manga.getChapter(chapter.id, true);
+            const result = await this.manga.getChapterUrls(chapter.id, true);
 
             if (result.length !== 0 && folder) {
               const chapterZip = new JSZip();

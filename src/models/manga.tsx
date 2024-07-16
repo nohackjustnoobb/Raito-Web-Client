@@ -4,6 +4,7 @@ import driversManager from "../managers/driversManager";
 import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import Details from "../screens/details/details";
+import ExperimentalRead from "../screens/experimentalRead/read";
 import Read from "../screens/read/read";
 import db, { Collection, Record } from "./db";
 import Driver from "./driver";
@@ -371,7 +372,17 @@ class DetailsManga extends Manga {
     if (this.driver.isDown)
       return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
-    window.stack.push(<Read manga={this} chapterId={chapterId} page={page} />);
+    window.stack.push(
+      settingsManager.experimentalRead ? (
+        <ExperimentalRead
+          manga={this}
+          chapterId={chapterId}
+          page={page || undefined}
+        />
+      ) : (
+        <Read manga={this} chapterId={chapterId} page={page} />
+      )
+    );
   }
 
   /**
@@ -401,7 +412,7 @@ class DetailsManga extends Manga {
    * @param chapterId The id of the chapter. (required)
    * @returns
    */
-  async getChapter(
+  async getChapterUrls(
     chapterId: string,
     forceProxy: boolean = false
   ): Promise<Array<string>> {

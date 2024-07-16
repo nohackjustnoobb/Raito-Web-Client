@@ -120,12 +120,22 @@ function formatChapterTitle(title: string): string {
   return result;
 }
 
+function mode<T>(arr: Array<T>) {
+  return arr
+    .sort(
+      (a, b) =>
+        arr.filter((v) => v === a).length - arr.filter((v) => v === b).length
+    )
+    .pop();
+}
+
 export {
   convertRemToPixels,
   errorHandler,
   formatChapterTitle,
   getCssVariable,
   Icon as AppIcon,
+  mode,
   retryFetch,
   sleep,
   translate,

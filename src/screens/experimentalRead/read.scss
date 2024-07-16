@@ -1,0 +1,42 @@
+.snapToPage {
+  scroll-snap-type: y mandatory;
+}
+
+.experimentalRead {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  background-color: var(--color-background);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .spacer {
+    width: 50%;
+  }
+
+  img {
+    pointer-events: none;
+  }
+
+  .images {
+    width: 100%;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+
+    ul {
+      width: 100%;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row-reverse;
+      flex-wrap: wrap;
+
+      li {
+        scroll-snap-align: center;
+      }
+    }
+  }
+}

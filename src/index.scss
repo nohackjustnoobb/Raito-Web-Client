@@ -152,6 +152,20 @@ html[data-theme="dark"] {
   transition: transform 500ms;
 }
 
+.slide-y-reverse-enter {
+  transform: translateY(-100%);
+}
+
+.slide-y-reverse-enter-active {
+  transform: translateY(0);
+  transition: transform 500ms;
+}
+
+.slide-y-reverse-exit-active {
+  transform: translateY(-100%);
+  transition: transform 500ms;
+}
+
 .slide-x-enter {
   transform: translateX(100%);
 }

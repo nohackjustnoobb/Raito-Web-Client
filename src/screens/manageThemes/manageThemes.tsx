@@ -74,7 +74,6 @@ class ManageThemes extends Component<Props> {
                 <div className="options">
                   <Button
                     fullWidth
-                    outlined
                     onClick={() => navigator.clipboard.writeText(v.style)}
                   >
                     {this.props.t("copyThemeCSS")}

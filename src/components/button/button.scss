@@ -1,12 +1,12 @@
 // To ensure it have the highest priority
 .button.button.button.button.button {
   all: initial;
-  color: inherit;
   font: inherit;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-sub-background);
+  background-color: var(--color-text);
+  color: var(--color-background);
   padding: 1rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;

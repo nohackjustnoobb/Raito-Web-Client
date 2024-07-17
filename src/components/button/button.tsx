@@ -11,6 +11,7 @@ interface ButtonProps {
   fullWidth?: boolean;
   horizontalPadding?: number;
   textColor?: string;
+  backgroundColor?: string;
 }
 
 const Button: FunctionComponent<ButtonProps> = ({
@@ -22,6 +23,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   fullWidth,
   horizontalPadding,
   textColor,
+  backgroundColor,
 }) => {
   const classList = ["button"];
   if (outlined) classList.push("outlined");
@@ -37,6 +39,7 @@ const Button: FunctionComponent<ButtonProps> = ({
         paddingTop: `${horizontalPadding}rem`,
         paddingBottom: `${horizontalPadding}rem`,
         color: textColor,
+        backgroundColor: backgroundColor,
       }}
     >
       {children}

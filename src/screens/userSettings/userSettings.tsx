@@ -65,6 +65,8 @@ class UserSettings extends Component<Props> {
           <Button
             fullWidth
             horizontalPadding={0.5}
+            textColor="var(--color-text)"
+            backgroundColor="transparent"
             onClick={() => window.stack.push(<ChangePassword />)}
           >
             {this.props.t("changePassword")}
@@ -72,6 +74,8 @@ class UserSettings extends Component<Props> {
           <Button
             fullWidth
             horizontalPadding={0.5}
+            textColor="var(--color-text)"
+            backgroundColor="transparent"
             onClick={async () => {
               localStorage.removeItem("lastSync");
 
@@ -88,6 +92,7 @@ class UserSettings extends Component<Props> {
         <div className="subSettings">
           <Button
             textColor="var(--color-warning)"
+            backgroundColor="transparent"
             fullWidth
             horizontalPadding={0.5}
             onClick={async () => {
@@ -106,6 +111,7 @@ class UserSettings extends Component<Props> {
           </Button>
           <Button
             textColor="var(--color-warning)"
+            backgroundColor="transparent"
             fullWidth
             horizontalPadding={0.5}
             onClick={() => window.stack.push(<ClearData />)}
@@ -117,6 +123,7 @@ class UserSettings extends Component<Props> {
         <div className="subSettings">
           <Button
             textColor="var(--color-warning)"
+            backgroundColor="transparent"
             fullWidth
             horizontalPadding={0.5}
             onClick={() => {

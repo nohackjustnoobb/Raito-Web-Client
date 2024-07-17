@@ -70,7 +70,6 @@ class ManageServers extends Component<Props> {
               </div>
               <div className="options">
                 <Button
-                  outlined
                   fullWidth
                   onClick={() =>
                     navigator.clipboard.writeText(

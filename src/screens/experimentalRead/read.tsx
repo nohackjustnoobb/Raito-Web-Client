@@ -54,6 +54,17 @@ interface State {
   scale: number;
 }
 
+type TouchEvent = React.TouchEvent<HTMLDivElement>;
+
+interface Position {
+  x: number;
+  y: number;
+}
+
+function diff(p1: Position, p2: Position) {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+}
+
 class Read extends Component<Props, State> {
   // the array of chapter that is currently being read
   chapters!: Array<Chapter>;
@@ -289,7 +300,9 @@ class Read extends Component<Props, State> {
 
     if (!target) return;
 
-    this.scrollToPage(target.index, target.page);
+    this.setState({ currentPage: target }, () =>
+      this.scrollToPage(target.index, target.page)
+    );
   }
 
   onScroll(event?: React.WheelEvent<HTMLDivElement>) {
@@ -364,6 +377,50 @@ class Read extends Component<Props, State> {
     });
   }
 
+  offset: Position | null = null;
+  prevDiff: number = -1;
+
+  onTouchStart(ev: TouchEvent) {
+    if (!settingsManager.experimentalUseZoomablePlugin) return;
+
+    if (ev.touches.length === 2) {
+      this.offset = {
+        x: (ev.touches[0].clientX + ev.touches[1].clientX) / 2,
+        y: (ev.touches[0].clientY + ev.touches[1].clientY) / 2,
+      };
+      this.prevDiff = diff(
+        { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
+        { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
+      );
+    }
+  }
+
+  onTouchMove(ev: TouchEvent) {
+    if (ev.touches.length === 2 && this.offset) {
+      ev.preventDefault();
+
+      const currDiff = diff(
+        { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
+        { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
+      );
+
+      const screenSize = diff(
+        { x: 0, y: 0 },
+        { x: window.innerWidth, y: window.innerHeight }
+      );
+      const scaledDiff = ((currDiff - this.prevDiff) / screenSize) * 5;
+
+      this.zoomTo(this.state.scale + scaledDiff, this.offset);
+
+      this.prevDiff = currDiff;
+    }
+  }
+
+  onTouchEnd() {
+    this.prevDiff = -1;
+    this.offset = null;
+  }
+
   render() {
     const isOnePaged: boolean =
       settingsManager.displayMode === DisplayMode.OnePage ||
@@ -378,6 +435,9 @@ class Read extends Component<Props, State> {
         }
         onScroll={() => this.onScroll()}
         onWheel={this.onScroll.bind(this)}
+        onTouchStart={this.onTouchStart.bind(this)}
+        onTouchMove={this.onTouchMove.bind(this)}
+        onTouchEnd={this.onTouchEnd.bind(this)}
         ref={(ref) => (this.scrollableRef = ref)}
       >
         <Menu

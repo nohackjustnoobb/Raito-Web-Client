@@ -4,8 +4,7 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button } from "@mui/material";
-
+import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import syncManager from "../../managers/syncManager";
 import db from "../../models/db";
@@ -64,17 +63,15 @@ class UserSettings extends Component<Props> {
 
         <div className="subSettings">
           <Button
-            variant="text"
-            size="small"
             fullWidth
+            horizontalPadding={0.5}
             onClick={() => window.stack.push(<ChangePassword />)}
           >
             {this.props.t("changePassword")}
           </Button>
           <Button
-            variant="text"
-            size="small"
             fullWidth
+            horizontalPadding={0.5}
             onClick={async () => {
               localStorage.removeItem("lastSync");
 
@@ -90,10 +87,9 @@ class UserSettings extends Component<Props> {
 
         <div className="subSettings">
           <Button
-            variant="text"
-            color="error"
-            size="small"
+            textColor="var(--color-warning)"
             fullWidth
+            horizontalPadding={0.5}
             onClick={async () => {
               if (window.confirm(this.props.t("deleteLocalDataConfirmation"))) {
                 // delete all data and sync the data
@@ -109,10 +105,9 @@ class UserSettings extends Component<Props> {
             {this.props.t("deleteLocalData")}
           </Button>
           <Button
-            variant="text"
-            color="error"
-            size="small"
+            textColor="var(--color-warning)"
             fullWidth
+            horizontalPadding={0.5}
             onClick={() => window.stack.push(<ClearData />)}
           >
             {this.props.t("deleteAllData")}
@@ -121,10 +116,9 @@ class UserSettings extends Component<Props> {
 
         <div className="subSettings">
           <Button
-            variant={"text"}
-            color="error"
-            size="small"
+            textColor="var(--color-warning)"
             fullWidth
+            horizontalPadding={0.5}
             onClick={() => {
               if (window.confirm(this.props.t("logoutConfirmation"))) {
                 user.logout();

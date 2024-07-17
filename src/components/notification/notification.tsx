@@ -5,9 +5,9 @@ import { Component } from "react";
 import { CSSTransition } from "react-transition-group";
 
 import Icon from "@mdi/react";
-import { Button } from "@mui/material";
 
 import { sleep } from "../../utils/utils";
+import Button from "../button/button";
 
 interface NotificationItem {
   icon: string;
@@ -69,8 +69,7 @@ class Notification extends Component {
               <span>{this.items[0].mesg}</span>
               {this.items[0].action && (
                 <Button
-                  variant="outlined"
-                  size="small"
+                  outlined
                   onClick={() => {
                     this.items[0].action!();
                     this.setState({ show: false });

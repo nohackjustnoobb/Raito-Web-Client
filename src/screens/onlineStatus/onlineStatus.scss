@@ -24,7 +24,7 @@
     table-layout: fixed;
 
     .disabled {
-      color: red;
+      color: var(--color-warning);
     }
 
     td {
@@ -35,6 +35,6 @@
   span {
     display: flex;
     width: 100%;
-    gap: 1rem;
+    gap: 0.5rem;
   }
 }

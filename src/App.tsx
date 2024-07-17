@@ -14,8 +14,8 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Button } from "@mui/material";
 
+import Button from "./components/button/button";
 import LazyImage from "./components/lazyImage/lazyImage";
 import MangaPreview, { Tag } from "./components/mangaPreview/mangaPreview";
 import downloadManager from "./managers/downloadManager";
@@ -261,17 +261,16 @@ class App extends Component<
                     </p>
                     <div className="options">
                       <Button
-                        variant={"outlined"}
-                        color="error"
-                        size="small"
+                        outlined
+                        warning
+                        fullWidth
                         disabled={v.started && !v.done}
                         onClick={() => downloadManager.remove(i)}
                       >
                         {this.props.t("cancel")}
                       </Button>
                       <Button
-                        variant={"outlined"}
-                        size="small"
+                        fullWidth
                         onClick={() => {
                           if (v.done) {
                             v.save();

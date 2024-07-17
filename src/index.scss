@@ -34,6 +34,7 @@ html[data-theme="light"] {
   --color-sub-background: #ffffff;
   --color-chapters-background: #ececec;
   --color-chapters-text: #929292;
+  --color-warning: #ff4545;
 }
 
 html[data-theme="dark"] {
@@ -44,6 +45,7 @@ html[data-theme="dark"] {
   --color-sub-background: #373737;
   --color-chapters-background: #373737;
   --color-chapters-text: #7f7f7f;
+  --color-warning: #cc3300;
 }
 
 .crash {
@@ -65,7 +67,7 @@ html[data-theme="dark"] {
     border-radius: 1rem;
     background-color: var(--color-sub-background);
     padding: 1rem;
-    color: red;
+    color: var(--color-warning);
     max-width: calc(100% - 4rem);
     white-space: pre-wrap;
     max-height: 70%;

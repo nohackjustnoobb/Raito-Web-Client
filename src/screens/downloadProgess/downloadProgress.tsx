@@ -4,8 +4,7 @@ import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button } from "@mui/material";
-
+import Button from "../../components/button/button";
 import downloadManager from "../../managers/downloadManager";
 import DownloadTask from "../../models/downloadTask";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
@@ -53,18 +52,15 @@ class DownloadProgress extends Component<Props> {
         </ul>
         <div>
           <Button
-            variant={"outlined"}
+            outlined
+            warning
             fullWidth
-            color="error"
-            size="small"
             onClick={this.props.close.bind(this)}
           >
             {this.props.t("hide")}
           </Button>
           <Button
-            variant={"outlined"}
             fullWidth
-            size="small"
             disabled={!this.props.task.done}
             onClick={() => {
               this.props.task.save();

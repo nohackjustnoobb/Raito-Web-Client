@@ -2,8 +2,9 @@ import "./experimentalSettings.scss";
 
 import { Component, ReactNode } from "react";
 
-import { Button, Checkbox } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
+import Button from "../../components/button/button";
 import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
@@ -53,13 +54,8 @@ class ExperimentalSettings extends Component<
             }}
           />
         </div>
-        <Button
-          variant={"outlined"}
-          size="small"
-          fullWidth
-          onClick={() => this.props.close()}
-        >
-          close
+        <Button outlined fullWidth onClick={() => this.props.close()}>
+          Close
         </Button>
       </div>
     );

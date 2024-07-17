@@ -4,8 +4,9 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
+import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import user from "../../models/user";
 import { AppIcon } from "../../utils/utils";
@@ -77,21 +78,14 @@ class Login extends Component<Props, { email: string; password: string }> {
           </div>
           <div className="row">
             <Button
-              variant="outlined"
-              size="small"
-              color="error"
+              outlined
+              warning
               fullWidth
               onClick={() => this.props.close()}
             >
               {this.props.t("cancel")}
             </Button>
-            <Button
-              variant="contained"
-              size="small"
-              color="secondary"
-              fullWidth
-              onClick={() => this.login()}
-            >
+            <Button fullWidth onClick={() => this.login()}>
               {this.props.t("logins")}
             </Button>
           </div>

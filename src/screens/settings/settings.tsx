@@ -6,8 +6,9 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiCogSync } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Button, Checkbox } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
+import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
 import driversManager from "../../managers/driversManager";
@@ -73,8 +74,7 @@ class Settings extends React.Component<Props> {
                 </span>
                 <span>
                   <Button
-                    variant="outlined"
-                    size="small"
+                    outlined
                     onClick={() => {
                       if (user.token) {
                         window.stack.push(<UserSettings />);
@@ -163,8 +163,7 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("theme")}: </span>
                 <Button
-                  variant={"outlined"}
-                  size="small"
+                  outlined
                   onClick={() => window.stack.push(<ManageThemes />)}
                 >
                   {this.props.t("settings")}
@@ -300,8 +299,7 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("sourcesStatus")}: </span>
                 <Button
-                  variant={"outlined"}
-                  size="small"
+                  outlined
                   onClick={() => window.stack.push(<OnlineStatus />)}
                 >
                   {this.props.t("checkStatus")}
@@ -311,8 +309,7 @@ class Settings extends React.Component<Props> {
               <div className="options">
                 <span>{this.props.t("sourceServers")}: </span>
                 <Button
-                  variant={"outlined"}
-                  size="small"
+                  outlined
                   onClick={() => window.stack.push(<ManageServers />)}
                 >
                   {this.props.t("settings")}
@@ -327,8 +324,7 @@ class Settings extends React.Component<Props> {
                   <div className="options">
                     <span>{this.props.t("createUser")}: </span>
                     <Button
-                      variant={"outlined"}
-                      size="small"
+                      outlined
                       onClick={() => window.stack.push(<CreateUser />)}
                     >
                       {this.props.t("openInterface")}
@@ -338,8 +334,7 @@ class Settings extends React.Component<Props> {
                   <div className="options">
                     <span>{this.props.t("experimentalFeatures")}: </span>
                     <Button
-                      variant={"outlined"}
-                      size="small"
+                      outlined
                       onClick={() =>
                         window.stack.push(<ExperimentalSettings />)
                       }

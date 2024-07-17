@@ -4,8 +4,9 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
+import Button from "../../components/button/button";
 import user from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -51,22 +52,10 @@ class ClearData extends Component<
           onChange={(event) => this.setState({ password: event.target.value })}
         />
         <span>
-          <Button
-            variant="contained"
-            size="small"
-            color="secondary"
-            fullWidth
-            onClick={() => this.props.close()}
-          >
+          <Button fullWidth onClick={() => this.props.close()}>
             {this.props.t("cancel")}
           </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            color="error"
-            fullWidth
-            onClick={() => this.submit()}
-          >
+          <Button outlined warning fullWidth onClick={() => this.submit()}>
             {this.props.t("confirm")}
           </Button>
         </span>

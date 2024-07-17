@@ -6,8 +6,9 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Button, Checkbox } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
+import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import settingsManager from "../../managers/settingsManager";
 import {
@@ -72,18 +73,15 @@ class ManageThemes extends Component<Props> {
                 </div>
                 <div className="options">
                   <Button
-                    variant="contained"
-                    size="small"
-                    color="secondary"
                     fullWidth
+                    outlined
                     onClick={() => navigator.clipboard.writeText(v.style)}
                   >
                     {this.props.t("copyThemeCSS")}
                   </Button>
                   <Button
-                    variant="outlined"
-                    size="small"
-                    color="error"
+                    outlined
+                    warning
                     fullWidth
                     onClick={() => {
                       if (!window.confirm(this.props.t("deleteConfirm")))

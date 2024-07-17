@@ -4,8 +4,9 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
+import Button from "../../components/button/button";
 import user from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -92,22 +93,10 @@ class CreateUser extends Component<
           onChange={(event) => this.setState({ key: event.target.value })}
         />
         <span>
-          <Button
-            variant="outlined"
-            size="small"
-            color="error"
-            fullWidth
-            onClick={() => this.props.close()}
-          >
+          <Button outlined warning fullWidth onClick={() => this.props.close()}>
             {this.props.t("cancel")}
           </Button>
-          <Button
-            variant="contained"
-            size="small"
-            color="secondary"
-            fullWidth
-            onClick={() => this.submit()}
-          >
+          <Button fullWidth onClick={() => this.submit()}>
             {this.props.t("confirm")}
           </Button>
         </span>

@@ -1,0 +1,54 @@
+// To ensure it have the highest priority
+.button.button.button.button.button {
+  all: initial;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-sub-background);
+  padding: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @mixin outlined($color) {
+    border: $color 1px solid;
+    background-color: transparent;
+    color: $color;
+    font-weight: normal;
+  }
+
+  &.outlined {
+    @include outlined(var(--color-text));
+  }
+
+  &.warning {
+    background-color: var(--color-warning);
+  }
+
+  &.outlined.warning {
+    @include outlined(var(--color-warning));
+  }
+
+  &.fullWidth {
+    flex: 1;
+    width: calc(100% - 2rem);
+  }
+
+  &.disabled {
+    opacity: 0.4;
+  }
+
+  &:not(.disabled):hover {
+    opacity: 0.8;
+  }
+
+  &:not(.disabled):active {
+    opacity: 0.6;
+  }
+}

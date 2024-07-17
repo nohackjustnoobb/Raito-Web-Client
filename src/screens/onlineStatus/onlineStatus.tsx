@@ -4,8 +4,7 @@ import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button } from "@mui/material";
-
+import Button from "../../components/button/button";
 import driversManager from "../../managers/driversManager";
 import serversManager from "../../managers/serversManager";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
@@ -74,9 +73,6 @@ class OnlineStatus extends Component<
 
         <span>
           <Button
-            variant={"contained"}
-            size="small"
-            color="secondary"
             fullWidth
             onClick={async () => {
               if (!this.state.isLoading) {
@@ -88,12 +84,7 @@ class OnlineStatus extends Component<
           >
             {this.props.t("update")}
           </Button>
-          <Button
-            variant={"outlined"}
-            size="small"
-            fullWidth
-            onClick={() => this.props.close()}
-          >
+          <Button onClick={() => this.props.close()} outlined fullWidth>
             {this.props.t("close")}
           </Button>
         </span>

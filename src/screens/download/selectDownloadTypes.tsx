@@ -4,8 +4,9 @@ import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Button, Checkbox } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
+import Button from "../../components/button/button";
 import { DownloadOptions, DownloadTypes } from "../../models/downloadTask";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -48,18 +49,10 @@ class SelectDownloadTypes extends Component<Props> {
         )}
 
         <span>
-          <Button
-            variant="outlined"
-            size="small"
-            color="error"
-            fullWidth
-            onClick={() => this.props.close()}
-          >
+          <Button outlined warning fullWidth onClick={() => this.props.close()}>
             {this.props.t("cancel")}
           </Button>
           <Button
-            variant="contained"
-            size="small"
             fullWidth
             onClick={() => {
               this.props.close();

@@ -6,8 +6,8 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Button } from "@mui/material";
 
+import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import serversManager from "../../managers/serversManager";
 import {
@@ -70,9 +70,7 @@ class ManageServers extends Component<Props> {
               </div>
               <div className="options">
                 <Button
-                  variant="contained"
-                  size="small"
-                  color="secondary"
+                  outlined
                   fullWidth
                   onClick={() =>
                     navigator.clipboard.writeText(
@@ -87,9 +85,8 @@ class ManageServers extends Component<Props> {
                   {this.props.t("copyServerInfo")}
                 </Button>
                 <Button
-                  variant="outlined"
-                  size="small"
-                  color="error"
+                  outlined
+                  warning
                   fullWidth
                   disabled={v.isDefaultServer}
                   onClick={() => {

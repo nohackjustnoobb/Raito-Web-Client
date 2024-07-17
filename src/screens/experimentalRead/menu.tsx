@@ -5,7 +5,7 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
-import { mdiChevronLeft } from "@mdi/js";
+import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 import { Checkbox, Slider } from "@mui/material";
 
@@ -96,6 +96,40 @@ const LowerMenu: FunctionComponent<LowerMenuProps> = ({
   );
 };
 
+interface ScaleMenuProps {
+  show: boolean;
+  scale: number;
+  zoomIn: () => void;
+  zoomOut: () => void;
+}
+
+const ScaleMenu: FunctionComponent<ScaleMenuProps> = ({
+  show,
+  scale,
+  zoomOut,
+  zoomIn,
+}) => {
+  return (
+    <CSSTransition
+      in={show}
+      classNames="fade"
+      timeout={500}
+      unmountOnExit
+      mountOnEnter
+    >
+      <div className="scaleMenu fade">
+        <span onClick={() => zoomOut()}>
+          <Icon path={mdiMinus} size={1} />
+        </span>
+        <h3>{Math.round(scale * 100)}%</h3>
+        <span onClick={() => zoomIn()}>
+          <Icon path={mdiPlus} size={1} />
+        </span>
+      </div>
+    </CSSTransition>
+  );
+};
+
 interface MenuProps {
   show: boolean;
   close: () => void;
@@ -104,16 +138,24 @@ interface MenuProps {
   togglePageOffset: () => void;
   page?: Page;
   scrollToPage: (index: number, page: number) => void;
+  scale: number;
+  zoomTo: (scale: number, offset?: { x: number; y: number }) => void;
 }
 
 const Menu: FunctionComponent<MenuProps> = ({
   page,
   scrollToPage,
+  zoomTo,
   ...props
 }) => {
   return (
     <>
       <UpperMenu title={page?.title} {...props} />
+      <ScaleMenu
+        zoomIn={() => zoomTo(props.scale + 0.5)}
+        zoomOut={() => zoomTo(props.scale - 0.5)}
+        {...props}
+      />
       <LowerMenu
         total={page?.total}
         page={page?.page}

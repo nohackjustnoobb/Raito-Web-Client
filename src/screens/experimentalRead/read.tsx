@@ -51,6 +51,7 @@ interface State {
   showMenu: boolean;
   isVertical: boolean;
   currentPage: Page | null;
+  scale: number;
 }
 
 class Read extends Component<Props, State> {
@@ -85,6 +86,7 @@ class Read extends Component<Props, State> {
     showMenu: false,
     currentPage: null,
     isVertical: window.innerHeight > window.innerWidth,
+    scale: 1,
   };
 
   componentDidMount() {
@@ -217,26 +219,52 @@ class Read extends Component<Props, State> {
           const index = Number(rawIndex);
           const chapter = this.chapters[index];
 
-          // check if changed
-          if (
-            !this.state.currentPage ||
-            this.state.currentPage.index !== index ||
-            this.state.currentPage.page !== page
-          ) {
-            this.setState(
-              {
-                currentPage: {
-                  title: chapter.title,
-                  index: index,
-                  page: page,
-                  total: this.state.urls.find((v) => v.index === index)!.urls
-                    .length,
-                },
-              },
-              () =>
+          const pageObj = {
+            title: chapter.title,
+            index: index,
+            page: page,
+            total: this.state.urls.find((v) => v.index === index)!.urls.length,
+          };
+
+          if (!this.state.currentPage)
+            return this.setState({ currentPage: pageObj }, () =>
+              // save it to history
+              this.props.manga.save(chapter, page)
+            );
+
+          let diff: number;
+          if (this.state.currentPage.index === index) {
+            diff = Math.abs(this.state.currentPage.page - page);
+          } else {
+            const lowerPage =
+              this.state.currentPage.index < index
+                ? this.state.currentPage
+                : pageObj;
+            const upperPage =
+              this.state.currentPage.index > index
+                ? this.state.currentPage
+                : pageObj;
+
+            diff = upperPage.total - upperPage.page + lowerPage.page;
+            diff += this.state.urls.reduce((pv, v) => {
+              if (
+                v.index < upperPage.index - 1 &&
+                v.index > lowerPage.index + 1
+              )
+                pv += v.urls.length;
+              return pv;
+            }, 0);
+          }
+
+          if (diff > 0) {
+            if (diff <= 4) {
+              this.setState({ currentPage: pageObj }, () =>
                 // save it to history
                 this.props.manga.save(chapter, page)
-            );
+              );
+            } else {
+              this.restorePage();
+            }
           }
         }
 
@@ -298,6 +326,44 @@ class Read extends Component<Props, State> {
     }
   }
 
+  zoomTo(scale: number, offset?: { x: number; y: number }) {
+    // limit the scale
+    if (scale > 2) scale = 2;
+    if (scale < 1) scale = 1;
+
+    const originalScale = this.state.scale;
+    const changedScale = scale / originalScale;
+    if (changedScale === 1 || !this.scrollableRef) return;
+
+    // save the position
+    const top = this.scrollableRef.scrollTop;
+    const left = this.scrollableRef.scrollLeft;
+
+    // set default offset
+    if (!offset) {
+      offset = {
+        x: this.scrollableRef.clientWidth / 2,
+        y: this.scrollableRef.clientHeight / 2,
+      };
+    }
+
+    this.setState({ scale: scale }, () => {
+      if (!this.scrollableRef || !offset) return;
+
+      const newLeft = Math.min(
+        Math.max((offset.x + left) * changedScale - offset.x, 0),
+        this.scrollableRef.scrollWidth - this.scrollableRef.clientWidth
+      );
+      const newTop = Math.min(
+        Math.max((offset.y + top) * changedScale - offset.y, 0),
+        this.scrollableRef.scrollHeight - this.scrollableRef.clientHeight
+      );
+
+      this.scrollableRef.scrollTop = newTop;
+      this.scrollableRef.scrollLeft = newLeft;
+    });
+  }
+
   render() {
     const isOnePaged: boolean =
       settingsManager.displayMode === DisplayMode.OnePage ||
@@ -322,8 +388,14 @@ class Read extends Component<Props, State> {
           isPageOffset={this.state.isPageOffset}
           togglePageOffset={this.togglePageOffset.bind(this)}
           scrollToPage={this.scrollToPage.bind(this)}
+          scale={this.state.scale}
+          zoomTo={this.zoomTo.bind(this)}
         />
-        <div className="images" onClick={this.toggleMenu.bind(this)}>
+        <div
+          className="images"
+          onClick={this.toggleMenu.bind(this)}
+          style={{ width: `${this.state.scale * 100}%` }}
+        >
           {this.state.urls.map((meta) => (
             <ul key={meta.chapter.id}>
               {this.state.isPageOffset && !isOnePaged && (
@@ -344,7 +416,9 @@ class Read extends Component<Props, State> {
                         this.state.imagesMeta[key] >= 1 || isOnePaged
                           ? "100%"
                           : "50%",
-                      aspectRatio: this.predictedRatio,
+                      aspectRatio: this.state.imagesMeta[key]
+                        ? "auto"
+                        : this.predictedRatio,
                     }}
                   >
                     <LazyImage

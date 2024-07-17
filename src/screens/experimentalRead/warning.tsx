@@ -1,8 +1,8 @@
 import "./warning.scss";
 
-import { FunctionComponent, useEffect } from "react";
+import { Component } from "react";
 
-import { useTranslation } from "react-i18next";
+import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiWindowClose } from "@mdi/js";
 import Icon from "@mdi/react";
@@ -14,22 +14,28 @@ enum WarningType {
   NoPreviousOne,
 }
 
-const Warning: FunctionComponent<
-  InjectedPopableProps & { type: WarningType }
-> = ({ type, close }) => {
-  useEffect(() => {
-    setTimeout(() => close(), 1000);
-  });
+interface Props extends InjectedPopableProps, WithTranslation {
+  type: WarningType;
+}
 
-  const { t } = useTranslation();
+class Warning extends Component<Props> {
+  componentDidMount() {
+    setTimeout(() => this.props.close(), 1000);
+  }
 
-  return (
-    <div className="warning">
-      <Icon path={mdiWindowClose} size={2} />
-      {t(type === WarningType.NoNextOne ? "noNextOne" : "noPreviousOne")}
-    </div>
-  );
-};
+  render() {
+    return (
+      <div className="warning">
+        <Icon path={mdiWindowClose} size={2} />
+        {this.props.t(
+          this.props.type === WarningType.NoNextOne
+            ? "noNextOne"
+            : "noPreviousOne"
+        )}
+      </div>
+    );
+  }
+}
 
-export default makePopable(Warning, { dismissible: false });
+export default makePopable(withTranslation()(Warning), { dismissible: false });
 export { WarningType };

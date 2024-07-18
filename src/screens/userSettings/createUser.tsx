@@ -4,9 +4,10 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
+import { mdiEmail, mdiFormTextboxPassword, mdiKey, mdiShield } from "@mdi/js";
 
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import user from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -44,53 +45,43 @@ class CreateUser extends Component<
   render(): ReactNode {
     return (
       <div className="createUser">
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("email")}
-          variant="outlined"
-          type="email"
+        <Input
           fullWidth
-          autoComplete="username"
           value={this.state.email}
-          onChange={(event) => this.setState({ email: event.target.value })}
+          onChange={(v) => this.setState({ email: v })}
+          placeholder={this.props.t("email")}
+          leftIcon={mdiEmail}
+          type="email"
+          autoComplete="username"
         />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("password")}
-          variant="outlined"
-          type="password"
-          autoComplete="new-password"
+        <Input
           fullWidth
           value={this.state.password}
-          onChange={(event) => this.setState({ password: event.target.value })}
-        />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("passwordConfirmation")}
-          variant="outlined"
+          onChange={(v) => this.setState({ password: v })}
+          placeholder={this.props.t("password")}
+          leftIcon={mdiFormTextboxPassword}
           type="password"
-          fullWidth
           autoComplete="new-password"
-          value={this.state.confirmPassword}
-          onChange={(event) =>
-            this.setState({ confirmPassword: event.target.value })
-          }
         />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("registerKey")}
-          variant="outlined"
-          type="text"
+        <Input
+          fullWidth
+          value={this.state.confirmPassword}
+          onChange={(v) => this.setState({ confirmPassword: v })}
+          placeholder={this.props.t("passwordConfirmation")}
+          leftIcon={mdiShield}
+          type="password"
+          autoComplete="new-password"
+        />
+        <Input
           fullWidth
           value={this.state.key}
+          onChange={(v) => this.setState({ key: v })}
+          placeholder={this.props.t("registerKey")}
+          leftIcon={mdiKey}
+          type="text"
           onKeyDown={(event) => {
             if (event.key === "Enter") this.submit();
           }}
-          onChange={(event) => this.setState({ key: event.target.value })}
         />
         <span>
           <Button outlined warning fullWidth onClick={() => this.props.close()}>

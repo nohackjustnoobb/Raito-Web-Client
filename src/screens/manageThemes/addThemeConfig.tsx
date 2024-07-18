@@ -4,9 +4,8 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
-
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import settingsManager from "../../managers/settingsManager";
 import Theme from "../../models/theme";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
@@ -36,25 +35,22 @@ class AddThemeConfig extends Component<
   render(): ReactNode {
     return (
       <div className="addThemeConfig">
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("themeName")}
-          variant="outlined"
+        <Input
           fullWidth
           value={this.state.name}
-          onChange={(event) => this.setState({ name: event.target.value })}
+          onChange={(v) => this.setState({ name: v })}
+          placeholder={this.props.t("themeName")}
         />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label="CSS"
-          variant="outlined"
+
+        <Input
           fullWidth
-          multiline
-          rows={5}
           value={this.state.style}
-          onChange={(event) => this.setState({ style: event.target.value })}
+          onChange={(v) => this.setState({ style: v })}
+          placeholder={"CSS"}
+          rows={5}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") this.submit();
+          }}
         />
         <span>
           <Button outlined warning fullWidth onClick={() => this.props.close()}>

@@ -6,9 +6,9 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Checkbox } from "@mui/material";
 
 import Button from "../../components/button/button";
+import Checkbox from "../../components/checkbox/checkbox";
 import TopBar from "../../components/topBar/topBar";
 import settingsManager from "../../managers/settingsManager";
 import {
@@ -64,7 +64,7 @@ class ManageThemes extends Component<Props> {
                   <b>{this.props.t("enable")}: </b>
                   <Checkbox
                     checked={settingsManager.currentTheme === v.name}
-                    onChange={(_, checked) => {
+                    onChange={(checked) => {
                       settingsManager.currentTheme = checked ? v.name : null;
 
                       settingsManager.update();

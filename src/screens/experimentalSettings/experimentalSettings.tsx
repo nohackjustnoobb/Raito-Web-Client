@@ -2,9 +2,8 @@ import "./experimentalSettings.scss";
 
 import { Component, ReactNode } from "react";
 
-import { Checkbox } from "@mui/material";
-
 import Button from "../../components/button/button";
+import Checkbox from "../../components/checkbox/checkbox";
 import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
@@ -38,8 +37,8 @@ class ExperimentalSettings extends Component<
           <span>UseZoomablePlugin:</span>
           <Checkbox
             checked={settingsManager.experimentalUseZoomablePlugin}
-            onChange={(_, checked) => {
-              settingsManager.experimentalUseZoomablePlugin = checked;
+            onChange={(v) => {
+              settingsManager.experimentalUseZoomablePlugin = v;
               settingsManager.update();
             }}
           />
@@ -48,8 +47,8 @@ class ExperimentalSettings extends Component<
           <span>UseExperimentalRead:</span>
           <Checkbox
             checked={settingsManager.experimentalRead}
-            onChange={(_, checked) => {
-              settingsManager.experimentalRead = checked;
+            onChange={(v) => {
+              settingsManager.experimentalRead = v;
               settingsManager.update();
             }}
           />

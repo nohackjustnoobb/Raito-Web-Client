@@ -7,8 +7,9 @@ import { CSSTransition } from "react-transition-group";
 
 import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Checkbox, Slider } from "@mui/material";
+import { Slider } from "@mui/material";
 
+import Checkbox from "../../components/checkbox/checkbox";
 import { translate } from "../../utils/utils";
 
 interface Props extends WithTranslation {

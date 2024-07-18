@@ -7,8 +7,9 @@ import { CSSTransition } from "react-transition-group";
 
 import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Checkbox, Slider } from "@mui/material";
+import { Slider } from "@mui/material";
 
+import Checkbox from "../../components/checkbox/checkbox";
 import { translate } from "../../utils/utils";
 import { Page } from "./read";
 
@@ -137,14 +138,14 @@ interface MenuProps {
   isPageOffset: boolean;
   togglePageOffset: () => void;
   page?: Page;
-  scrollToPage: (index: number, page: number) => void;
+  restorePage: (page: Page) => void;
   scale: number;
   zoomTo: (scale: number, offset?: { x: number; y: number }) => void;
 }
 
 const Menu: FunctionComponent<MenuProps> = ({
   page,
-  scrollToPage,
+  restorePage,
   zoomTo,
   ...props
 }) => {
@@ -159,7 +160,14 @@ const Menu: FunctionComponent<MenuProps> = ({
       <LowerMenu
         total={page?.total}
         page={page?.page}
-        scrollToPage={(p: number) => page && scrollToPage(page?.index, p)}
+        scrollToPage={(p: number) => {
+          if (page) {
+            const newPage = structuredClone(page);
+            newPage.page = p;
+
+            restorePage(newPage);
+          }
+        }}
         {...props}
       />
     </>

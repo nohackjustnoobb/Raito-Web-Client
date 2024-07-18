@@ -4,9 +4,10 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
+import { mdiEmail, mdiFormTextboxPassword } from "@mdi/js";
 
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import TopBar from "../../components/topBar/topBar";
 import user from "../../models/user";
 import { AppIcon } from "../../utils/utils";
@@ -46,34 +47,28 @@ class Login extends Component<Props, { email: string; password: string }> {
           <AppIcon />
           <h2>Raito Manga</h2>
           <div className="row">
-            <TextField
-              size="small"
+            <Input
               fullWidth
-              id="outlined-basic"
-              label={this.props.t("email")}
-              variant="outlined"
+              value={this.state.email}
+              onChange={(v) => this.setState({ email: v })}
+              placeholder={this.props.t("email")}
+              leftIcon={mdiEmail}
               type="email"
               autoComplete="username"
-              value={this.state.email}
-              onChange={(event) => this.setState({ email: event.target.value })}
             />
           </div>
           <div className="row">
-            <TextField
-              size="small"
-              id="outlined-basic"
-              label={this.props.t("password")}
-              variant="outlined"
-              type="password"
+            <Input
               fullWidth
-              autoComplete="current-password"
               value={this.state.password}
+              onChange={(v) => this.setState({ password: v })}
+              placeholder={this.props.t("password")}
+              leftIcon={mdiFormTextboxPassword}
+              type="password"
+              autoComplete="new-password"
               onKeyDown={(event) => {
                 if (event.key === "Enter") this.login();
               }}
-              onChange={(event) =>
-                this.setState({ password: event.target.value })
-              }
             />
           </div>
           <div className="row">

@@ -4,9 +4,8 @@ import { Component } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { Checkbox } from "@mui/material";
-
 import Button from "../../components/button/button";
+import Checkbox from "../../components/checkbox/checkbox";
 import { DownloadOptions, DownloadTypes } from "../../models/downloadTask";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -43,7 +42,7 @@ class SelectDownloadTypes extends Component<Props> {
             <span>{this.props.t("combineIntoASingleFile")}: </span>
             <Checkbox
               checked={this.state.singleFile}
-              onChange={(_, checked) => this.setState({ singleFile: checked })}
+              onChange={(v) => this.setState({ singleFile: v })}
             />
           </div>
         )}

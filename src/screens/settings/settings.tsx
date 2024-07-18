@@ -6,9 +6,9 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import { mdiCogSync } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Checkbox } from "@mui/material";
 
 import Button from "../../components/button/button";
+import Checkbox from "../../components/checkbox/checkbox";
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
 import driversManager from "../../managers/driversManager";
@@ -129,8 +129,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("forceTranslate")}: </span>
                 <Checkbox
                   checked={settingsManager.forceTranslate}
-                  onChange={(_, checked) => {
-                    settingsManager.forceTranslate = checked;
+                  onChange={(v) => {
+                    settingsManager.forceTranslate = v;
                     settingsManager.update();
                   }}
                 />
@@ -140,8 +140,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("developerMode")}: </span>
                 <Checkbox
                   checked={settingsManager.showDeveloperSettings}
-                  onChange={(_, checked) => {
-                    settingsManager.showDeveloperSettings = checked;
+                  onChange={(v) => {
+                    settingsManager.showDeveloperSettings = v;
                     settingsManager.update();
                   }}
                 />
@@ -153,8 +153,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("formatChaptersTitle")}: </span>
                 <Checkbox
                   checked={settingsManager.formatChapterTitle}
-                  onChange={(_, checked) => {
-                    settingsManager.formatChapterTitle = checked;
+                  onChange={(v) => {
+                    settingsManager.formatChapterTitle = v;
                     settingsManager.update();
                   }}
                 />
@@ -227,8 +227,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
                 <Checkbox
                   checked={settingsManager.overscrollToLoadPreviousChapters}
-                  onChange={(_, checked) => {
-                    settingsManager.overscrollToLoadPreviousChapters = checked;
+                  onChange={(v) => {
+                    settingsManager.overscrollToLoadPreviousChapters = v;
                     settingsManager.update();
                   }}
                 />
@@ -238,8 +238,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("snapToPage")}: </span>
                 <Checkbox
                   checked={settingsManager.snapToPage}
-                  onChange={(_, checked) => {
-                    settingsManager.snapToPage = checked;
+                  onChange={(v) => {
+                    settingsManager.snapToPage = v;
                     settingsManager.update();
                   }}
                 />
@@ -273,8 +273,8 @@ class Settings extends React.Component<Props> {
                 <span>{this.props.t("useProxy")}: </span>
                 <Checkbox
                   checked={settingsManager.useProxy}
-                  onChange={(_, checked) => {
-                    settingsManager.useProxy = checked;
+                  onChange={(v) => {
+                    settingsManager.useProxy = v;
                     settingsManager.update();
                   }}
                 />
@@ -285,8 +285,8 @@ class Settings extends React.Component<Props> {
                   <span>{this.props.t("useBase64")}: </span>
                   <Checkbox
                     checked={settingsManager.useBase64}
-                    onChange={(_, checked) => {
-                      settingsManager.useBase64 = checked;
+                    onChange={(v) => {
+                      settingsManager.useBase64 = v;
                       settingsManager.update();
                     }}
                   />
@@ -347,8 +347,8 @@ class Settings extends React.Component<Props> {
                     <span> {this.props.t("ignoreError")}: </span>
                     <Checkbox
                       checked={settingsManager.ignoreError}
-                      onChange={(_, checked) => {
-                        settingsManager.ignoreError = checked;
+                      onChange={(v) => {
+                        settingsManager.ignoreError = v;
                         settingsManager.update();
                       }}
                     />
@@ -358,8 +358,8 @@ class Settings extends React.Component<Props> {
                     <span>{this.props.t("debugMode")}: </span>
                     <Checkbox
                       checked={settingsManager.debugMode}
-                      onChange={(_, checked) => {
-                        settingsManager.debugMode = checked;
+                      onChange={(v) => {
+                        settingsManager.debugMode = v;
                         settingsManager.update();
                       }}
                     />

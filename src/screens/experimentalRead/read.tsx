@@ -128,6 +128,17 @@ class Read extends Component<Props, State> {
     if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
+  constructPage(index: number, page: number) {
+    const chapter = this.chapters[index];
+
+    return {
+      page: page,
+      index: index,
+      title: chapter.title,
+      total: this.state.urls.find((v) => v.index === index)!.urls.length,
+    };
+  }
+
   async load(type: LoadTypes = LoadTypes.Next) {
     if (Date.now() < this.lastLoad + TIMEOUT) return;
     this.lastLoad = Number.MAX_VALUE;
@@ -187,7 +198,8 @@ class Read extends Component<Props, State> {
         for (let i = 0; i <= page; i++) {
           if (!this.state.imagesMeta[`${this.initIndex}_${i}`]) break;
 
-          if (i === page) this.scrollToPage(this.initIndex, i);
+          if (i === page)
+            this.restorePage(this.constructPage(this.initIndex, i));
         }
       }
     );
@@ -224,18 +236,12 @@ class Read extends Component<Props, State> {
         const rawPage = elem.getAttribute("data-page");
 
         // check if null
-        // TODO check if the page is jumping too far
         if (rawIndex !== null && rawPage !== null) {
           const page = Number(rawPage);
           const index = Number(rawIndex);
           const chapter = this.chapters[index];
 
-          const pageObj = {
-            title: chapter.title,
-            index: index,
-            page: page,
-            total: this.state.urls.find((v) => v.index === index)!.urls.length,
-          };
+          const pageObj = this.constructPage(index, page);
 
           if (!this.state.currentPage)
             return this.setState({ currentPage: pageObj }, () =>
@@ -447,7 +453,7 @@ class Read extends Component<Props, State> {
           showPageOffset={!this.state.isVertical}
           isPageOffset={this.state.isPageOffset}
           togglePageOffset={this.togglePageOffset.bind(this)}
-          scrollToPage={this.scrollToPage.bind(this)}
+          restorePage={this.restorePage.bind(this)}
           scale={this.state.scale}
           zoomTo={this.zoomTo.bind(this)}
         />

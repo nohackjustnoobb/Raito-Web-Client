@@ -4,9 +4,8 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
-
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import user from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -38,34 +37,24 @@ class ChangePassword extends Component<
   render(): ReactNode {
     return (
       <div className="changePassword">
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("oldPassword")}
-          variant="outlined"
-          type="password"
+        <Input
           fullWidth
-          autoComplete="current-password"
           value={this.state.oldPassword}
-          onChange={(event) =>
-            this.setState({ oldPassword: event.target.value })
-          }
-        />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("newPassword")}
-          variant="outlined"
+          onChange={(v) => this.setState({ oldPassword: v })}
+          placeholder={this.props.t("oldPassword")}
           type="password"
+          autoComplete="current-password"
+        />
+        <Input
           fullWidth
-          autoComplete="new-password"
           value={this.state.newPassword}
+          onChange={(v) => this.setState({ newPassword: v })}
+          placeholder={this.props.t("newPassword")}
+          type="password"
+          autoComplete="new-password"
           onKeyDown={(event) => {
             if (event.key === "Enter") this.submit();
           }}
-          onChange={(event) =>
-            this.setState({ newPassword: event.target.value })
-          }
         />
         <span>
           <Button outlined warning fullWidth onClick={() => this.props.close()}>

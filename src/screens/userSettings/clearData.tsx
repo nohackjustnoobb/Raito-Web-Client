@@ -4,9 +4,10 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
+import { mdiFormTextboxPassword } from "@mdi/js";
 
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import user from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -37,19 +38,17 @@ class ClearData extends Component<
   render(): ReactNode {
     return (
       <div className="clearData">
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("password")}
-          variant="outlined"
-          type="password"
+        <Input
           fullWidth
-          autoComplete="current-password"
           value={this.state.password}
+          onChange={(v) => this.setState({ password: v })}
+          placeholder={this.props.t("oldPassword")}
+          leftIcon={mdiFormTextboxPassword}
+          type="password"
+          autoComplete="current-password"
           onKeyDown={(event) => {
             if (event.key === "Enter") this.submit();
           }}
-          onChange={(event) => this.setState({ password: event.target.value })}
         />
         <span>
           <Button fullWidth onClick={() => this.props.close()}>

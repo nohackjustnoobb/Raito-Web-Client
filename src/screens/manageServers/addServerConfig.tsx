@@ -4,9 +4,10 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { TextField } from "@mui/material";
+import { mdiKey, mdiServer } from "@mdi/js";
 
 import Button from "../../components/button/button";
+import Input from "../../components/input/input";
 import serversManager from "../../managers/serversManager";
 import settingsManager from "../../managers/settingsManager";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
@@ -37,23 +38,26 @@ class AddServerConfig extends Component<
   render(): ReactNode {
     return (
       <div className="addServerConfig">
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("serverAddress")}
-          variant="outlined"
+        <Input
           fullWidth
           value={this.state.address}
-          onChange={(event) => this.setState({ address: event.target.value })}
+          onChange={(v) => this.setState({ address: v })}
+          placeholder={this.props.t("serverAddress")}
+          leftIcon={mdiServer}
+          type="password"
+          autoComplete="new-password"
         />
-        <TextField
-          size="small"
-          id="outlined-basic"
-          label={this.props.t("accessKeyIfExists")}
-          variant="outlined"
+        <Input
           fullWidth
           value={this.state.accessKey}
-          onChange={(event) => this.setState({ accessKey: event.target.value })}
+          onChange={(v) => this.setState({ accessKey: v })}
+          placeholder={this.props.t("accessKeyIfExists")}
+          leftIcon={mdiKey}
+          type="password"
+          autoComplete="new-password"
+          onKeyDown={(event) => {
+            if (event.key === "Enter") this.submit();
+          }}
         />
         <span>
           <Button outlined warning fullWidth onClick={() => this.props.close()}>

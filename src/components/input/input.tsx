@@ -36,7 +36,7 @@ const Input: FunctionComponent<InputProps> = ({
     <span className={classList.join(" ")}>
       {leftIcon && !useTextarea && (
         <span>
-          <Icon path={leftIcon} size={1} />
+          <Icon path={leftIcon} size={1} color="#999999" />
         </span>
       )}
       {useTextarea ? (
@@ -50,7 +50,7 @@ const Input: FunctionComponent<InputProps> = ({
       )}
       {!hideClear && !useTextarea && (
         <span className="clear" onClick={() => onChange("")}>
-          <Icon path={mdiClose} size={1} />
+          <Icon path={mdiClose} size={1} color="#999999" />
         </span>
       )}
     </span>

@@ -9,6 +9,7 @@ import Icon from "@mdi/react";
 
 import Button from "../../components/button/button";
 import Checkbox from "../../components/checkbox/checkbox";
+import Select from "../../components/select/select";
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
 import driversManager from "../../managers/driversManager";
@@ -90,39 +91,34 @@ class Settings extends React.Component<Props> {
 
               <div className="options">
                 <span>{this.props.t("language")}: </span>
-                <select
+                <Select
                   value={this.props.i18n.language}
-                  onChange={(event) => {
-                    for (const [key, value] of Object.entries(lngName)) {
-                      if (value === event.target.value) {
-                        localStorage.setItem("lng", key);
-                        this.props.i18n.changeLanguage(key);
-                      }
-                    }
+                  onChange={(v) => {
+                    localStorage.setItem("lng", v as string);
+                    this.props.i18n.changeLanguage(v as string);
+                    this.forceUpdate();
                   }}
-                >
-                  {this.props.i18n.languages.map((v) => (
-                    <option key={v}>{lngName[v]}</option>
-                  ))}
-                </select>
+                  options={Object.entries(lngName).map((item) => ({
+                    value: item[0],
+                    text: item[1],
+                  }))}
+                />
               </div>
-
               <div className="options">
                 <span>{this.props.t("defaultSource")}: </span>
-                <select
+                <Select
                   value={
                     settingsManager.defaultDriver ??
                     driversManager.available[0].identifier
                   }
-                  onChange={(event) => {
-                    settingsManager.defaultDriver = event.target.value;
+                  onChange={(v) => {
+                    settingsManager.defaultDriver = v as string;
                     settingsManager.update();
                   }}
-                >
-                  {driversManager.available?.map((v) => (
-                    <option key={v.identifier}>{v.identifier}</option>
-                  ))}
-                </select>
+                  options={driversManager.available.map((v) => ({
+                    value: v.identifier,
+                  }))}
+                />
               </div>
 
               <div className="options">
@@ -172,37 +168,29 @@ class Settings extends React.Component<Props> {
 
               <div className="options">
                 <span>{this.props.t("darkTheme")}: </span>
-                <select
-                  value={settingsManager.themeModel}
-                  onChange={(event) => {
-                    settingsManager.themeModel = Number(event.target.value);
+                <Select
+                  value={settingsManager.themeMode}
+                  onChange={(v) => {
+                    settingsManager.themeMode = v as number;
                     settingsManager.update();
                     window.updateRoot();
                   }}
-                >
-                  <option value={0}>{this.props.t("auto")}</option>
-                  <option value={1}>{this.props.t("dark")}</option>
-                  <option value={2}>{this.props.t("light")}</option>
-                </select>
+                  options={["auto", "dark", "light"].map((v, i) => ({
+                    value: i,
+                    text: this.props.t(v),
+                  }))}
+                />
               </div>
-
               <div className="options">
                 <span>{this.props.t("numberOfRecordPreviews")}: </span>
-                <select
+                <Select
                   value={settingsManager.numberOfRecordPreviews}
-                  onChange={(event) => {
-                    settingsManager.numberOfRecordPreviews = Number(
-                      event.target.value
-                    );
+                  onChange={(v) => {
+                    settingsManager.numberOfRecordPreviews = v as number;
                     settingsManager.update();
                   }}
-                >
-                  {Array.from(Array(11), (_, i) => (
-                    <option value={i * 5} key={i}>
-                      {i * 5}
-                    </option>
-                  ))}
-                </select>
+                  options={Array.from(Array(11), (_, i) => ({ value: i * 5 }))}
+                />
               </div>
             </div>
 
@@ -210,19 +198,18 @@ class Settings extends React.Component<Props> {
             <div className="subSettings">
               <div className="options">
                 <span>{this.props.t("mangaLayout")}: </span>
-                <select
+                <Select
                   value={settingsManager.displayMode}
-                  onChange={(event) => {
-                    settingsManager.displayMode = Number(event.target.value);
+                  onChange={(v) => {
+                    settingsManager.displayMode = v as number;
                     settingsManager.update();
                   }}
-                >
-                  <option value={0}>{this.props.t("auto")}</option>
-                  <option value={1}>{this.props.t("singlePage")}</option>
-                  <option value={2}>{this.props.t("dualPage")}</option>
-                </select>
+                  options={["auto", "singlePage", "dualPage"].map((v, i) => ({
+                    value: i,
+                    text: this.props.t(v),
+                  }))}
+                />
               </div>
-
               <div className="options">
                 <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
                 <Checkbox
@@ -233,7 +220,6 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
-
               <div className="options">
                 <span>{this.props.t("snapToPage")}: </span>
                 <Checkbox
@@ -245,30 +231,24 @@ class Settings extends React.Component<Props> {
                 />
               </div>
             </div>
-
             <h3>{this.props.t("imageSettings")}</h3>
             <div className="subSettings">
               <div className="options">
                 <span>{this.props.t("imageCacheMaxAge")}: </span>
-                <select
+                <Select
                   value={settingsManager.imageCacheMaxAge}
-                  onChange={(event) => {
-                    settingsManager.imageCacheMaxAge = Number(
-                      event.target.value
-                    );
+                  onChange={(v) => {
+                    settingsManager.imageCacheMaxAge = v as number;
                     settingsManager.update();
                   }}
-                >
-                  {Array.from(Array(8), (_, i) => (
-                    <option value={i === 7 ? 31536000 : i * 3600} key={i}>
-                      {this.props.t(
-                        i === 0 ? "noCache" : i === 7 ? "neverExpired" : `${i}h`
-                      )}
-                    </option>
-                  ))}
-                </select>
+                  options={Array.from(Array(8), (_, i) => ({
+                    value: i === 7 ? 31536000 : i * 3600,
+                    text: this.props.t(
+                      i === 0 ? "noCache" : i === 7 ? "neverExpired" : `${i}h`
+                    ),
+                  }))}
+                />
               </div>
-
               <div className="options">
                 <span>{this.props.t("useProxy")}: </span>
                 <Checkbox

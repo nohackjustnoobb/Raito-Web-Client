@@ -3,16 +3,21 @@
   all: initial;
   font: inherit;
   color: inherit;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   display: flex;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  transition: all 250ms;
 
   &:hover {
     opacity: 0.8;
+    transform: scale(1.125);
   }
 
   &:active {
     opacity: 0.6;
+    transform: scale(1.25);
   }
 }

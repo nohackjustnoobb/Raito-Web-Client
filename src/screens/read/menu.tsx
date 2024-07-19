@@ -7,9 +7,9 @@ import { CSSTransition } from "react-transition-group";
 
 import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Slider } from "@mui/material";
 
 import Checkbox from "../../components/checkbox/checkbox";
+import Slider from "../../components/slider/slider";
 import { translate } from "../../utils/utils";
 
 interface Props extends WithTranslation {
@@ -114,10 +114,7 @@ class Menu extends Component<Props, State> {
                       value={this.state.page + 1}
                       max={this.props.maxPage!}
                       min={1}
-                      step={1}
-                      onChange={(_, value) =>
-                        this.props.scrollToPage(value as number)
-                      }
+                      onChange={(v) => this.props.scrollToPage(v - 1)}
                     />
                   </div>
                 </>

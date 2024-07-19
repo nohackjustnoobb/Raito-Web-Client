@@ -6,8 +6,6 @@ import { Component, ReactNode } from "react";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-
 import App from "./App";
 import Loader from "./components/loader/loader";
 import Notification, {
@@ -103,34 +101,21 @@ class Main extends Component<{}, { dark: boolean }> {
 
   render(): ReactNode {
     const useDarkMode =
-      settingsManager.themeModel === ThemeMode.Auto
+      settingsManager.themeMode === ThemeMode.Auto
         ? this.state.dark
-        : settingsManager.themeModel === ThemeMode.Dark;
+        : settingsManager.themeMode === ThemeMode.Dark;
 
     document.documentElement.setAttribute(
       "data-theme",
       useDarkMode ? "dark" : "light"
     );
 
-    const theme = createTheme({
-      palette: {
-        primary: {
-          main: getCssVariable("--color-primary") || "#fff",
-        },
-        secondary: {
-          main: getCssVariable("--color-sub-background") || "#fff",
-        },
-      },
-    });
-
     return (
       <ErrorBoundary fallbackRender={this.fallbackRender.bind(this)}>
-        <ThemeProvider theme={theme}>
-          <Loader />
-          <Notification />
-          <StackView />
-          <App />
-        </ThemeProvider>
+        <Loader />
+        <Notification />
+        <StackView />
+        <App />
       </ErrorBoundary>
     );
   }

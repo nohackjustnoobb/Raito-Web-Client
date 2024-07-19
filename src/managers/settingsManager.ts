@@ -25,7 +25,7 @@ class SettingsManager {
   imageCacheMaxAge: number = 7200;
 
   // appearance settings
-  themeModel: ThemeMode = ThemeMode.Auto;
+  themeMode: ThemeMode = ThemeMode.Auto;
   themes: Theme[] = [];
   formatChapterTitle: boolean = true;
   currentTheme: string | null = null;
@@ -85,7 +85,7 @@ class SettingsManager {
       if (displayModeString) this.displayMode = JSON.parse(displayModeString);
 
       const themeString = localStorage.getItem("themeModel");
-      if (themeString) this.themeModel = JSON.parse(themeString);
+      if (themeString) this.themeMode = JSON.parse(themeString);
       this.currentTheme = localStorage.getItem("currentTheme");
 
       const numberOfRecordPreviewsString = localStorage.getItem(
@@ -114,7 +114,7 @@ class SettingsManager {
       localStorage.setItem("currentTheme", this.currentTheme);
     else localStorage.removeItem("currentTheme");
     localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
-    localStorage.setItem("themeModel", JSON.stringify(this.themeModel));
+    localStorage.setItem("themeModel", JSON.stringify(this.themeMode));
     localStorage.setItem(
       "numberOfRecordPreviews",
       this.numberOfRecordPreviews.toString()

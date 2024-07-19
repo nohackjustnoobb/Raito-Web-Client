@@ -17,6 +17,7 @@
   text-overflow: ellipsis;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  transition: all 250ms;
 
   @mixin outlined($color) {
     border: $color 1px solid;
@@ -48,9 +49,11 @@
 
   &:not(.disabled):hover {
     opacity: 0.8;
+    transform: scale(1.125);
   }
 
   &:not(.disabled):active {
     opacity: 0.6;
+    transform: scale(1.25);
   }
 }

@@ -6,6 +6,7 @@ import { withTranslation, WithTranslation } from "react-i18next";
 
 import Button from "../../components/button/button";
 import Checkbox from "../../components/checkbox/checkbox";
+import Select from "../../components/select/select";
 import { DownloadOptions, DownloadTypes } from "../../models/downloadTask";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
@@ -24,18 +25,20 @@ class SelectDownloadTypes extends Component<Props> {
         )}
         <div className="options">
           <span>{this.props.t("downloadType")}: </span>
-          <select
+          <Select
             value={this.state.type}
-            onChange={(event) => {
-              this.setState({ type: Number(event.target.value) });
+            onChange={(v) => {
+              this.setState({ type: v });
             }}
-          >
-            <option value={DownloadTypes.Pdf}>PDF</option>
-            <option value={DownloadTypes.Zip}>ZIP</option>
-            <option value={DownloadTypes.Panels}>
-              Panels{this.props.t("compatible")}
-            </option>
-          </select>
+            options={[
+              { value: DownloadTypes.Pdf, text: "PDF" },
+              { value: DownloadTypes.Zip, text: "ZIP" },
+              {
+                value: DownloadTypes.Panels,
+                text: `Panels${this.props.t("compatible")}`,
+              },
+            ]}
+          />
         </div>
         {this.state.type === DownloadTypes.Pdf && (
           <div className="options">

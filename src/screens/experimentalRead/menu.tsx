@@ -7,9 +7,9 @@ import { CSSTransition } from "react-transition-group";
 
 import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Slider } from "@mui/material";
 
 import Checkbox from "../../components/checkbox/checkbox";
+import Slider from "../../components/slider/slider";
 import { translate } from "../../utils/utils";
 import { Page } from "./read";
 
@@ -86,8 +86,7 @@ const LowerMenu: FunctionComponent<LowerMenuProps> = ({
                 value={page + 1}
                 max={total}
                 min={1}
-                step={1}
-                onChange={(_, value) => scrollToPage(value as number)}
+                onChange={(v) => scrollToPage(v - 1)}
               />
             </div>
           </>

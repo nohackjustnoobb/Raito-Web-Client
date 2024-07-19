@@ -14,14 +14,6 @@ body {
   color: var(--color-text);
 }
 
-.MuiFormLabel-root:not(.Mui-focused) {
-  color: var(--color-chapters-text);
-}
-
-:not(.Mui-focused) > .MuiOutlinedInput-notchedOutline {
-  border-color: var(--color-chapters-text);
-}
-
 #root {
   position: fixed;
 }

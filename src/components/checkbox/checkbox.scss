@@ -9,6 +9,7 @@
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   transition: all 250ms;
+  -webkit-tap-highlight-color: transparent !important;
 
   &:hover {
     opacity: 0.8;

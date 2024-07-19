@@ -11,10 +11,12 @@
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   border-radius: 0.5rem;
+  cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   user-select: none;
+  -webkit-tap-highlight-color: transparent !important;
   transition: all 250ms;
 
   @mixin outlined($color) {

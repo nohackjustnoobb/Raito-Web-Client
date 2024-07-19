@@ -1,10 +1,8 @@
 {
   "name": "raito-web-client",
-  "version": "1.0.0-beta.66",
+  "version": "1.0.0-beta.67",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
     "@mdi/js": "^7.2.96",
     "@mdi/react": "^1.6.1",
     "dexie": "^3.2.4",

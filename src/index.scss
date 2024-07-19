@@ -9,7 +9,7 @@ body {
   width: 100vw;
   overflow: hidden;
   scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent !important;
   background-color: var(--color-background);
   color: var(--color-text);
 }

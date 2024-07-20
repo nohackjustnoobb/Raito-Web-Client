@@ -88,6 +88,8 @@ class Read extends Component<Props, State> {
   previousPage: Page | null = null;
   // prediction for the image ratio
   predictedRatio?: number;
+  // determines if it have already restored the requested page
+  isRestored: boolean = false;
 
   state: State = {
     // a array of the images with its metadata
@@ -193,13 +195,17 @@ class Read extends Component<Props, State> {
         },
       }),
       () => {
-        // jump to the requested page
+        if (this.isRestored) return;
+
+        // restore the requested page
         const page = this.props.page || 0;
         for (let i = 0; i <= page; i++) {
           if (!this.state.imagesMeta[`${this.initIndex}_${i}`]) break;
 
-          if (i === page)
+          if (i === page) {
             this.restorePage(this.constructPage(this.initIndex, i));
+            this.isRestored = true;
+          }
         }
       }
     );

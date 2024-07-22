@@ -21,8 +21,6 @@ class ServersManager {
     checkAccessibility: boolean = true,
     isDefaultServer: boolean = false
   ): Promise<boolean> {
-    if (!Server.verifyAddress(address)) return false;
-
     const server = new Server(address, accessKey, false, isDefaultServer);
     const result = await server.initialize();
 

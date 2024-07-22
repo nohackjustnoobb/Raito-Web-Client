@@ -37,20 +37,6 @@ class Server {
   }
 
   /**
-   * Verify the server address and also check if it exists.
-   *
-   * @static
-   * @param address
-   * @returns
-   */
-  static verifyAddress(address: string): boolean {
-    return Boolean(
-      address.match(/^https?:\/\/.*\/$/) &&
-        !serversManager.servers.find((server) => server.address === address)
-    );
-  }
-
-  /**
    * Initialize the server by getting the server info.
    *
    * @async

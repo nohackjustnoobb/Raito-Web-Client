@@ -353,8 +353,7 @@ class Read extends Component<Props, State> {
 
   zoomTo(scale: number, offset?: { x: number; y: number }) {
     // limit the scale
-    if (scale > 2) scale = 2;
-    if (scale < 1) scale = 1;
+    scale = Math.min(2, Math.max(scale, 1));
 
     const originalScale = this.state.scale;
     const changedScale = scale / originalScale;
@@ -384,53 +383,57 @@ class Read extends Component<Props, State> {
         this.scrollableRef.scrollHeight - this.scrollableRef.clientHeight
       );
 
-      this.scrollableRef.scrollTop = newTop;
-      this.scrollableRef.scrollLeft = newLeft;
+      this.scrollableRef.scrollTo({
+        top: newTop,
+        left: newLeft,
+        behavior: "instant" as ScrollBehavior,
+      });
     });
   }
 
-  offset: Position | null = null;
   prevDiff: number = -1;
 
   onTouchStart(ev: TouchEvent) {
-    if (!settingsManager.experimentalUseZoomablePlugin) return;
+    if (
+      !settingsManager.experimentalUseZoomablePlugin ||
+      ev.touches.length !== 2
+    )
+      return;
 
-    if (ev.touches.length === 2) {
-      this.offset = {
-        x: (ev.touches[0].clientX + ev.touches[1].clientX) / 2,
-        y: (ev.touches[0].clientY + ev.touches[1].clientY) / 2,
-      };
-      this.prevDiff = diff(
-        { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
-        { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
-      );
-    }
+    this.prevDiff = diff(
+      { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
+      { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
+    );
   }
 
   onTouchMove(ev: TouchEvent) {
-    if (ev.touches.length === 2 && this.offset) {
-      ev.preventDefault();
+    if (ev.touches.length !== 2) return;
 
-      const currDiff = diff(
-        { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
-        { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
-      );
+    ev.preventDefault();
 
-      const screenSize = diff(
-        { x: 0, y: 0 },
-        { x: window.innerWidth, y: window.innerHeight }
-      );
-      const scaledDiff = ((currDiff - this.prevDiff) / screenSize) * 5;
+    const currDiff = diff(
+      { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
+      { x: ev.touches[1].clientX, y: ev.touches[1].clientY }
+    );
 
-      this.zoomTo(this.state.scale + scaledDiff, this.offset);
+    const screenSize = diff(
+      { x: 0, y: 0 },
+      { x: window.innerWidth, y: window.innerHeight }
+    );
+    const scaledDiff = ((currDiff - this.prevDiff) / screenSize) * 5;
 
-      this.prevDiff = currDiff;
-    }
+    const offset = {
+      x: (ev.touches[0].clientX + ev.touches[1].clientX) / 2,
+      y: (ev.touches[0].clientY + ev.touches[1].clientY) / 2,
+    };
+
+    this.zoomTo(this.state.scale + scaledDiff, offset);
+
+    this.prevDiff = currDiff;
   }
 
   onTouchEnd() {
     this.prevDiff = -1;
-    this.offset = null;
   }
 
   render() {

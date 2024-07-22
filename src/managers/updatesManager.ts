@@ -1,6 +1,6 @@
 import db from "../models/db";
 import { dispatchEvent, RaitoEvents } from "../models/events";
-import { DetailsManga } from "../models/manga";
+import { Manga } from "../models/manga";
 import user from "../models/user";
 import { sleep } from "../utils/utils";
 import syncManager from "./syncManager";
@@ -40,10 +40,6 @@ class UpdatesManager {
     // count items that already updated
     let counter: number = 0;
 
-    // filter out items that are ended
-    const notEnd = collections.filter((v) => !v.isEnded);
-    const end = collections.filter((v) => v.isEnded);
-
     // function for updating the state
     const updateState = () => {
       this.state.currentState = `${counter} / ${collections.length}`;
@@ -51,17 +47,15 @@ class UpdatesManager {
     };
     updateState();
 
-    for (let items of [notEnd, end]) {
-      await DetailsManga.getBatch(
-        items.map((item) => ({ driver: item.driver, id: item.id })),
-        // eslint-disable-next-line no-loop-func
-        (chunkSize: number) => {
-          // update the state
-          counter += chunkSize;
-          updateState();
-        }
-      );
-    }
+    await Manga.getBatch(
+      collections.map((item) => ({ driver: item.driver, id: item.id })),
+      // eslint-disable-next-line no-loop-func
+      (chunkSize: number) => {
+        // update the state
+        counter += chunkSize;
+        updateState();
+      }
+    );
 
     this.state.lastUpdate = Date.now();
     this.state.isUpdating = false;

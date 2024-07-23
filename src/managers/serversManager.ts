@@ -8,6 +8,19 @@ class ServersManager {
   isLoading = false;
   servers: Array<Server> = [];
 
+  async initialize() {
+    // initialize the default source server
+    if (process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS !== undefined)
+      await this.add(
+        process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS,
+        null,
+        false,
+        true
+      );
+
+    this.checkDown();
+  }
+
   /**
    * Add a source server to the application
    *
@@ -21,6 +34,8 @@ class ServersManager {
     checkAccessibility: boolean = true,
     isDefaultServer: boolean = false
   ): Promise<boolean> {
+    if (!(isDefaultServer || this.verifyAddress(address))) return false;
+
     const server = new Server(address, accessKey, false, isDefaultServer);
     const result = await server.initialize();
 
@@ -29,17 +44,11 @@ class ServersManager {
     return result;
   }
 
-  async initialize() {
-    // initialize the default source server
-    if (process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS !== undefined)
-      await this.add(
-        process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS,
-        null,
-        false,
-        true
-      );
-
-    this.checkDown();
+  verifyAddress(address: string): boolean {
+    return Boolean(
+      address.match(/^https?:\/\/.*\/$/) &&
+        !this.servers.find((server) => server.address === address)
+    );
   }
 
   // check if any things is down every 5 seconds

@@ -143,24 +143,26 @@ class Details extends Component<Props, State> {
           <TopBar
             close={this.props.close}
             rightComponent={
-              <div
-                className="share"
-                onClick={async () => {
-                  // share it
-                  try {
-                    await navigator.share({
-                      url: `${manga!.driver.server!.address}share?driver=${
-                        manga!.driver.identifier
-                      }&id=${manga!.id}&proxy=${
-                        settingsManager.useProxy ? "1" : "0"
-                      }`,
-                      title: translate(manga!.title),
-                    });
-                  } catch {}
-                }}
-              >
-                <Icon path={mdiExportVariant} size={1} />
-              </div>
+              (!manga?.driver.server?.accessKey || undefined) && (
+                <div
+                  className="share"
+                  onClick={async () => {
+                    // share it
+                    try {
+                      await navigator.share({
+                        url: `${manga!.driver.server!.address}share?driver=${
+                          manga!.driver.identifier
+                        }&id=${manga!.id}&proxy=${
+                          settingsManager.useProxy ? "1" : "0"
+                        }`,
+                        title: translate(manga!.title),
+                      });
+                    } catch {}
+                  }}
+                >
+                  <Icon path={mdiExportVariant} size={1} />
+                </div>
+              )
             }
           />
           <div className="scrollable">

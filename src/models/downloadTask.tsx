@@ -8,30 +8,87 @@ import { retryFetch, sleep, translate } from "../utils/utils";
 import { dispatchEvent, RaitoEvents } from "./events";
 import { Chapter, DetailsManga } from "./manga";
 
+/**
+ * A list of available download types.
+ *
+ * @enum
+ */
 enum DownloadTypes {
-  InApp,
   Pdf,
   Zip,
   Panels,
 }
 
+/**
+ * A object describing the progress of the download.
+ *
+ * @interface
+ */
 interface ProgressItems {
+  /**
+   * The name of the chapter.
+   */
   name: string;
+  /**
+   * The counter of the number of pages downloaded.
+   */
   counter?: number;
+  /**
+   * The total pages of this chapter.
+   */
   totelPage?: number;
+  /**
+   * The text that overrides the page counter.
+   */
   text?: string;
 }
 
+/**
+ * A object for describing the options of the download.
+ *
+ * @interface
+ */
 interface DownloadOptions {
+  /**
+   * Only apply to DownloadTypes.Pdf
+   *
+   * If true, all chapters will be grouped into a single file.
+   */
   singleFile?: boolean;
 }
 
+/**
+ * A class for a download task.
+ *
+ * @class
+ */
 class DownloadTask {
+  /**
+   * A array of progress for each chapter.
+   */
   progress: { [id: string]: ProgressItems } = {};
+  /**
+   * Indicating if it has started.
+   */
   started: boolean = false;
+  /**
+   * Indicating if it has done.
+   */
   done: boolean = false;
+  /**
+   * Stores the result of the download.
+   */
   result: { [title: string]: Blob } = {};
 
+  /**
+   * Creates an instance of DownloadTask.
+   *
+   * @constructor
+   * @param manga The manga that the chapters belong to. (required)
+   * @param content A array of chapters to download. (required)
+   * @param type The download type. (required)
+   * @param options The options for the download. (optional)
+   */
   constructor(
     public manga: DetailsManga,
     public content: Array<Chapter>,
@@ -41,6 +98,9 @@ class DownloadTask {
     this.resetProgress();
   }
 
+  /**
+   * Reset the progress.
+   */
   resetProgress() {
     this.started = false;
     for (const chapter of this.content)
@@ -49,6 +109,13 @@ class DownloadTask {
       };
   }
 
+  /**
+   * Load a image from the given url.
+   *
+   * @async
+   * @param url The url of the image located. (required)
+   * @returns HTMLImageElement
+   */
   async loadImage(url: string) {
     const img = new Image();
 
@@ -67,6 +134,11 @@ class DownloadTask {
     return img;
   }
 
+  /**
+   * Download the chapters as PDF.
+   *
+   * @async
+   */
   async exportAsPDF() {
     try {
       const generatePDF = async (
@@ -202,6 +274,13 @@ class DownloadTask {
     } catch {}
   }
 
+  /**
+   * Download the chapters as compressed file type.
+   *
+   * @async
+   * @param filterAndAddFunction
+   * @returns
+   */
   async exportAsCompressed(
     filterAndAddFunction: (
       zip: JSZip,
@@ -248,6 +327,11 @@ class DownloadTask {
     } catch {}
   }
 
+  /**
+   * Download the chapters as ZIP.
+   *
+   * @async
+   */
   async exportAsZip() {
     const filterAndAdd = async (
       zip: JSZip,
@@ -312,6 +396,11 @@ class DownloadTask {
     await this.exportAsCompressed(filterAndAdd);
   }
 
+  /**
+   * Download the chapters as panels competable types.
+   *
+   * @async
+   */
   async exportAsPanels() {
     const filterAndAdd = async (
       zip: JSZip,
@@ -381,6 +470,11 @@ class DownloadTask {
     await this.exportAsCompressed(filterAndAdd);
   }
 
+  /**
+   * Start the download.
+   *
+   * @async
+   */
   async start(): Promise<void> {
     this.started = true;
     dispatchEvent(RaitoEvents.downloadChanged);
@@ -405,10 +499,16 @@ class DownloadTask {
     }
   }
 
+  /**
+   * Save the result.
+   */
   save() {
     for (const [key, value] of Object.entries(this.result)) saveAs(value, key);
   }
 
+  /**
+   * Push the progess of this download to the current window.
+   */
   showProgress() {
     window.stack.push(<DownloadProgress task={this} />);
   }

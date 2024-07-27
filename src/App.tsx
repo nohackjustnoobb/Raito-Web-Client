@@ -167,7 +167,6 @@ class App extends Component<
             i18n={this.props.i18n}
             tReady={this.props.tReady}
           />
-
           <div id="actions">
             <div onClick={() => window.stack.push(<Library />)}>
               <Icon path={mdiLibraryShelves} size={1.25} />

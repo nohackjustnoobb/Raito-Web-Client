@@ -11,6 +11,11 @@ enum DisplayMode {
   TwoPages,
 }
 
+enum TransitionMode {
+  Paginated,
+  Continuous,
+}
+
 enum ThemeMode {
   Auto,
   Dark,
@@ -33,6 +38,7 @@ class SettingsManager {
 
   // reader settings
   displayMode: DisplayMode = DisplayMode.Auto;
+  transitionMode: TransitionMode = TransitionMode.Continuous;
   overscrollToLoadPreviousChapters: boolean = true;
   snapToPage: boolean = true;
 
@@ -46,109 +52,52 @@ class SettingsManager {
 
   // experimental functions
   experimentalUseZoomablePlugin: boolean = false;
-  experimentalRead: boolean = false;
-
-  saveBool(key: string, value: boolean) {
-    localStorage.setItem(key, value ? "1" : "0");
-  }
-
-  loadBool(key: string): boolean | null {
-    const itemString = localStorage.getItem(key);
-    if (!itemString) return null;
-
-    return itemString === "1";
-  }
 
   constructor(load: boolean = true) {
-    if (load) {
-      // getting from local storage and setting default values
-      this.defaultDriver = localStorage.getItem("defaultDriver");
+    if (!load) return;
 
-      // boolean
-      this.forceTranslate =
-        this.loadBool("forceTranslate") ?? this.forceTranslate;
-      this.debugMode = this.loadBool("debugMode") ?? this.debugMode;
-      this.ignoreError = this.loadBool("ignoreError") ?? this.ignoreError;
-      this.useProxy = this.loadBool("useProxy") ?? this.useProxy;
-      this.useBase64 = this.loadBool("useBase64") ?? this.useBase64;
-      this.showDeveloperSettings =
-        this.loadBool("showDeveloperSettings") ?? this.showDeveloperSettings;
-      this.overscrollToLoadPreviousChapters =
-        this.loadBool("overscrollToLoadPreviousChapters") ??
-        this.overscrollToLoadPreviousChapters;
-      this.formatChapterTitle =
-        this.loadBool("formatChapterTitle") ?? this.formatChapterTitle;
-      this.snapToPage = this.loadBool("snapToPage") ?? this.snapToPage;
+    for (const key of Object.keys(this)) {
+      const stringValue = localStorage.getItem(key);
+      if (stringValue === null) continue;
 
-      // special cases
-      const displayModeString = localStorage.getItem("displayMode");
-      if (displayModeString) this.displayMode = JSON.parse(displayModeString);
-
-      const themeString = localStorage.getItem("themeModel");
-      if (themeString) this.themeMode = JSON.parse(themeString);
-      this.currentTheme = localStorage.getItem("currentTheme");
-
-      const numberOfRecordPreviewsString = localStorage.getItem(
-        "numberOfRecordPreviews"
-      );
-      if (numberOfRecordPreviewsString)
-        this.numberOfRecordPreviews = Number(numberOfRecordPreviewsString);
-
-      const imageCacheMaxAgeString = localStorage.getItem("imageCacheMaxAge");
-      if (imageCacheMaxAgeString)
-        this.imageCacheMaxAge = Number(imageCacheMaxAgeString);
-
-      // experimental functions
-      this.experimentalUseZoomablePlugin =
-        this.loadBool("experimentalUseZoomablePlugin") ??
-        this.experimentalUseZoomablePlugin;
-      this.experimentalRead =
-        this.loadBool("experimentalRead") ?? this.experimentalRead;
+      switch (typeof (this as any)[key]) {
+        case "boolean":
+          (this as any)[key] = stringValue === "1";
+          break;
+        case "string":
+          (this as any)[key] = stringValue;
+          break;
+        case "number":
+          (this as any)[key] = Number(stringValue);
+          break;
+      }
     }
   }
 
   async save() {
-    if (this.defaultDriver)
-      localStorage.setItem("defaultDriver", this.defaultDriver);
-    if (this.currentTheme)
-      localStorage.setItem("currentTheme", this.currentTheme);
-    else localStorage.removeItem("currentTheme");
-    localStorage.setItem("displayMode", JSON.stringify(this.displayMode));
-    localStorage.setItem("themeModel", JSON.stringify(this.themeMode));
-    localStorage.setItem(
-      "numberOfRecordPreviews",
-      this.numberOfRecordPreviews.toString()
-    );
-    localStorage.setItem("imageCacheMaxAge", this.imageCacheMaxAge.toString());
+    for (const [key, value] of Object.entries(this)) {
+      if (value === null) continue;
 
-    // boolean
-    this.saveBool("forceTranslate", this.forceTranslate);
-    this.saveBool("debugMode", this.debugMode);
-    this.saveBool("ignoreError", this.ignoreError);
-    this.saveBool("useProxy", this.useProxy);
-    this.saveBool("useBase64", this.useBase64);
-    this.saveBool("showDeveloperSettings", this.showDeveloperSettings);
-    this.saveBool(
-      "overscrollToLoadPreviousChapters",
-      this.overscrollToLoadPreviousChapters
-    );
-    this.saveBool("formatChapterTitle", this.formatChapterTitle);
-    this.saveBool("snapToPage", this.snapToPage);
-
-    // experimental functions
-    this.saveBool(
-      "experimentalUseZoomablePlugin",
-      this.experimentalUseZoomablePlugin
-    );
-    this.saveBool("experimentalRead", this.experimentalRead);
+      switch (typeof value) {
+        case "string":
+          localStorage.setItem(key, value);
+          break;
+        case "number":
+          localStorage.setItem(key, value.toString());
+          break;
+        case "boolean":
+          localStorage.setItem(key, value ? "1" : "0");
+          break;
+      }
+    }
   }
 
   reset() {
     settingsManager = new SettingsManager(false);
     settingsManager.initialize();
 
-    // update the settings
-    settingsManager.update();
+    // reload the page
+    window.location.reload();
   }
 
   update() {
@@ -243,4 +192,4 @@ class SettingsManager {
 let settingsManager = new SettingsManager();
 
 export default settingsManager;
-export { DisplayMode, ThemeMode };
+export { DisplayMode, ThemeMode, TransitionMode };

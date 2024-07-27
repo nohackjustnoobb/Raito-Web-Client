@@ -4,6 +4,11 @@ import settingsManager from "../managers/settingsManager";
 import { errorHandler } from "../utils/utils";
 import user from "./user";
 
+/**
+ * A class that represents the server configuration.
+ *
+ * @class
+ */
 class Server {
   /**
    * Determine whether if the server is down.
@@ -21,7 +26,6 @@ class Server {
   /**
    * This should not be called directly
    *
-   * @private
    * @param address address to connect to server (required)
    * @param accessKey access key to connect to server (default: null)
    * @param isSyncServer boolean (default: false)
@@ -61,6 +65,11 @@ class Server {
     return result.ok;
   }
 
+  /**
+   * Remove this server from the app.
+   *
+   * @returns
+   */
   remove() {
     if (this.isDefaultServer || this.isSyncServer) return;
 
@@ -95,7 +104,8 @@ class Server {
    * @param headers The headers of te request. (default: {})
    * @param handleError Determine whether it should handled for the error. (default: false)
    * @param checkServerDown Determine whether it should check if the server down before sending the request. (default: true)
-   * @returns
+   *
+   * @returns The response.
    */
   async fetch(
     method: string,
@@ -152,6 +162,8 @@ class Server {
    * @param headers The headers of te request. (default: {})
    * @param handleError Determine whether it should handled for the error. (default: false)
    * @param checkServerDown Determine whether it should check if the server down before sending the request. (default: true)
+   *
+   * @returns The response.
    */
   get = async (
     action: string,
@@ -180,6 +192,8 @@ class Server {
    * @param headers The headers of te request. (default: {})
    * @param handleError Determine whether it should handled for the error. (default: false)
    * @param checkServerDown Determine whether it should check if the server down before sending the request. (default: true)
+   *
+   * @returns The response.
    */
   post = async (
     action: string,

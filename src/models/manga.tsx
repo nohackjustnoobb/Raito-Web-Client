@@ -4,14 +4,13 @@ import driversManager from "../managers/driversManager";
 import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import Details from "../screens/details/details";
-import ExperimentalRead from "../screens/experimentalRead/read";
-import Read from "../screens/read/read";
+import Reader from "../screens/reader/reader";
 import db, { Collection, Record } from "./db";
 import Driver from "./driver";
 import user from "./user";
 
 /**
- * A class for the base manga.
+ * The base class for manga.
  *
  */
 class Manga {
@@ -41,7 +40,7 @@ class Manga {
   thumbnail: string;
 
   /**
-   * Creates an instance of SimpleManga.
+   * Creates an instance of Manga.
    *
    * @constructor
    * @param data Object (required)
@@ -56,15 +55,14 @@ class Manga {
   }
 
   /**
-   * Get a list of manga at once.
+   * Update a list of manga at once. The result will directly written to the database.
    *
    * @static
    * @async
    * @param ids A array of manga id that wants to get. (required)
    * @param actionsAfterEachFetch A callback function that will be called after each request. (optional)
-   * @returns
    */
-  static async getBatch(
+  static async updateBatch(
     ids: Array<{ driver: string; id: string }>,
     actionsAfterEachFetch?: (chunkSize: number) => void
   ) {
@@ -118,10 +116,28 @@ class Manga {
   }
 
   /**
-   * Get the history of the manga if exists.
+   * Construct a Manga instance using the data from the local database.
+   *
+   * @static
+   * @param collection A collection instance. (required)
+   * @returns A manga instance.
+   */
+  static fromCollection(collection: Collection): Manga {
+    return new Manga({
+      driver: collection.driver,
+      id: collection.id,
+      title: collection.title,
+      latest: collection.latest,
+      isEnded: collection.isEnded,
+      thumbnail: collection.thumbnail,
+    });
+  }
+
+  /**
+   * Get the history of this manga if exists.
    *
    * @async
-   * @returns
+   * @returns The record or undefined if not exists.
    */
   async getHistory(): Promise<Record | undefined> {
     return await db.history.get([this.driver.identifier, this.id]);
@@ -140,27 +156,8 @@ class Manga {
   }
 
   /**
-   * Construct a SimpleManga instance using the data from the local database.
+   * Push the Details screen to the current window.
    *
-   * @static
-   * @param collection A collection instance. (required)
-   * @returns
-   */
-  static fromCollection(collection: Collection): Manga {
-    return new Manga({
-      driver: collection.driver,
-      id: collection.id,
-      title: collection.title,
-      latest: collection.latest,
-      isEnded: collection.isEnded,
-      thumbnail: collection.thumbnail,
-    });
-  }
-
-  /**
-   * Push the Details screen to the current UI.
-   *
-   * @returns
    */
   pushDetails() {
     if (this.driver.isDown)
@@ -174,7 +171,6 @@ class Manga {
    *
    * @async
    * @param sync Determine whether it should be sync to the server. (default: true)
-   * @returns
    */
   async add(sync: boolean = true) {
     if (user.token && syncManager.ok() && sync) {
@@ -233,10 +229,9 @@ class Manga {
   }
 
   /**
-   * Remove it from the collection.
+   * Remove this manga from the collection.
    *
    * @async
-   * @returns
    */
   async remove() {
     if (user.token && !syncManager.ok()) {
@@ -256,13 +251,13 @@ class Manga {
   }
 
   /**
-   * Construct a SimpleManga instance by directly fetching from the server.
+   * Construct a Manga instance by directly fetching from the server.
    *
    * @static
    * @async
    * @param driverID The ID of the driver. (required)
    * @param id  The ID of the manga. (required)
-   * @returns
+   * @returns A manga instance or false if failed.
    */
   static async get(
     driverID: string,
@@ -280,7 +275,6 @@ class Manga {
    * @async
    * @param chapter The chapter that is currently reading. (required)
    * @param page The page that is currently reading. (required)
-   * @returns
    */
   async save(chapter: Chapter, page: number) {
     // update or create history
@@ -313,7 +307,7 @@ interface Chapters {
 }
 
 /**
- * A subclass of SimpleManga that contain the details info.
+ * A subclass of Manga that contain the details info.
  *
  * @class
  * @extends {Manga}
@@ -341,7 +335,7 @@ class DetailsManga extends Manga {
   updateTime: null | Date = null;
 
   /**
-   * Creates an instance of Manga.
+   * Creates an instance of DetailsManga.
    *
    * @constructor
    * @param Object (required)
@@ -362,34 +356,24 @@ class DetailsManga extends Manga {
   }
 
   /**
-   * Push a read Screen of the manga to the current UI.
+   * Push a reader of this manga to the current window.
    *
    * @param chapterId The id of the chapter. (required)
-   * @param page The page number. (required)
-   * @returns
+   * @param page The page number. (optional)
    */
-  read(chapterId: string, page: number | null = null) {
+  read(chapterId: string, page?: number) {
     if (this.driver.isDown)
       return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
     window.stack.push(
-      settingsManager.experimentalRead ? (
-        <ExperimentalRead
-          manga={this}
-          chapterId={chapterId}
-          page={page || undefined}
-        />
-      ) : (
-        <Read manga={this} chapterId={chapterId} page={page} />
-      )
+      <Reader manga={this} chapterId={chapterId} page={page} />
     );
   }
 
   /**
-   * Push a read Screen of the manga to the current UI with parameters set to history.
+   * Push a reader of this manga to the current window with parameters set to history.
    *
    * @async
-   * @returns
    */
   async continue() {
     const history = await this.getHistory();
@@ -406,11 +390,11 @@ class DetailsManga extends Manga {
   }
 
   /**
-   * Get the urls of the chapter
+   * Get the urls of a chapter
    *
    * @async
    * @param chapterId The id of the chapter. (required)
-   * @returns
+   * @returns A array of urls.
    */
   async getChapterUrls(
     chapterId: string,
@@ -441,7 +425,7 @@ class DetailsManga extends Manga {
    * Get a Chapter instance from its id
    *
    * @param chapterId The id of the chapter. (required)
-   * @returns
+   * @returns A Chapter instance or null if not found.
    */
   getChapterById(chapterId: string): Chapter | null {
     for (const chapter of [...this.chapters.serial, ...this.chapters.extra]) {

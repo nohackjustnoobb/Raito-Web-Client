@@ -1,0 +1,82 @@
+.upperMenu {
+  position: fixed;
+  top: 0;
+  width: calc(100% - 2rem);
+  z-index: 1;
+  background-color: var(--color-background);
+  padding: 1rem;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  span {
+    color: var(--color-text);
+    display: flex;
+    cursor: pointer;
+  }
+
+  .pageOffset {
+    height: 1rem;
+    cursor: initial;
+    padding-right: 0.5rem;
+  }
+}
+
+.lowerMenu {
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 2rem);
+  z-index: 1;
+  background-color: var(--color-background);
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  .sliderWrapper {
+    width: calc(100% - 2rem);
+  }
+}
+
+.scaleMenu {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(7rem + env(safe-area-inset-bottom));
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--color-chapters-background);
+  color: var(--color-chapters-text);
+  gap: 1rem;
+  padding: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 2rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  span {
+    display: flex;
+  }
+}

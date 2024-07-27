@@ -1,9 +1,12 @@
-import "./read.scss";
+import "./reader.scss";
 
 import { Component, SyntheticEvent } from "react";
 
 import LazyImage from "../../components/lazyImage/lazyImage";
-import settingsManager, { DisplayMode } from "../../managers/settingsManager";
+import settingsManager, {
+  DisplayMode,
+  TransitionMode,
+} from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
@@ -65,7 +68,7 @@ function diff(p1: Position, p2: Position) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
 }
 
-class Read extends Component<Props, State> {
+class Reader extends Component<Props, State> {
   // the array of chapter that is currently being read
   chapters!: Array<Chapter>;
   // the initial chapter index
@@ -76,8 +79,10 @@ class Read extends Component<Props, State> {
   nextLoaded: number = 1;
   // state for cool down
   lastLoad: number = Number.MIN_VALUE;
-  // subscriptions for raito events
-  raitoSubscription!: RaitoSubscription;
+  // subscriptions for screen changed events
+  screenChangeSub!: RaitoSubscription;
+  // subscriptions for settings changed events
+  settingsChangeSub!: RaitoSubscription;
   // timeout to prevent too many events
   onScrollTimeout: NodeJS.Timeout | null = null;
   // ref to the scrollable element
@@ -90,6 +95,10 @@ class Read extends Component<Props, State> {
   predictedRatio?: number;
   // determines if it have already restored the requested page
   isRestored: boolean = false;
+  // determines if it should be centered
+  shouldCentered: boolean = false;
+  // derived settings
+  isContinuous = settingsManager.transitionMode === TransitionMode.Continuous;
 
   state: State = {
     // a array of the images with its metadata
@@ -103,12 +112,21 @@ class Read extends Component<Props, State> {
   };
 
   componentDidMount() {
-    this.raitoSubscription = listenToEvents([RaitoEvents.screenChanged], () => {
+    this.screenChangeSub = listenToEvents([RaitoEvents.screenChanged], () => {
       const isVertical = window.innerHeight > window.innerWidth;
       if (this.state.isVertical !== isVertical)
         this.setState({ isVertical: isVertical }, () => this.restorePage());
       else this.restorePage();
     });
+
+    this.settingsChangeSub = listenToEvents(
+      [RaitoEvents.settingsChanged],
+      () => {
+        this.isContinuous =
+          settingsManager.transitionMode === TransitionMode.Continuous;
+        this.restorePage();
+      }
+    );
 
     const isExtra =
       this.props.manga.chapters.extra.findIndex(
@@ -127,7 +145,24 @@ class Read extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
+    if (this.screenChangeSub) this.screenChangeSub.unsubscribe();
+    if (this.settingsChangeSub) this.settingsChangeSub.unsubscribe();
+  }
+
+  componentDidUpdate() {
+    if (!this.isContinuous && !this.state.currentPage)
+      this.setState({
+        currentPage: this.constructPage(this.initIndex, 0),
+      });
+
+    const shouldCentered =
+      this.scrollableRef &&
+      this.scrollableRef.scrollHeight <= this.scrollableRef.clientHeight;
+
+    if (shouldCentered !== null && shouldCentered !== this.shouldCentered) {
+      this.shouldCentered = shouldCentered;
+      this.forceUpdate();
+    }
   }
 
   constructPage(index: number, page: number) {
@@ -177,7 +212,23 @@ class Read extends Component<Props, State> {
         : newUrls.unshift(...this.state.urls);
 
     this.previousPage = this.state.currentPage;
-    this.setState({ urls: newUrls }, () => (this.lastLoad = Date.now()));
+    this.setState(
+      {
+        urls: newUrls,
+        currentPage: !this.isContinuous
+          ? {
+              title: chapter.title,
+              index: index,
+              page: type === LoadTypes.Previous ? result.urls.length - 1 : 0,
+              total: result.urls.length,
+            }
+          : this.state.currentPage,
+      },
+      () => {
+        this.lastLoad = Date.now();
+        this.updateHistory();
+      }
+    );
 
     if (type)
       type === LoadTypes.Previous ? this.previousLoaded++ : this.nextLoaded++;
@@ -210,12 +261,65 @@ class Read extends Component<Props, State> {
       }
     );
 
-    if (this.previousPage) this.restorePage(this.previousPage || undefined);
-    else setTimeout(this.tryUpdatePage.bind(this), 100);
+    if (this.isContinuous) {
+      if (this.previousPage) this.restorePage(this.previousPage || undefined);
+      else setTimeout(this.tryUpdatePage.bind(this), 100);
+
+      // TODO load more is not scrollable
+    }
   }
 
-  toggleMenu() {
-    this.setState({ showMenu: !this.state.showMenu });
+  onClick(
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    targetIndex: Array<number>
+  ) {
+    if (this.isContinuous)
+      return this.setState({ showMenu: !this.state.showMenu });
+
+    const subWidth = window.innerWidth / 4;
+
+    // Toggle menu
+    if (event.clientX <= subWidth * 3 && event.clientX >= subWidth)
+      return this.setState({ showMenu: !this.state.showMenu });
+
+    const currentPage = this.state.currentPage;
+    if (!currentPage) return;
+
+    const isLeft = event.clientX <= subWidth;
+    const newPage = targetIndex[Number(!isLeft)];
+
+    // navigate in the same chapter
+    if (newPage >= 0 && newPage < currentPage.total) {
+      currentPage.page = newPage;
+
+      return this.setState(
+        {
+          currentPage: currentPage,
+        },
+        this.updateHistory.bind(this)
+      );
+    }
+
+    const newIndex =
+      this.state.urls.findIndex((v) => v.index === currentPage.index) +
+      (isLeft ? -1 : 1);
+
+    // crossing chapter
+    if (newIndex >= 0 && newIndex < this.state.urls.length) {
+      const meta = this.state.urls[newIndex];
+      return this.setState(
+        {
+          currentPage: this.constructPage(
+            meta.index,
+            isLeft ? meta.urls.length - 1 : 0
+          ),
+        },
+        this.updateHistory.bind(this)
+      );
+    }
+
+    // no loaded chapters
+    this.load(isLeft ? LoadTypes.Previous : LoadTypes.Next);
   }
 
   togglePageOffset() {
@@ -236,7 +340,7 @@ class Read extends Component<Props, State> {
     );
 
     for (const elem of elems) {
-      if (elem.className === "pageWrapper") {
+      if (elem.classList.contains("pageWrapper")) {
         // get the data from the element
         const rawIndex = elem.getAttribute("data-index");
         const rawPage = elem.getAttribute("data-page");
@@ -279,21 +383,28 @@ class Read extends Component<Props, State> {
             }, 0);
           }
 
-          if (diff > 0) {
-            if (diff <= 4) {
-              this.setState({ currentPage: pageObj }, () =>
-                // save it to history
-                this.props.manga.save(chapter, page)
-              );
-            } else {
-              this.restorePage();
-            }
+          if (diff === 0) return;
+
+          if (diff <= 4) {
+            this.setState(
+              { currentPage: pageObj },
+              this.updateHistory.bind(this)
+            );
+          } else {
+            this.restorePage();
           }
         }
 
         break;
       }
     }
+  }
+
+  updateHistory() {
+    if (!this.state.currentPage) return;
+
+    const chapter = this.chapters[this.state.currentPage?.index];
+    this.props.manga.save(chapter, this.state.currentPage.page);
   }
 
   scrollToPage(index: number, page: number) {
@@ -318,6 +429,8 @@ class Read extends Component<Props, State> {
   }
 
   onScroll(event?: React.WheelEvent<HTMLDivElement>) {
+    if (!this.isContinuous) return;
+
     this.tryUpdatePage();
 
     if (this.isOverScrolling) {
@@ -388,6 +501,8 @@ class Read extends Component<Props, State> {
         left: newLeft,
         behavior: "instant" as ScrollBehavior,
       });
+
+      if (!this.isContinuous) this.forceUpdate();
     });
   }
 
@@ -441,13 +556,62 @@ class Read extends Component<Props, State> {
       settingsManager.displayMode === DisplayMode.OnePage ||
       (settingsManager.displayMode === DisplayMode.Auto &&
         this.state.isVertical);
+
     this.predictedRatio = mode(Object.values(this.state.imagesMeta));
+
+    const classList = ["read"];
+    if (settingsManager.snapToPage && this.isContinuous)
+      classList.push("snapToPage");
+
+    if (!this.isContinuous && this.shouldCentered) classList.push("centered");
+
+    const groupedPages: Array<Array<{ key: string; index: number }>> = [[]];
+
+    const currentKey = `${this.state.currentPage?.index}_${this.state.currentPage?.page}`;
+    const currentUrls = this.state.urls.find(
+      (v) => v.index === this.state.currentPage?.index
+    );
+    let currentGroup: number = 0;
+
+    if (currentUrls)
+      for (const index in currentUrls.urls) {
+        const page = {
+          key: `${currentUrls.index}_${index}`,
+          index: Number(index),
+        };
+        const isWide = this.state.imagesMeta[page.key] >= 1;
+        let groupIndex = groupedPages.length - 1;
+
+        const target = groupedPages[groupIndex];
+        if (isWide && target.length) {
+          groupedPages.push([page]);
+          groupIndex++;
+        } else {
+          target.push(page);
+        }
+
+        if (page.key === currentKey) currentGroup = groupIndex;
+
+        const shouldStartNewGroup =
+          (Number(index) === 0 && this.state.isPageOffset) ||
+          isWide ||
+          target.length === 2 ||
+          isOnePaged;
+        if (shouldStartNewGroup) groupedPages.push([]);
+      }
+
+    if (!groupedPages[groupedPages.length - 1].length) groupedPages.pop();
+
+    const targetIndex: Array<number> = [
+      currentGroup > 0 ? groupedPages[currentGroup - 1][0].index : -1,
+      currentGroup < groupedPages.length - 1
+        ? groupedPages[currentGroup + 1][0].index
+        : -1,
+    ];
 
     return (
       <div
-        className={
-          "experimentalRead" + (settingsManager.snapToPage ? " snapToPage" : "")
-        }
+        className={classList.join(" ")}
         onScroll={() => this.onScroll()}
         onWheel={this.onScroll.bind(this)}
         onTouchStart={this.onTouchStart.bind(this)}
@@ -468,13 +632,17 @@ class Read extends Component<Props, State> {
         />
         <div
           className="images"
-          onClick={this.toggleMenu.bind(this)}
+          onClick={(e) => this.onClick(e, targetIndex)}
           style={{ width: `${this.state.scale * 100}%` }}
         >
           {this.state.urls.map((meta) => (
             <ul key={meta.chapter.id}>
               {this.state.isPageOffset && !isOnePaged && (
-                <li className="spacer" />
+                <li
+                  className={`spacer  ${
+                    this.state.currentPage?.page === 0 ? "" : "hidden"
+                  }`}
+                />
               )}
               {meta.urls.map((url, index) => {
                 const key = `${meta.index}_${index}`;
@@ -485,15 +653,21 @@ class Read extends Component<Props, State> {
                     id={key}
                     data-index={meta.index}
                     data-page={index}
-                    className="pageWrapper"
+                    className={`pageWrapper ${
+                      this.isContinuous ||
+                      groupedPages[currentGroup].find((v) => v.key === key)
+                        ? ""
+                        : "hidden"
+                    }`}
                     style={{
                       width:
                         this.state.imagesMeta[key] >= 1 || isOnePaged
                           ? "100%"
                           : "50%",
-                      aspectRatio: this.state.imagesMeta[key]
-                        ? "auto"
-                        : this.predictedRatio,
+                      aspectRatio:
+                        this.state.imagesMeta[key] || !this.isContinuous
+                          ? "auto"
+                          : this.predictedRatio,
                     }}
                   >
                     <LazyImage
@@ -512,5 +686,5 @@ class Read extends Component<Props, State> {
   }
 }
 
-export default makeSwipeable(Read);
+export default makeSwipeable(Reader);
 export type { Page };

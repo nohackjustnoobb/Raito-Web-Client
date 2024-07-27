@@ -1,4 +1,4 @@
-.experimentalSettings {
+.readerSettings {
   background-color: var(--color-background);
   padding: 1rem;
   position: relative;
@@ -8,25 +8,18 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
   width: 100%;
   margin: 1rem;
   max-width: 400px;
+  gap: 0.5rem;
 
-  span {
-    color: var(--color-text);
-  }
-
-  h5 {
-    color: var(--color-warning);
+  h3 {
     margin: 0;
-    text-align: center;
   }
 
   .options {
     display: flex;
-    width: 100%;
-    align-items: center;
     justify-content: space-between;
+    width: 100%;
   }
 }

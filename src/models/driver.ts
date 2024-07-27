@@ -76,7 +76,7 @@ class Driver {
    * @constructor
    * @private
    * @param identifier The id of the driver. (required)
-   * @param server The server that has the driver. It can be updated later. (default: null)
+   * @param server The server that has the driver. It can be updated later. (optional)
    */
   constructor(public identifier: string, public server: Server | null = null) {
     this.isDown = server === null;
@@ -87,7 +87,6 @@ class Driver {
    *
    * @async
    * @param server The server that has the driver. (required)
-   * @returns
    */
   async setServer(server: Server): Promise<void> {
     this.server = server;
@@ -101,7 +100,6 @@ class Driver {
    * This will be called automatically whenever any other method is called and the driver is not initialized.
    *
    * @async
-   * @returns
    */
   async initialize() {
     if (this.initialized || this.isDown) return;
@@ -134,7 +132,7 @@ class Driver {
    * @async
    * @param category the category that wants to get (default: "")
    * @param page the page that wants to get (default: 1)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getList(
     category: string = "All",
@@ -194,7 +192,7 @@ class Driver {
    * @async
    * @param keyword The keyword that wants to search (required)
    * @param page The page of the result (default: 1)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getSearch(keyword: string, page: number = 1): Promise<boolean> {
     // check if the keyword is empty
@@ -256,7 +254,7 @@ class Driver {
    *
    * @async
    * @param keyword The keyword that wants to search (required)
-   * @returns
+   * @returns A array of suggestions.
    */
   async getSuggestions(keyword: string): Promise<Array<string>> {
     // check if disabled
@@ -290,7 +288,7 @@ class Driver {
    * @param ids A array of id that wants to be fetched from the server. (required)
    * @param showAll Determine whether the detailed manga should be fetched. (default: false)
    * @param cache Determine whether it should use cache. (default: true)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getManga(
     ids: Array<string>,
@@ -361,7 +359,6 @@ class Driver {
    * Update the database with the cached data
    *
    * @async
-   * @returns
    */
   async update() {
     // get the collections and histories
@@ -420,7 +417,6 @@ class Driver {
    * Update the driver status
    *
    * @async
-   * @returns
    */
   async updateStatus() {
     if (this.server === null) return;

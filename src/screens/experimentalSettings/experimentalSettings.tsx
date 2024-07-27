@@ -31,7 +31,7 @@ class ExperimentalSettings extends Component<
 
   render(): ReactNode {
     return (
-      <div className="userSettingsContent">
+      <div className="experimentalSettings">
         <h5>The functions below are buggy and not ready to use.</h5>
         <div className="options">
           <span>UseZoomablePlugin:</span>
@@ -39,16 +39,6 @@ class ExperimentalSettings extends Component<
             checked={settingsManager.experimentalUseZoomablePlugin}
             onChange={(v) => {
               settingsManager.experimentalUseZoomablePlugin = v;
-              settingsManager.update();
-            }}
-          />
-        </div>
-        <div className="options">
-          <span>UseExperimentalRead:</span>
-          <Checkbox
-            checked={settingsManager.experimentalRead}
-            onChange={(v) => {
-              settingsManager.experimentalRead = v;
               settingsManager.update();
             }}
           />

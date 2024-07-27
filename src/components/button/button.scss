@@ -56,4 +56,12 @@
     opacity: 0.6;
     transform: scale(1.25);
   }
+
+  &.fullWidth:not(.disabled):hover {
+    transform: scale(1.025);
+  }
+
+  &.fullWidth:not(.disabled):active {
+    transform: scale(1.05);
+  }
 }

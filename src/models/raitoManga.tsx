@@ -5,7 +5,18 @@ import syncManager from "../managers/syncManager";
 import updatesManager from "../managers/updatesManager";
 import { dispatchEvent, RaitoEvents } from "./events";
 
+/**
+ * Act as a namespace.
+ *
+ * @class
+ */
 class RaitoManga {
+  /**
+   * Main entry point for initializing the backend engine.
+   *
+   * @static
+   * @async
+   */
   static async initialize() {
     driversManager.initialize();
 

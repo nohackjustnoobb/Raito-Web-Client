@@ -5,13 +5,14 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 import { CSSTransition } from "react-transition-group";
 
-import { mdiChevronLeft, mdiMinus, mdiPlus } from "@mdi/js";
+import { mdiChevronLeft, mdiCog, mdiMinus, mdiPlus } from "@mdi/js";
 import Icon from "@mdi/react";
 
 import Checkbox from "../../components/checkbox/checkbox";
 import Slider from "../../components/slider/slider";
 import { translate } from "../../utils/utils";
-import { Page } from "./read";
+import { Page } from "./reader";
+import ReaderSettings from "./readerSettings";
 
 interface UpperMenuProps {
   show: boolean;
@@ -45,12 +46,17 @@ const UpperMenu: FunctionComponent<UpperMenuProps> = ({
           <Icon path={mdiChevronLeft} size={1.5} />
           <h2>{title && translate(title)}</h2>
         </div>
-        {showPageOffset && (
-          <div className="pageOffset">
-            <Checkbox checked={isPageOffset} onChange={togglePageOffset} />
-            <h3>{t("thumbnailOffset")}</h3>
-          </div>
-        )}
+        <div>
+          {showPageOffset && (
+            <div className="pageOffset">
+              <Checkbox checked={isPageOffset} onChange={togglePageOffset} />
+              <h3>{t("thumbnailOffset")}</h3>
+            </div>
+          )}
+          <span onClick={() => window.stack.push(<ReaderSettings />)}>
+            <Icon path={mdiCog} size={1} />
+          </span>
+        </div>
       </div>
     </CSSTransition>
   );

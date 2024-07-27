@@ -14,6 +14,7 @@ interface CheckboxProps {
   onChange: (checked: boolean) => void;
   outlined?: boolean;
   size?: number;
+  color?: string;
 }
 
 const Checkbox: FunctionComponent<CheckboxProps> = ({
@@ -21,11 +22,16 @@ const Checkbox: FunctionComponent<CheckboxProps> = ({
   onChange,
   outlined,
   size,
+  color,
 }) => {
   const checkedIcon = outlined ? mdiCheckboxMarkedOutline : mdiCheckboxMarked;
 
   return (
-    <span className={"checkbox"} onClick={() => onChange(!checked)}>
+    <span
+      className={"checkbox"}
+      onClick={() => onChange(!checked)}
+      style={{ color: color }}
+    >
       <Icon
         path={checked ? checkedIcon : mdiCheckboxBlankOutline}
         size={size || 1}

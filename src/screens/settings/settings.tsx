@@ -13,7 +13,9 @@ import Select from "../../components/select/select";
 import TopBar from "../../components/topBar/topBar";
 import { lngName } from "../../locales/i18n";
 import driversManager from "../../managers/driversManager";
-import settingsManager from "../../managers/settingsManager";
+import settingsManager, {
+  TransitionMode,
+} from "../../managers/settingsManager";
 import syncManager from "../../managers/syncManager";
 import {
   listenToEvents,
@@ -73,20 +75,18 @@ class Settings extends React.Component<Props> {
                   {this.props.t("account")}:
                   <b>{user.email ?? this.props.t("notLoggedIn")}</b>
                 </span>
-                <span>
-                  <Button
-                    outlined
-                    onClick={() => {
-                      if (user.token) {
-                        window.stack.push(<UserSettings />);
-                      } else {
-                        user.pushLogin();
-                      }
-                    }}
-                  >
-                    {this.props.t(user.token ? "settings" : "logins")}
-                  </Button>
-                </span>
+                <Button
+                  outlined
+                  onClick={() => {
+                    if (user.token) {
+                      window.stack.push(<UserSettings />);
+                    } else {
+                      user.pushLogin();
+                    }
+                  }}
+                >
+                  {this.props.t(user.token ? "settings" : "logins")}
+                </Button>
               </div>
 
               <div className="options">
@@ -211,25 +211,44 @@ class Settings extends React.Component<Props> {
                 />
               </div>
               <div className="options">
-                <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
-                <Checkbox
-                  checked={settingsManager.overscrollToLoadPreviousChapters}
+                <span>{this.props.t("mangaTransition")}: </span>
+                <Select
+                  value={settingsManager.transitionMode}
                   onChange={(v) => {
-                    settingsManager.overscrollToLoadPreviousChapters = v;
+                    settingsManager.transitionMode = v as number;
                     settingsManager.update();
                   }}
+                  options={["paginated", "continuous"].map((v, i) => ({
+                    value: i,
+                    text: this.props.t(v),
+                  }))}
                 />
               </div>
-              <div className="options">
-                <span>{this.props.t("snapToPage")}: </span>
-                <Checkbox
-                  checked={settingsManager.snapToPage}
-                  onChange={(v) => {
-                    settingsManager.snapToPage = v;
-                    settingsManager.update();
-                  }}
-                />
-              </div>
+              {settingsManager.transitionMode === TransitionMode.Continuous && (
+                <>
+                  <div className="options">
+                    <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
+                    <Checkbox
+                      checked={settingsManager.overscrollToLoadPreviousChapters}
+                      onChange={(v) => {
+                        settingsManager.overscrollToLoadPreviousChapters = v;
+                        settingsManager.update();
+                      }}
+                    />
+                  </div>
+
+                  <div className="options">
+                    <span>{this.props.t("snapToPage")}: </span>
+                    <Checkbox
+                      checked={settingsManager.snapToPage}
+                      onChange={(v) => {
+                        settingsManager.snapToPage = v;
+                        settingsManager.update();
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
             <h3>{this.props.t("imageSettings")}</h3>
             <div className="subSettings">
@@ -259,7 +278,6 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
-
               {settingsManager.useProxy && (
                 <div className="options">
                   <span>{this.props.t("useBase64")}: </span>
@@ -273,7 +291,6 @@ class Settings extends React.Component<Props> {
                 </div>
               )}
             </div>
-
             <h3>{this.props.t("serverSettings")}</h3>
             <div className="subSettings">
               <div className="options">
@@ -285,7 +302,6 @@ class Settings extends React.Component<Props> {
                   {this.props.t("checkStatus")}
                 </Button>
               </div>
-
               <div className="options">
                 <span>{this.props.t("sourceServers")}: </span>
                 <Button
@@ -296,7 +312,6 @@ class Settings extends React.Component<Props> {
                 </Button>
               </div>
             </div>
-
             {settingsManager.showDeveloperSettings && (
               <>
                 <h3>{this.props.t("developerSettings")}</h3>

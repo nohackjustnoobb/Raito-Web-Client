@@ -164,5 +164,8 @@
     "tagUpdated": "已更新",
     "tagEnded": "已完結",
     "noNextOne": "沒有下一話了",
-    "noPreviousOne": "沒有上一話了"
+    "noPreviousOne": "沒有上一話了",
+    "mangaTransition": "漫畫過渡",
+    "paginated": "分頁",
+    "continuous": "連續"
 }

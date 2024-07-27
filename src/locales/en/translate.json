@@ -164,5 +164,8 @@
     "tagUpdated": "Updated",
     "tagEnded": "Ended",
     "noNextOne": "No Next Chapter",
-    "noPreviousOne": "No Previous Chapter"
+    "noPreviousOne": "No Previous Chapter",
+    "mangaTransition": "Manga Transition",
+    "paginated": "Paginated",
+    "continuous": "Continuous"
 }

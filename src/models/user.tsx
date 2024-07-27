@@ -3,19 +3,52 @@ import Login from "../screens/login/login";
 import db from "./db";
 import { dispatchEvent, RaitoEvents } from "./events";
 
+/**
+ * A class that represents a user
+ *
+ * @class
+ */
 class User {
+  /**
+   * The token associated with this user.
+   */
   token: string | null;
+  /**
+   * The email of this user.
+   */
   email: string | null;
+  /**
+   * The id of this user.
+   */
   id: number | null = null;
+  /**
+   * The created date of this user.
+   */
   createdAt: Date | null = null;
+  /**
+   * The updated date of this user.
+   */
   updatedAt: Date | null = null;
 
+  /**
+   * Creates an instance of User.
+   *
+   * @constructor
+   */
   constructor() {
     // try to get the token and email from the local storage
     this.token = localStorage.getItem("token");
     this.email = localStorage.getItem("email");
   }
 
+  /**
+   * Obtain the token with email and password.
+   *
+   * @async
+   * @param email (required)
+   * @param password (required)
+   * @returns true if success
+   */
   async login(email: string, password: string): Promise<boolean> {
     if (!syncManager.ok()) return false;
 
@@ -54,7 +87,10 @@ class User {
     return result.ok;
   }
 
-  async logout() {
+  /**
+   * Clear the user credentials.
+   */
+  logout() {
     // clear the session
     this.token = null;
     this.email = null;
@@ -67,6 +103,11 @@ class User {
     dispatchEvent(RaitoEvents.settingsChanged);
   }
 
+  /**
+   * Get the user info.
+   *
+   * @async
+   */
   async getInfo() {
     if (!this.token || !syncManager.syncServer) return;
 
@@ -79,6 +120,13 @@ class User {
     this.updatedAt = new Date(json["updatedAt"]);
   }
 
+  /**
+   * Clear all data remotely and locally.
+   *
+   * @async
+   * @param password (required)
+   * @returns true if success
+   */
   async clear(password: string): Promise<boolean> {
     if (!this.token || !syncManager.ok()) return false;
 
@@ -102,7 +150,21 @@ class User {
     return result.ok;
   }
 
-  async create(email: string, password: string, key: string): Promise<boolean> {
+  /**
+   * Create a new user
+   *
+   * @static
+   * @async
+   * @param email (required)
+   * @param password (required)
+   * @param key (required)
+   * @returns true if success
+   */
+  static async create(
+    email: string,
+    password: string,
+    key: string
+  ): Promise<boolean> {
     if (!syncManager.syncServer) return false;
 
     return (
@@ -116,6 +178,14 @@ class User {
     ).ok;
   }
 
+  /**
+   * Change the password of this user.
+   *
+   * @async
+   * @param newPassword (required)
+   * @param oldPassword (required)
+   * @returns true if success
+   */
   async changePassword(
     newPassword: string,
     oldPassword: string
@@ -133,9 +203,18 @@ class User {
     ).ok;
   }
 
+  /**
+   * Push login screen to the current window.
+   *
+   * @returns
+   */
   pushLogin = () => window.stack.push(<Login />);
 }
 
+/**
+ * The main user instance.
+ */
 const user = new User();
 
 export default user;
+export { User };

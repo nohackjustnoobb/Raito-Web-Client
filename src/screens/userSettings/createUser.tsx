@@ -8,7 +8,7 @@ import { mdiEmail, mdiFormTextboxPassword, mdiKey, mdiShield } from "@mdi/js";
 
 import Button from "../../components/button/button";
 import Input from "../../components/input/input";
-import user from "../../models/user";
+import { User } from "../../models/user";
 import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
 class CreateUser extends Component<
@@ -28,7 +28,7 @@ class CreateUser extends Component<
   };
 
   async submit() {
-    const result = await user.create(
+    const result = await User.create(
       this.state.email,
       this.state.password,
       this.state.key

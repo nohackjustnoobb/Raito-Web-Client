@@ -9,23 +9,70 @@ import { sleep } from "../utils/utils";
 import driversManager from "./driversManager";
 import settingsManager from "./settingsManager";
 
+/**
+ * An object that represents the state of the syncing process.
+ *
+ * @interface
+ */
 interface SyncState {
+  /**
+   * Indicates whether it is syncing.
+   */
   isSyncing: boolean;
+  /**
+   * Store the last sync datetime.
+   */
   lastSync?: number;
+  /**
+   * Store the current status.
+   */
   currentStatus?: string;
 }
 
+/**
+ * An object that store the hashes of different syncable objects.
+ *
+ * @interface
+ */
 interface SyncHashes {
+  /**
+   * Hash for settings.
+   */
   settings: string;
+  /**
+   * Hash for history.
+   */
   history: string;
+  /**
+   * Hash for collections.
+   */
   collections: string;
 }
 
+/**
+ * The class for handling syncing process.
+ *
+ * @class
+ */
 class SyncManager {
+  /**
+   * The state of the current syncing process.
+   */
   state: SyncState = { isSyncing: false };
+  /**
+   * The server that it is going to sync with.
+   */
   syncServer: Server | null = null;
+  /**
+   * Indicating if the history is changed.
+   */
   isHistoryChanged: boolean = false;
 
+  /**
+   * Initialize the sync server and start the main loop for syncing.
+   *
+   * @async
+   */
   async initialize() {
     // initialize the sync server
     if (process.env.REACT_APP_SYNC_ADDRESS) {
@@ -43,11 +90,22 @@ class SyncManager {
     }
   }
 
+  /**
+   * Indicates if everything is working.
+   *
+   * @returns true if everything is working.
+   */
   ok() {
     return Boolean(this.syncServer && !this.syncServer.isDown);
   }
 
-  // sync every 30 seconds or 5 seconds if there are any history changed
+  /**
+   * Main loop for syncing.
+   *
+   * Sync every 30 seconds or 5 seconds if there are any history changed.
+   *
+   * @async
+   */
   async trySync() {
     while (true) {
       if (
@@ -62,6 +120,12 @@ class SyncManager {
     }
   }
 
+  /**
+   * Get the current hashes from the local database.
+   *
+   * @async
+   * @returns The hashes.
+   */
   async getHashes(): Promise<SyncHashes> {
     const dtCollection = await db.history
       .orderBy("datetime")
@@ -101,6 +165,11 @@ class SyncManager {
     };
   }
 
+  /**
+   * Sync the settings.
+   *
+   * @async
+   */
   async syncSettings() {
     if (!this.ok()) return;
 
@@ -112,6 +181,11 @@ class SyncManager {
     }
   }
 
+  /**
+   * Sync the history.
+   *
+   * @async
+   */
   async syncHistory() {
     if (!this.ok()) return;
 
@@ -176,6 +250,11 @@ class SyncManager {
     localStorage.setItem("lastSync", now.toString());
   }
 
+  /**
+   * Sync the collections.
+   *
+   * @async
+   */
   async syncCollections() {
     if (!this.ok()) return;
 
@@ -211,7 +290,7 @@ class SyncManager {
         addedManga.push({ driver: manga.driver, id: manga.id });
     }
 
-    await DetailsManga.getBatch(addedManga);
+    await DetailsManga.updateBatch(addedManga);
     addedManga.forEach((manga) =>
       driversManager
         .getOrCreate(manga.driver)
@@ -219,11 +298,21 @@ class SyncManager {
     );
   }
 
+  /**
+   * Update the status.
+   *
+   * @param status (Optional)
+   */
   setStatus(status?: string) {
     this.state.currentStatus = status;
     dispatchEvent(RaitoEvents.syncStateChanged);
   }
 
+  /**
+   * Check the hashes and sync the one out of sync.
+   *
+   * @async
+   */
   async sync() {
     // check if logged in
     if (!user.token || !this.ok()) return;
@@ -271,6 +360,9 @@ class SyncManager {
   }
 }
 
+/**
+ * The main instance of the sync handler.
+ */
 const syncManager = new SyncManager();
 
 export default syncManager;

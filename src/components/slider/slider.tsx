@@ -23,7 +23,10 @@ class Slider extends Component<SliderProps> {
       const index = this.positions.findIndex((v) => v > clientX);
       if (index === -1) return;
 
-      const value = this.props.min + index;
+      const value = Math.max(
+        Math.min(this.props.min + index, this.props.max),
+        this.props.min
+      );
       if (this.props.value !== value) this.props.onChange(value);
     }
   }

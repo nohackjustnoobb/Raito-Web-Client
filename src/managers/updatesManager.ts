@@ -5,15 +5,42 @@ import user from "../models/user";
 import { sleep } from "../utils/utils";
 import syncManager from "./syncManager";
 
+/**
+ * An object that represents the state of the update process.
+ *
+ * @interface
+ */
 interface UpdateCollectionsState {
+  /**
+   * Indicates whether it is updating.
+   */
   isUpdating: boolean;
+  /**
+   * Stores the last update time.
+   */
   lastUpdate?: number;
+  /**
+   * Stores the current status.
+   */
   currentState?: string;
 }
 
+/**
+ * The main handler for the update process.
+ *
+ * @class
+ */
 class UpdatesManager {
+  /**
+   * The current state of the update process.
+   */
   state: UpdateCollectionsState = { isUpdating: false };
 
+  /**
+   * Check for updates and update the database.
+   *
+   * @async
+   */
   async update() {
     // prevent it updates the collections when it is not synced with the server for too long
     if (
@@ -47,7 +74,7 @@ class UpdatesManager {
     };
     updateState();
 
-    await Manga.getBatch(
+    await Manga.updateBatch(
       collections.map((item) => ({ driver: item.driver, id: item.id })),
       // eslint-disable-next-line no-loop-func
       (chunkSize: number) => {
@@ -64,6 +91,9 @@ class UpdatesManager {
   }
 }
 
+/**
+ * The main instance of the updates handler.
+ */
 const updatesManager = new UpdatesManager();
 
 export default updatesManager;

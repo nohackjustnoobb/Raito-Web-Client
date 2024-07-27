@@ -637,13 +637,11 @@ class Reader extends Component<Props, State> {
         >
           {this.state.urls.map((meta) => (
             <ul key={meta.chapter.id}>
-              {this.state.isPageOffset && !isOnePaged && (
-                <li
-                  className={`spacer  ${
-                    this.state.currentPage?.page === 0 ? "" : "hidden"
-                  }`}
-                />
-              )}
+              {this.state.isPageOffset &&
+                !isOnePaged &&
+                (this.isContinuous || this.state.currentPage?.page === 0) && (
+                  <li className="spacer" />
+                )}
               {meta.urls.map((url, index) => {
                 const key = `${meta.index}_${index}`;
 

@@ -318,9 +318,9 @@ class DetailsManga extends Manga {
    */
   description: string;
   /**
-   * The categories of the manga.
+   * The genres of the manga.
    */
-  categories: Array<string>;
+  genres: Array<string>;
   /**
    * All the chapters that the manga has.
    */
@@ -345,7 +345,7 @@ class DetailsManga extends Manga {
 
     this.authors = data.authors;
     this.description = data.description;
-    this.categories = data.categories;
+    this.genres = data.genres;
     this.chapters = data.chapters;
     this.latest =
       data.latest ??

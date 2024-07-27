@@ -55,9 +55,7 @@ class Library extends Component<
       // scroll back to the top
       if (this.content) this.content.scrollTop = 0;
 
-      if (
-        !driversManager.selected?.supportedCategories.includes(this.state.genre)
-      )
+      if (!driversManager.selected?.supportedGenres.includes(this.state.genre))
         this.setState({ genre: "All" });
 
       // update the cached driver
@@ -157,7 +155,7 @@ class Library extends Component<
           <div className="filter">
             <h3>{this.props.t("genre")}: </h3>
             <ul onWheel={wheelToScrollHorizontally("UL")}>
-              {driversManager.selected?.supportedCategories.map((v) => (
+              {driversManager.selected?.supportedGenres.map((v) => (
                 <li
                   key={v}
                   className={v === this.state.genre ? "selected" : ""}

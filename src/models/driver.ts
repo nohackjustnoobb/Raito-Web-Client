@@ -32,9 +32,9 @@ class Driver {
    */
   supportSuggestion: boolean | null = null;
   /**
-   * A list of categories that the driver supports.
+   * A list of genres that the driver supports.
    */
-  supportedCategories: Array<string> = [];
+  supportedGenres: Array<string> = [];
   /**
    * The recommended size for fetching manga at once.
    */
@@ -113,7 +113,7 @@ class Driver {
 
     const info = await result.json();
 
-    this.supportedCategories = info.supportedCategories;
+    this.supportedGenres = info.supportedGenres;
     this.supportSuggestion = info.supportSuggestion;
     this.recommendedChunkSize = info.recommendedChunkSize;
     this.version = info.version;

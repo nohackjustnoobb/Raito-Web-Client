@@ -9,7 +9,7 @@ class DriversManager {
   selected: Driver | null = null;
 
   initialize() {
-    // clear the cache
+    // Schedule for clear cache
     this.clearCache();
   }
 

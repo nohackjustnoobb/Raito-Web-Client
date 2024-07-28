@@ -35,12 +35,12 @@ class StackView extends Component<{}, { stack: Array<ReactElement> }> {
     homePage.removeAttribute("style");
   }
 
-  push(screen: ReactElement): void {
+  push(screen: ReactElement) {
     this.state.stack.push(screen);
     this.forceUpdate();
   }
 
-  pop(): void {
+  pop() {
     this.state.stack.pop();
     this.forceUpdate();
   }

@@ -251,10 +251,8 @@ class Reader extends Component<Props, State> {
           0
         );
         const loaded = Object.keys(this.state.imagesMeta).length;
-        if (total === loaded && this.isNotScrollable) {
+        if (total === loaded && this.isNotScrollable)
           this.load(LoadTypes.Next, true);
-          console.log("load more");
-        }
 
         if (this.isRestored) return;
 

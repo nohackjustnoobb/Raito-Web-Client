@@ -10,7 +10,7 @@ class ServersManager {
 
   async initialize() {
     // initialize the default source server
-    if (process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS !== undefined)
+    if (process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS)
       await this.add(
         process.env.REACT_APP_DEFAULT_SOURCE_ADDRESS,
         null,

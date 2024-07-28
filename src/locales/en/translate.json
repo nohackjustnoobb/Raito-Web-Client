@@ -167,5 +167,9 @@
     "noPreviousOne": "No Previous Chapter",
     "mangaTransition": "Manga Transition",
     "paginated": "Paginated",
-    "continuous": "Continuous"
+    "continuous": "Continuous",
+    "overrideSyncServer": "Override Sync Server",
+    "overrideSyncServerConfirmation": "Are you sure you want to override the sync server?",
+    "removeOverride": "Remove Override",
+    "removeOverrideConfirmation": "Are you sure you want to remove the override?"
 }

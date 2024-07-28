@@ -67,6 +67,7 @@ class SyncManager {
    * Indicating if the history is changed.
    */
   isHistoryChanged: boolean = false;
+  isOverridden: boolean = false;
 
   /**
    * Initialize the sync server and start the main loop for syncing.
@@ -75,19 +76,19 @@ class SyncManager {
    */
   async initialize() {
     // initialize the sync server
-    if (process.env.REACT_APP_SYNC_ADDRESS) {
-      this.syncServer = new Server(
-        process.env.REACT_APP_SYNC_ADDRESS,
-        null,
-        true
-      );
+    const trySyncServer = localStorage.getItem("syncServer");
+    this.isOverridden = Boolean(trySyncServer);
 
+    const address = trySyncServer || process.env.REACT_APP_SYNC_ADDRESS;
+
+    if (address) {
+      this.syncServer = new Server(address, null, true);
       await this.syncServer.initialize();
-
-      // FIXME temp fix for crashing
-      setTimeout(this.trySync.bind(this), 5000);
-      // this.trySync();
     }
+
+    // FIXME temp fix for crashing
+    setTimeout(this.trySync.bind(this), 5000);
+    // this.trySync();
   }
 
   /**
@@ -97,6 +98,24 @@ class SyncManager {
    */
   ok() {
     return Boolean(this.syncServer && !this.syncServer.isDown);
+  }
+
+  /**
+   * Override the default sync server
+   *
+   * @param address (required)
+   */
+  overrideServer(address: string) {
+    user.logout();
+    localStorage.setItem("syncServer", address);
+    window.location.reload();
+  }
+
+  /** Remove the override server */
+  removeOverride() {
+    user.logout();
+    localStorage.removeItem("syncServer");
+    window.location.reload();
   }
 
   /**

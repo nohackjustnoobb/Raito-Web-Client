@@ -27,6 +27,7 @@ import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
 import ManageServers from "../manageServers/manageServers";
 import ManageThemes from "../manageThemes/manageThemes";
 import OnlineStatus from "../onlineStatus/onlineStatus";
+import OverrideSyncServer from "../overrideSyncServer/overrideSyncServer";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
@@ -325,7 +326,27 @@ class Settings extends React.Component<Props> {
                       {this.props.t("openInterface")}
                     </Button>
                   </div>
-
+                  <div className="options">
+                    <span>{this.props.t("overrideSyncServer")}: </span>
+                    <Button
+                      outlined
+                      warning={syncManager.isOverridden}
+                      onClick={() => {
+                        if (syncManager.isOverridden) {
+                          if (window.confirm("removeOverrideConfirmation"))
+                            syncManager.removeOverride();
+                        } else {
+                          window.stack.push(<OverrideSyncServer />);
+                        }
+                      }}
+                    >
+                      {this.props.t(
+                        syncManager.isOverridden
+                          ? "removeOverride"
+                          : "openInterface"
+                      )}
+                    </Button>
+                  </div>
                   <div className="options">
                     <span>{this.props.t("experimentalFeatures")}: </span>
                     <Button

@@ -167,5 +167,9 @@
     "noPreviousOne": "沒有上一話了",
     "mangaTransition": "漫畫過渡",
     "paginated": "分頁",
-    "continuous": "連續"
+    "continuous": "連續",
+    "overrideSyncServer": "覆寫同步伺服器",
+    "overrideSyncServerConfirmation": "確定要覆寫同步伺服器？",
+    "removeOverride": "移除覆寫",
+    "removeOverrideConfirmation": "確定要移除覆寫？"
 }

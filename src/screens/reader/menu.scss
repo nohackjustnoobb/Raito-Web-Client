@@ -12,6 +12,10 @@
 
   h2 {
     margin: 0;
+    max-width: 20rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   div {

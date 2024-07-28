@@ -187,15 +187,15 @@
 
       .vDivider {
         background-color: var(--color-chapters-background);
-        height: 5rem;
+        min-height: 5rem;
         margin-left: 1rem;
         margin-right: 1rem;
         width: 2px;
+        align-self: center;
         flex-shrink: 0;
       }
 
       li:not(.vDivider) {
-        height: 5rem;
         min-width: 5rem;
         max-width: 10rem;
         display: flex;

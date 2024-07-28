@@ -222,9 +222,7 @@ class Details extends Component<Props, State> {
                 <span className="title">{this.props.t("genre")}</span>
                 <span className="content">
                   {manga && manga.genres.length
-                    ? manga.genres
-                        .map((category) => this.props.t(category))
-                        .join(" ")
+                    ? manga.genres.map((genre) => this.props.t(genre)).join(" ")
                     : this.props.t("none")}
                 </span>
               </li>

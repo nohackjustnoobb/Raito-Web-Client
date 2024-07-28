@@ -95,8 +95,8 @@ class Reader extends Component<Props, State> {
   predictedRatio?: number;
   // determines if it have already restored the requested page
   isRestored: boolean = false;
-  // determines if it should be centered
-  shouldCentered: boolean = false;
+  // determines if it is scrollable
+  isNotScrollable: boolean = false;
   // derived settings
   isContinuous = settingsManager.transitionMode === TransitionMode.Continuous;
 
@@ -159,8 +159,8 @@ class Reader extends Component<Props, State> {
       this.scrollableRef &&
       this.scrollableRef.scrollHeight <= this.scrollableRef.clientHeight;
 
-    if (shouldCentered !== null && shouldCentered !== this.shouldCentered) {
-      this.shouldCentered = shouldCentered;
+    if (shouldCentered !== null && shouldCentered !== this.isNotScrollable) {
+      this.isNotScrollable = shouldCentered;
       this.forceUpdate();
     }
   }
@@ -176,8 +176,8 @@ class Reader extends Component<Props, State> {
     };
   }
 
-  async load(type: LoadTypes = LoadTypes.Next) {
-    if (Date.now() < this.lastLoad + TIMEOUT) return;
+  async load(type: LoadTypes = LoadTypes.Next, force: boolean = false) {
+    if (!force && Date.now() < this.lastLoad + TIMEOUT) return;
     this.lastLoad = Number.MAX_VALUE;
 
     // get the id of the chapter to load
@@ -246,6 +246,16 @@ class Reader extends Component<Props, State> {
         },
       }),
       () => {
+        const total = this.state.urls.reduce(
+          (prev, urls) => (prev += urls.urls.length),
+          0
+        );
+        const loaded = Object.keys(this.state.imagesMeta).length;
+        if (total === loaded && this.isNotScrollable) {
+          this.load(LoadTypes.Next, true);
+          console.log("load more");
+        }
+
         if (this.isRestored) return;
 
         // restore the requested page
@@ -261,12 +271,9 @@ class Reader extends Component<Props, State> {
       }
     );
 
-    if (this.isContinuous) {
+    if (this.isContinuous)
       if (this.previousPage) this.restorePage(this.previousPage || undefined);
       else setTimeout(this.tryUpdatePage.bind(this), 100);
-
-      // TODO load more is not scrollable
-    }
   }
 
   onClick(
@@ -563,7 +570,7 @@ class Reader extends Component<Props, State> {
     if (settingsManager.snapToPage && this.isContinuous)
       classList.push("snapToPage");
 
-    if (!this.isContinuous && this.shouldCentered) classList.push("centered");
+    if (!this.isContinuous && this.isNotScrollable) classList.push("centered");
 
     const groupedPages: Array<Array<{ key: string; index: number }>> = [[]];
 

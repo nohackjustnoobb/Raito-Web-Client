@@ -42,7 +42,7 @@ class Driver {
   /**
    * Cache for the list of manga.
    */
-  list: { [category: string]: Array<{ [page: number]: Array<string> }> } = {};
+  list: { [genre: string]: Array<{ [page: number]: Array<string> }> } = {};
   /**
    * Cache for the search results.
    */
@@ -130,12 +130,12 @@ class Driver {
    * It will only fetch from server only if the list of manga is not cached.
    *
    * @async
-   * @param category the category that wants to get (default: "")
+   * @param genre the genre that wants to get (default: "")
    * @param page the page that wants to get (default: 1)
    * @returns A boolean that indicates whether it is successfully.
    */
   async getList(
-    category: string = "All",
+    genre: string = "All",
     status: Status = Status.Any,
     page: number = 1
   ): Promise<boolean> {
@@ -146,15 +146,15 @@ class Driver {
     if (!tryInitialize(this)) return false;
 
     // check if the end is reached
-    if (page > 1 && !this.list[category][status][page - 1].length) return false;
+    if (page > 1 && !this.list[genre][status][page - 1].length) return false;
 
     // check if cached
-    if (this.list[category] && this.list[category][status][page]) return true;
+    if (this.list[genre] && this.list[genre][status][page]) return true;
 
     // get the list of manga
     const result = await this.server!.get("list", {
       driver: this.identifier,
-      ...(category !== "All" && { category: category }),
+      ...(genre !== "All" && { genre: genre }),
       status: String(status),
       page: String(page),
       proxy: settingsManager.useProxy ? "1" : "0",
@@ -168,8 +168,8 @@ class Driver {
     const manga = await result.json();
 
     // check if the object is already initialized
-    if (!this.list[category]) this.list[category] = [{}, {}, {}];
-    this.list[category][status][page] = [];
+    if (!this.list[genre]) this.list[genre] = [{}, {}, {}];
+    this.list[genre][status][page] = [];
 
     // convert the data to SimpleManga objects
     manga.forEach((v: any) => {
@@ -178,7 +178,7 @@ class Driver {
       this.simpleManga[manga.id] = manga;
 
       // push it to list
-      this.list[category][status][page].push(manga.id);
+      this.list[genre][status][page].push(manga.id);
     });
 
     return true;

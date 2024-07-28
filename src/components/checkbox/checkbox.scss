@@ -1,0 +1,23 @@
+// To ensure it have the highest priority
+.checkbox.checkbox.checkbox.checkbox.checkbox {
+  all: initial;
+  font: inherit;
+  color: inherit;
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  transition: all 250ms;
+  -webkit-tap-highlight-color: transparent !important;
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.125);
+  }
+
+  &:active {
+    opacity: 0.6;
+    transform: scale(1.25);
+  }
+}

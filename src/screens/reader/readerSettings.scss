@@ -1,0 +1,25 @@
+.readerSettings {
+  background-color: var(--color-background);
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  gap: 0.5rem;
+
+  h3 {
+    margin: 0;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+}

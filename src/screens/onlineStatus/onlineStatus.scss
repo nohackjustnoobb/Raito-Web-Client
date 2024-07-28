@@ -1,0 +1,40 @@
+.onlineStatus {
+  background-color: var(--color-background);
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  gap: 0.5rem;
+
+  h5 {
+    margin: 0;
+    padding: 0;
+    opacity: 0.4;
+  }
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+
+    .disabled {
+      color: var(--color-warning);
+    }
+
+    td {
+      text-align: center;
+    }
+  }
+
+  span {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+  }
+}

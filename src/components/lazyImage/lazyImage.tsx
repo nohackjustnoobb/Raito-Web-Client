@@ -7,6 +7,7 @@ import {
 
 import { TailSpin } from 'react-loader-spinner';
 
+import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
@@ -52,7 +53,7 @@ class LazyImage extends Component<
   }
 
   componentDidMount() {
-    this.prevDebugMode = window.raito.settingsState.debugMode;
+    this.prevDebugMode = settingsManager.debugMode;
 
     // register for update events
     this.raitoSubscription = listenToEvents(
@@ -60,9 +61,9 @@ class LazyImage extends Component<
       () => {
         if (
           !this.state.url ||
-          window.raito.settingsState.debugMode !== this.prevDebugMode
+          settingsManager.debugMode !== this.prevDebugMode
         ) {
-          this.prevDebugMode = window.raito.settingsState.debugMode;
+          this.prevDebugMode = settingsManager.debugMode;
           this.forceUpdate();
         }
       }
@@ -86,13 +87,13 @@ class LazyImage extends Component<
       this.isLoading = true;
       try {
         const response = await fetch(
-          window.raito.settingsState.useBase64
+          settingsManager.useBase64
             ? `${this.props.src}?base64=1`
             : this.props.src,
           {
             headers: {
-              "cache-control": window.raito.settingsState.imageCacheMaxAge
-                ? `max-age=${window.raito.settingsState.imageCacheMaxAge}`
+              "cache-control": settingsManager.imageCacheMaxAge
+                ? `max-age=${settingsManager.imageCacheMaxAge}`
                 : "no-cache",
             },
           }
@@ -136,7 +137,7 @@ class LazyImage extends Component<
         onClick={this.props.onClick}
         ref={(ref) => {
           if (!this.state.url) {
-            if (!window.raito.settingsState.useProxy)
+            if (!settingsManager.useProxy)
               this.setState({ url: this.props.src });
             else if (ref && !this.ref) {
               this.ref = ref;
@@ -145,7 +146,7 @@ class LazyImage extends Component<
           }
         }}
       >
-        {window.raito.settingsState.debugMode && (
+        {settingsManager.debugMode && (
           <span className="src">{this.props.src}</span>
         )}
         {(this.props.load === undefined || this.props.load) &&

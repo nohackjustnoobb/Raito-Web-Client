@@ -1,9 +1,9 @@
-import i18next from "i18next";
-
+import settingsManager from "../managers/settingsManager";
+import syncManager from "../managers/syncManager";
 import { tryInitialize } from "../utils/utils";
 import db from "./db";
 import { dispatchEvent, RaitoEvents } from "./events";
-import { Manga, SimpleManga } from "./manga";
+import { DetailsManga, Manga } from "./manga";
 import Server from "./server";
 
 enum Status {
@@ -32,9 +32,9 @@ class Driver {
    */
   supportSuggestion: boolean | null = null;
   /**
-   * A list of categories that the driver supports.
+   * A list of genres that the driver supports.
    */
-  supportedCategories: Array<string> = [];
+  supportedGenres: Array<string> = [];
   /**
    * The recommended size for fetching manga at once.
    */
@@ -42,7 +42,7 @@ class Driver {
   /**
    * Cache for the list of manga.
    */
-  list: { [category: string]: Array<{ [page: number]: Array<string> }> } = {};
+  list: { [genre: string]: Array<{ [page: number]: Array<string> }> } = {};
   /**
    * Cache for the search results.
    */
@@ -50,11 +50,11 @@ class Driver {
   /**
    * Cache for the simple manga.
    */
-  simpleManga: { [id: string]: SimpleManga } = {};
+  simpleManga: { [id: string]: Manga } = {};
   /**
    * Cache for the manga that contains more details.
    */
-  manga: { [id: string]: Manga } = {};
+  manga: { [id: string]: DetailsManga } = {};
   /**
    * Determine whether the driver is initialized.
    */
@@ -76,72 +76,10 @@ class Driver {
    * @constructor
    * @private
    * @param identifier The id of the driver. (required)
-   * @param server The server that has the driver. It can be updated later. (default: null)
+   * @param server The server that has the driver. It can be updated later. (optional)
    */
   constructor(public identifier: string, public server: Server | null = null) {
     this.isDown = server === null;
-  }
-
-  /**
-   * Get or create a new instance.
-   *
-   * If the server is not null and the driver is already exists, it will replace the driver's server with the new one provided.
-   *
-   * @static
-   * @param id The id of the driver (required)
-   * @param server The server that has the driver. It can be updated later. (default: null)
-   * @returns
-   */
-  static getOrCreate(id: string, server: Server | null = null): Driver {
-    // try get the driver
-    let driver = window.raito.availableDrivers.find(
-      (v) => v.identifier === id.toUpperCase()
-    );
-    if (!driver) {
-      driver = new Driver(id.toUpperCase(), server);
-      window.raito.availableDrivers.push(driver);
-    } else if (server !== null) {
-      // replace the server if it already exists
-      driver.setServer(server);
-    }
-
-    return driver!;
-  }
-
-  /**
-   * Clear the cached data of all drivers.
-   *
-   * @static
-   */
-  static clearCache() {
-    for (const driver of window.raito.availableDrivers) {
-      driver.list = {};
-      driver.search = {};
-      driver.simpleManga = {};
-      driver.manga = {};
-    }
-  }
-
-  /**
-   * Select a driver as the current driver.
-   *
-   * @static
-   * @async
-   * @param id The id of the driver (required)
-   * @returns
-   */
-  static async select(id: string) {
-    const driver = Driver.getOrCreate(id);
-    if (!driver || driver.isDown || driver.server === null)
-      return alert(`${id}${i18next.t("isDown")}`);
-
-    window.raito.selectedDriver = driver;
-
-    // initialize the driver
-    if (!window.raito.selectedDriver.initialized)
-      await window.raito.selectedDriver.initialize();
-
-    dispatchEvent(RaitoEvents.driverChanged);
   }
 
   /**
@@ -149,7 +87,6 @@ class Driver {
    *
    * @async
    * @param server The server that has the driver. (required)
-   * @returns
    */
   async setServer(server: Server): Promise<void> {
     this.server = server;
@@ -163,7 +100,6 @@ class Driver {
    * This will be called automatically whenever any other method is called and the driver is not initialized.
    *
    * @async
-   * @returns
    */
   async initialize() {
     if (this.initialized || this.isDown) return;
@@ -177,7 +113,7 @@ class Driver {
 
     const info = await result.json();
 
-    this.supportedCategories = info.supportedCategories;
+    this.supportedGenres = info.supportedGenres;
     this.supportSuggestion = info.supportSuggestion;
     this.recommendedChunkSize = info.recommendedChunkSize;
     this.version = info.version;
@@ -194,12 +130,12 @@ class Driver {
    * It will only fetch from server only if the list of manga is not cached.
    *
    * @async
-   * @param category the category that wants to get (default: "")
+   * @param genre the genre that wants to get (default: "")
    * @param page the page that wants to get (default: 1)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getList(
-    category: string = "All",
+    genre: string = "All",
     status: Status = Status.Any,
     page: number = 1
   ): Promise<boolean> {
@@ -210,18 +146,18 @@ class Driver {
     if (!tryInitialize(this)) return false;
 
     // check if the end is reached
-    if (page > 1 && !this.list[category][status][page - 1].length) return false;
+    if (page > 1 && !this.list[genre][status][page - 1].length) return false;
 
     // check if cached
-    if (this.list[category] && this.list[category][status][page]) return true;
+    if (this.list[genre] && this.list[genre][status][page]) return true;
 
     // get the list of manga
     const result = await this.server!.get("list", {
       driver: this.identifier,
-      ...(category !== "All" && { category: category }),
+      ...(genre !== "All" && { genre: genre }),
       status: String(status),
       page: String(page),
-      proxy: window.raito.settingsState.useProxy ? "1" : "0",
+      proxy: settingsManager.useProxy ? "1" : "0",
     });
 
     if (!result.ok) {
@@ -232,17 +168,17 @@ class Driver {
     const manga = await result.json();
 
     // check if the object is already initialized
-    if (!this.list[category]) this.list[category] = [{}, {}, {}];
-    this.list[category][status][page] = [];
+    if (!this.list[genre]) this.list[genre] = [{}, {}, {}];
+    this.list[genre][status][page] = [];
 
     // convert the data to SimpleManga objects
     manga.forEach((v: any) => {
-      const manga: SimpleManga = new SimpleManga(v);
+      const manga: Manga = new Manga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
 
       // push it to list
-      this.list[category][status][page].push(manga.id);
+      this.list[genre][status][page].push(manga.id);
     });
 
     return true;
@@ -256,7 +192,7 @@ class Driver {
    * @async
    * @param keyword The keyword that wants to search (required)
    * @param page The page of the result (default: 1)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getSearch(keyword: string, page: number = 1): Promise<boolean> {
     // check if the keyword is empty
@@ -283,7 +219,7 @@ class Driver {
       driver: this.identifier,
       keyword: keyword,
       page: String(page),
-      proxy: window.raito.settingsState.useProxy ? "1" : "0",
+      proxy: settingsManager.useProxy ? "1" : "0",
     });
 
     if (!result.ok) {
@@ -300,7 +236,7 @@ class Driver {
 
     // convert the data to SimpleManga objects
     manga.forEach((v: any) => {
-      const manga: SimpleManga = new SimpleManga(v);
+      const manga: Manga = new Manga(v);
       // cache the manga
       this.simpleManga[manga.id] = manga;
 
@@ -318,7 +254,7 @@ class Driver {
    *
    * @async
    * @param keyword The keyword that wants to search (required)
-   * @returns
+   * @returns A array of suggestions.
    */
   async getSuggestions(keyword: string): Promise<Array<string>> {
     // check if disabled
@@ -352,7 +288,7 @@ class Driver {
    * @param ids A array of id that wants to be fetched from the server. (required)
    * @param showAll Determine whether the detailed manga should be fetched. (default: false)
    * @param cache Determine whether it should use cache. (default: true)
-   * @returns
+   * @returns A boolean that indicates whether it is successfully.
    */
   async getManga(
     ids: Array<string>,
@@ -381,7 +317,7 @@ class Driver {
         {
           driver: this.identifier,
           "show-all": showAll ? "1" : "0",
-          proxy: window.raito.settingsState.useProxy ? "1" : "0",
+          proxy: settingsManager.useProxy ? "1" : "0",
         },
         JSON.stringify({ ids: filtered }),
         { "Content-Type": "application/json" }
@@ -392,7 +328,7 @@ class Driver {
         driver: this.identifier,
         ids: filtered.join(","),
         "show-all": showAll ? "1" : "0",
-        proxy: window.raito.settingsState.useProxy ? "1" : "0",
+        proxy: settingsManager.useProxy ? "1" : "0",
       });
     }
 
@@ -408,10 +344,10 @@ class Driver {
     manga.forEach((v: any) => {
       // cache the manga by its type
       if (showAll) {
-        const manga: Manga = new Manga(v);
+        const manga: DetailsManga = new DetailsManga(v);
         this.manga[manga.id] = manga;
       } else {
-        const manga: SimpleManga = new SimpleManga(v);
+        const manga: Manga = new Manga(v);
         this.simpleManga[manga.id] = manga;
       }
     });
@@ -423,7 +359,6 @@ class Driver {
    * Update the database with the cached data
    *
    * @async
-   * @returns
    */
   async update() {
     // get the collections and histories
@@ -445,7 +380,7 @@ class Driver {
           driver: this.identifier,
           id: mangaObject.id,
           title: mangaObject.title,
-          isEnd: mangaObject.isEnded,
+          isEnded: mangaObject.isEnded,
           latest: mangaObject.latest,
           thumbnail: mangaObject.thumbnail,
         });
@@ -456,10 +391,10 @@ class Driver {
           // remove the cached manga details
           if (this.manga[manga]) delete this.manga[manga];
 
-          window.raito.syncManager.isHistoryChanged = true;
+          syncManager.isHistoryChanged = true;
           await db.history.update([this.identifier, mangaObject.id], {
-            datetime: Date.now(),
-            new: true,
+            updateDatetime: Date.now(),
+            isUpdated: true,
             latest: mangaObject.latest,
             title: mangaObject.title,
             thumbnail: mangaObject.thumbnail,
@@ -468,7 +403,7 @@ class Driver {
           mangaObject.thumbnail !== history?.thumbnail ||
           mangaObject.title !== history?.title
         ) {
-          window.raito.syncManager.isHistoryChanged = true;
+          syncManager.isHistoryChanged = true;
           await db.history.update([this.identifier, mangaObject.id], {
             title: mangaObject.title,
             thumbnail: mangaObject.thumbnail,
@@ -482,7 +417,6 @@ class Driver {
    * Update the driver status
    *
    * @async
-   * @returns
    */
   async updateStatus() {
     if (this.server === null) return;

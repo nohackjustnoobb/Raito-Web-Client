@@ -1,5 +1,11 @@
-import Driver from '../models/driver';
-import { ReactComponent as Icon } from './icon.svg';
+import { WheelEvent } from "react";
+
+import chinese from "s2t-chinese";
+
+import settingsManager from "../managers/settingsManager";
+import Driver from "../models/driver";
+import user from "../models/user";
+import { ReactComponent as Icon } from "./icon.svg";
 
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -18,7 +24,7 @@ async function errorHandler(response: Response) {
       alert(`Error 400\n${(await response.json())["error"]}`);
       break;
     case 401:
-      window.raito.user.logout();
+      user.logout();
       alert("Error 401\nUser data was reset.\nPlease refresh the page.");
       break;
     case 500:
@@ -68,12 +74,71 @@ async function retryFetch(
   return Response.error();
 }
 
+function wheelToScrollHorizontally(parentTagName: string) {
+  return function (event: WheelEvent) {
+    let [x, y] = [event.deltaX, event.deltaY];
+    let magnitude;
+
+    if (x === 0) magnitude = y < 0 ? -30 : 30;
+    else magnitude = x;
+
+    if (event.target) {
+      let elem = event.target as Element;
+
+      while (elem.tagName !== parentTagName && elem.parentElement)
+        elem = elem.parentElement;
+
+      elem.scrollBy({
+        left: magnitude,
+      });
+    }
+  };
+}
+
+function translate(text: string): string {
+  if (!settingsManager.forceTranslate) return text;
+
+  return chinese.s2t(text);
+}
+
+function formatChapterTitle(title: string): string {
+  let result = translate(title);
+
+  if (!settingsManager.formatChapterTitle) return result;
+
+  let match = result.match(
+    /(?:周刊版?|週刊版?|連載版?|连载版?).*?([\d.]+(?:-[\d.]+)?)/
+  );
+  if (match && match[1]) return "連載" + match[1].padStart(2, "0");
+
+  match = result.match(/第([\d.]+(?:-[\d.]+)?)[話话回]/);
+  if (match && match[1]) return match[1].replace(/^0+/, "").padStart(1, "0");
+
+  match = result.match(/第0+(\d+)卷/);
+  if (match && match[1]) return `第${match[1]}卷`;
+
+  return result;
+}
+
+function mode<T>(arr: Array<T>) {
+  return arr
+    .sort(
+      (a, b) =>
+        arr.filter((v) => v === a).length - arr.filter((v) => v === b).length
+    )
+    .pop();
+}
+
 export {
   convertRemToPixels,
   errorHandler,
+  formatChapterTitle,
   getCssVariable,
   Icon as AppIcon,
+  mode,
   retryFetch,
   sleep,
+  translate,
   tryInitialize,
+  wheelToScrollHorizontally,
 };

@@ -1,0 +1,43 @@
+.segmentedSelector {
+  flex: 1;
+  background-color: var(--color-chapters-background);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  position: relative;
+  max-width: 450px;
+
+  ul {
+    display: flex;
+    list-style-type: none;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+
+    li {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .selected {
+      font-weight: bold;
+      cursor: auto;
+    }
+
+    .disabled {
+      opacity: 0.25;
+      cursor: auto;
+    }
+  }
+
+  .hover {
+    position: absolute;
+    background-color: var(--color-background);
+    border-radius: 0.5rem;
+    height: calc(100% - 0.5rem);
+    top: 0.25rem;
+    transition: left 400ms;
+  }
+}

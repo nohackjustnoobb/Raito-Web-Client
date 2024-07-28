@@ -1,0 +1,68 @@
+.chaptersList.controller {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  gap: 1rem;
+  background-color: var(--color-background);
+  justify-content: center;
+
+  span {
+    display: flex;
+    cursor: pointer;
+  }
+}
+
+.chapters.chaptersList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.75rem;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .highlighted {
+    border-style: solid;
+    border-color: var(--color-chapters-text);
+    border-width: 1.5px;
+    height: calc(1.5rem - 5px);
+  }
+
+  li {
+    cursor: pointer;
+    background-color: var(--color-chapters-background);
+    color: var(--color-chapters-text);
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    text-align: center;
+    height: 1.5rem;
+
+    p {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.chaptersList.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(75px), 1fr));
+}
+
+.chaptersList.list {
+  display: flex;
+  flex-direction: column;
+}

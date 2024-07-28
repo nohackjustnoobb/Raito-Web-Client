@@ -1,0 +1,20 @@
+.driverSelector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  select {
+    font-weight: bold;
+    font-size: 1rem;
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transform: translateX(1rem);
+    background-color: transparent;
+    border: none;
+    appearance: none;
+    outline: none;
+  }
+}

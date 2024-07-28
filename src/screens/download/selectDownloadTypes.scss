@@ -1,0 +1,36 @@
+.downloadTypes {
+  background-color: var(--color-background);
+  border-radius: 1rem;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+  padding: 1rem;
+  z-index: 2;
+
+  h5 {
+    color: var(--color-warning);
+    margin: 0;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  span {
+    gap: 1rem;
+    display: flex;
+    width: 100%;
+  }
+
+  .options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    height: 1.75rem;
+    justify-content: space-between;
+
+    span {
+      width: auto;
+      color: var(--color-text);
+    }
+  }
+}

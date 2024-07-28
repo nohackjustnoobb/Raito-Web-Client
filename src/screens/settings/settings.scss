@@ -1,0 +1,85 @@
+.settings {
+  width: calc(
+    100vw - max(1rem, env(safe-area-inset-right)) -
+      max(1rem, env(safe-area-inset-left))
+  );
+  height: 100%;
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  background-color: var(--color-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .topBar {
+    div {
+      cursor: pointer;
+    }
+  }
+
+  .settingsContent {
+    overflow-y: scroll;
+    flex: 1;
+    scrollbar-width: none;
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    h3 {
+      margin: 0;
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+    }
+
+    .subSettings {
+      background-color: var(--color-sub-background);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      overflow: hidden;
+
+      .options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 1.75rem;
+        overflow: visible;
+
+        span {
+          display: flex;
+          color: var(--color-text);
+          gap: 0.25rem;
+
+          b {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            word-break: nowrap;
+            max-width: calc(100vw - 14rem);
+          }
+        }
+      }
+    }
+
+    .credit {
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      font-size: 0.75rem;
+
+      a {
+        font-weight: bold;
+        color: var(--color-text);
+        text-decoration: none;
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}

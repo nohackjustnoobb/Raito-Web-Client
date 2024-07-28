@@ -1,42 +1,24 @@
-import './locales/i18n';
-import './index.scss';
+import "./locales/i18n";
+import "./index.scss";
 
-import {
-  Component,
-  ReactNode,
-} from 'react';
+import { Component, ReactNode } from "react";
 
-import ReactDOM from 'react-dom/client';
-import {
-  ErrorBoundary,
-  FallbackProps,
-} from 'react-error-boundary';
+import ReactDOM from "react-dom/client";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
-import {
-  createTheme,
-  ThemeProvider,
-} from '@mui/material/styles';
-
-import App from './App';
-import Loader from './components/loader/loader';
+import App from "./App";
+import Loader from "./components/loader/loader";
 import Notification, {
   NotificationItem,
-} from './components/notification/notification';
-import Driver from './models/driver';
-import {
-  dispatchEvent,
-  RaitoEvents,
-} from './models/events';
-import { SimpleManga } from './models/manga';
-import RaitoManga from './models/raitoManga';
-import { Theme } from './models/settingsState';
-import Search from './screen/search/search';
-import StackView, { Stack } from './screen/stack';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import {
-  getCssVariable,
-  sleep,
-} from './utils/utils';
+} from "./components/notification/notification";
+import driversManager from "./managers/driversManager";
+import settingsManager, { ThemeMode } from "./managers/settingsManager";
+import { Manga } from "./models/manga";
+import RaitoManga from "./models/raitoManga";
+import Search from "./screens/search/search";
+import StackView, { Stack } from "./screens/stack";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import { getCssVariable, sleep } from "./utils/utils";
 
 // declare global variables
 declare global {
@@ -47,14 +29,11 @@ declare global {
     hideLoader: () => void;
     pushNotification: (item: NotificationItem) => void;
     stack: Stack;
-    raito: RaitoManga;
   }
 }
 
-// initialize the main engine
-window.raito = new RaitoManga();
 // check if url path is share
-window.raito.initialize().then(async () => {
+RaitoManga.initialize().then(async () => {
   if (
     window.location.pathname === "/share" ||
     window.location.pathname === "/share/"
@@ -65,37 +44,14 @@ window.raito.initialize().then(async () => {
     const id = params.get("id");
 
     if (driver && id) {
-      while (!Driver.getOrCreate(driver).initialized) await sleep(250);
+      while (!driversManager.getOrCreate(driver).initialized) await sleep(250);
 
       // show share and reset url
-      const result = await SimpleManga.get(driver, id);
-      if (result) (result as SimpleManga).pushDetails();
+      const result = await Manga.get(driver, id);
+      if (result) (result as Manga).pushDetails();
 
       window.history.replaceState({}, "", "/");
     }
-  }
-});
-
-// update the screen when screen rotate or resize
-window.addEventListener("resize", () =>
-  dispatchEvent(RaitoEvents.screenChanged)
-);
-window.addEventListener("orientationchange", () =>
-  dispatchEvent(RaitoEvents.screenChanged)
-);
-
-// reset the update and sync state when site is minimized
-document.addEventListener("visibilitychange", async () => {
-  window.raito.updateCollectionsState.isUpdating = false;
-  window.raito.syncManager.state.isSyncing = false;
-
-  // update the collections if not updated for 30 seconds
-  if (
-    document.visibilityState === "visible" &&
-    (!window.raito.updateCollectionsState.lastUpdate ||
-      Date.now() - window.raito.updateCollectionsState.lastUpdate > 30000)
-  ) {
-    await window.raito.updateCollections();
   }
 });
 
@@ -147,34 +103,21 @@ class Main extends Component<{}, { dark: boolean }> {
 
   render(): ReactNode {
     const useDarkMode =
-      window.raito.settingsState.themeModel === Theme.Auto
+      settingsManager.themeMode === ThemeMode.Auto
         ? this.state.dark
-        : window.raito.settingsState.themeModel === Theme.Dark;
+        : settingsManager.themeMode === ThemeMode.Dark;
 
     document.documentElement.setAttribute(
       "data-theme",
       useDarkMode ? "dark" : "light"
     );
 
-    const theme = createTheme({
-      palette: {
-        primary: {
-          main: getCssVariable("--color-primary") || "#fff",
-        },
-        secondary: {
-          main: getCssVariable("--color-sub-background") || "#fff",
-        },
-      },
-    });
-
     return (
       <ErrorBoundary fallbackRender={this.fallbackRender.bind(this)}>
-        <ThemeProvider theme={theme}>
-          <Loader />
-          <Notification />
-          <StackView />
-          <App />
-        </ThemeProvider>
+        <Loader />
+        <Notification />
+        <StackView />
+        <App />
       </ErrorBoundary>
     );
   }

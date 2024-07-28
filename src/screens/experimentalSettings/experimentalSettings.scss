@@ -1,0 +1,32 @@
+.experimentalSettings {
+  background-color: var(--color-background);
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 1rem;
+  max-width: 400px;
+
+  span {
+    color: var(--color-text);
+  }
+
+  h5 {
+    color: var(--color-warning);
+    margin: 0;
+    text-align: center;
+  }
+
+  .options {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

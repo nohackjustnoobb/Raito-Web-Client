@@ -4,21 +4,22 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiPlus } from "@mdi/js";
+import { mdiKey, mdiPlus, mdiServer } from "@mdi/js";
 import Icon from "@mdi/react";
 
 import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import serversManager from "../../managers/serversManager";
+import settingsManager from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import InputPopup from "../inputPopup/inputPopup";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import AddServerConfig from "./addServerConfig";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -43,7 +44,41 @@ class ManageServers extends Component<Props> {
         <TopBar
           close={this.props.close}
           rightComponent={
-            <div onClick={() => window.stack.push(<AddServerConfig />)}>
+            <div
+              onClick={() =>
+                window.stack.push(
+                  <InputPopup
+                    title={this.props.t("addServer")}
+                    values={[
+                      {
+                        value: "address",
+                        placeholder: this.props.t("serverAddress"),
+                        leftIcon: mdiServer,
+                      },
+                      {
+                        value: "accessKey",
+                        placeholder: this.props.t("accessKeyIfExists"),
+                        leftIcon: mdiKey,
+                      },
+                    ]}
+                    onSubmit={async (v, close) => {
+                      window.showLoader();
+                      const accessKey = v["accessKey"] || null;
+                      const result = await serversManager.add(
+                        v["address"],
+                        accessKey
+                      );
+                      window.hideLoader();
+
+                      if (result) {
+                        settingsManager.saveSettings();
+                        close();
+                      } else alert(this.props.t("failedToConnectToTheServer"));
+                    }}
+                  />
+                )
+              }
+            >
               <Icon path={mdiPlus} size={1} />
             </div>
           }

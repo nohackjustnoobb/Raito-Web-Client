@@ -4,16 +4,17 @@ import { Component, ReactNode } from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
+import { mdiFormTextboxPassword } from "@mdi/js";
+
 import Button from "../../components/button/button";
 import TopBar from "../../components/topBar/topBar";
 import syncManager from "../../managers/syncManager";
 import db from "../../models/db";
 import user from "../../models/user";
+import InputPopup from "../inputPopup/inputPopup";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import ChangePassword from "./changePassword";
-import ClearData from "./clearData";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -67,7 +68,42 @@ class UserSettings extends Component<Props> {
             horizontalPadding={0.5}
             textColor="var(--color-text)"
             backgroundColor="transparent"
-            onClick={() => window.stack.push(<ChangePassword />)}
+            onClick={() =>
+              window.stack.push(
+                <InputPopup
+                  title={this.props.t("changePassword")}
+                  values={[
+                    {
+                      value: "oldPassword",
+                      placeholder: this.props.t("oldPassword"),
+                      type: "password",
+                      autoComplete: "current-password",
+                    },
+                    {
+                      value: "newPassword",
+                      placeholder: this.props.t("newPassword"),
+                      type: "password",
+                      autoComplete: "new-password",
+                    },
+                  ]}
+                  onSubmit={async (v, close, clear) => {
+                    window.showLoader();
+                    const result = await user.changePassword(
+                      v["newPassword"],
+                      v["oldPassword"]
+                    );
+                    window.hideLoader();
+
+                    if (result) {
+                      close();
+                    } else {
+                      clear(["oldPassword"]);
+                      alert(this.props.t("wrongPassword"));
+                    }
+                  }}
+                />
+              )
+            }
           >
             {this.props.t("changePassword")}
           </Button>
@@ -114,7 +150,37 @@ class UserSettings extends Component<Props> {
             backgroundColor="transparent"
             fullWidth
             horizontalPadding={0.5}
-            onClick={() => window.stack.push(<ClearData />)}
+            onClick={() =>
+              window.stack.push(
+                <InputPopup
+                  title={this.props.t("deleteAllData")}
+                  values={[
+                    {
+                      value: "password",
+                      placeholder: this.props.t("oldPassword"),
+                      type: "password",
+                      autoComplete: "current-password",
+                      leftIcon: mdiFormTextboxPassword,
+                    },
+                  ]}
+                  onSubmit={async (v, close, clear) => {
+                    if (!window.confirm(this.props.t("clearDataConfirmation")))
+                      return;
+
+                    window.showLoader();
+                    const result = await user.clear(v["password"]);
+                    window.hideLoader();
+
+                    if (result) {
+                      close();
+                    } else {
+                      clear(["password"]);
+                      alert(this.props.t("wrongPassword"));
+                    }
+                  }}
+                />
+              )
+            }
           >
             {this.props.t("deleteAllData")}
           </Button>

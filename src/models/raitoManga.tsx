@@ -3,6 +3,7 @@ import serversManager from "../managers/serversManager";
 import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import updatesManager from "../managers/updatesManager";
+import { updateTheme } from "../utils/utils";
 import { dispatchEvent, RaitoEvents } from "./events";
 
 /**
@@ -18,6 +19,8 @@ class RaitoManga {
    * @async
    */
   static async initialize() {
+    updateTheme();
+
     driversManager.initialize();
 
     await syncManager.initialize();
@@ -35,6 +38,11 @@ class RaitoManga {
     window.addEventListener("orientationchange", () =>
       dispatchEvent(RaitoEvents.screenChanged)
     );
+
+    // listen for theme changes
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", updateTheme);
 
     // reset the update and sync state when site is minimized
     document.addEventListener("visibilitychange", async () => {

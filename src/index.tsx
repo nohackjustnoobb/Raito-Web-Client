@@ -1,24 +1,29 @@
-import "./locales/i18n";
-import "./index.scss";
+import './locales/i18n';
+import './index.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import ReactDOM from "react-dom/client";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
+import ReactDOM from 'react-dom/client';
+import {
+  ErrorBoundary,
+  FallbackProps,
+} from 'react-error-boundary';
 
-import App from "./App";
-import Loader from "./components/loader/loader";
+import App from './App';
+import Loader from './components/loader/loader';
 import Notification, {
   NotificationItem,
-} from "./components/notification/notification";
-import driversManager from "./managers/driversManager";
-import settingsManager, { ThemeMode } from "./managers/settingsManager";
-import { Manga } from "./models/manga";
-import RaitoManga from "./models/raitoManga";
-import Search from "./screens/search/search";
-import StackView, { Stack } from "./screens/stack";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { getCssVariable, sleep } from "./utils/utils";
+} from './components/notification/notification';
+import driversManager from './managers/driversManager';
+import { Manga } from './models/manga';
+import RaitoManga from './models/raitoManga';
+import Search from './screens/search/search';
+import StackView, { Stack } from './screens/stack';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import { sleep } from './utils/utils';
 
 // declare global variables
 declare global {
@@ -56,32 +61,11 @@ RaitoManga.initialize().then(async () => {
 });
 
 // main entry point
-class Main extends Component<{}, { dark: boolean }> {
-  state = {
-    dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
-  };
-
+class Main extends Component {
   componentDidMount() {
     window.updateRoot = this.forceUpdate.bind(this);
     window.search = (keyword: string) =>
       window.stack.push(<Search keyword={keyword} />);
-
-    // listen for theme changes
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", ({ matches }) =>
-        this.setState({ dark: matches })
-      );
-
-    const checkCssVariable = () => {
-      if (!getCssVariable("--color-primary")) {
-        sleep(50);
-        checkCssVariable();
-      } else this.forceUpdate();
-    };
-
-    // prevent blocking
-    setTimeout(() => checkCssVariable());
   }
 
   fallbackRender({ error }: FallbackProps) {
@@ -100,16 +84,6 @@ class Main extends Component<{}, { dark: boolean }> {
   }
 
   render(): ReactNode {
-    const useDarkMode =
-      settingsManager.themeMode === ThemeMode.Auto
-        ? this.state.dark
-        : settingsManager.themeMode === ThemeMode.Dark;
-
-    document.documentElement.setAttribute(
-      "data-theme",
-      useDarkMode ? "dark" : "light"
-    );
-
     return (
       <ErrorBoundary fallbackRender={this.fallbackRender.bind(this)}>
         <Loader />

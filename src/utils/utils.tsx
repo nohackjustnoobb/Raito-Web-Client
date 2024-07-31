@@ -1,11 +1,11 @@
-import { WheelEvent } from "react";
+import { WheelEvent } from 'react';
 
-import chinese from "s2t-chinese";
+import chinese from 's2t-chinese';
 
-import settingsManager from "../managers/settingsManager";
-import Driver from "../models/driver";
-import user from "../models/user";
-import { ReactComponent as Icon } from "./icon.svg";
+import settingsManager, { ThemeMode } from '../managers/settingsManager';
+import Driver from '../models/driver';
+import user from '../models/user';
+import { ReactComponent as Icon } from './icon.svg';
 
 const convertRemToPixels = (rem: number): number =>
   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -129,6 +129,18 @@ function mode<T>(arr: Array<T>) {
     .pop();
 }
 
+function updateTheme() {
+  const useDarkMode =
+    settingsManager.themeMode === ThemeMode.Auto
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : settingsManager.themeMode === ThemeMode.Dark;
+
+  document.documentElement.setAttribute(
+    "data-theme",
+    useDarkMode ? "dark" : "light"
+  );
+}
+
 export {
   convertRemToPixels,
   errorHandler,
@@ -140,5 +152,6 @@ export {
   sleep,
   translate,
   tryInitialize,
+  updateTheme,
   wheelToScrollHorizontally,
 };

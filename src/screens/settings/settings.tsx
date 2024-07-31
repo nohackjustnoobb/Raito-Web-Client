@@ -4,7 +4,14 @@ import React from "react";
 
 import { withTranslation, WithTranslation } from "react-i18next";
 
-import { mdiCogSync } from "@mdi/js";
+import {
+  mdiCogSync,
+  mdiEmail,
+  mdiFormTextboxPassword,
+  mdiKey,
+  mdiServer,
+  mdiShield,
+} from "@mdi/js";
 import Icon from "@mdi/react";
 
 import Button from "../../components/button/button";
@@ -22,16 +29,15 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
-import user from "../../models/user";
+import user, { User } from "../../models/user";
 import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
+import InputPopup from "../inputPopup/inputPopup";
 import ManageServers from "../manageServers/manageServers";
 import ManageThemes from "../manageThemes/manageThemes";
 import OnlineStatus from "../onlineStatus/onlineStatus";
-import OverrideSyncServer from "../overrideSyncServer/overrideSyncServer";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import CreateUser from "../userSettings/createUser";
 import UserSettings from "../userSettings/userSettings";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
@@ -321,7 +327,63 @@ class Settings extends React.Component<Props> {
                     <span>{this.props.t("createUser")}: </span>
                     <Button
                       outlined
-                      onClick={() => window.stack.push(<CreateUser />)}
+                      onClick={() =>
+                        window.stack.push(
+                          <InputPopup
+                            title={this.props.t("createUser")}
+                            values={[
+                              {
+                                value: "email",
+                                leftIcon: mdiEmail,
+                                placeholder: this.props.t("email"),
+                                type: "email",
+                                autoComplete: "username",
+                              },
+                              {
+                                value: "password",
+                                leftIcon: mdiFormTextboxPassword,
+                                placeholder: this.props.t("password"),
+                                type: "password",
+                                autoComplete: "new-password",
+                              },
+                              {
+                                value: "confirmPassword",
+                                leftIcon: mdiShield,
+                                placeholder: this.props.t(
+                                  "passwordConfirmation"
+                                ),
+                                type: "password",
+                                autoComplete: "new-password",
+                              },
+                              {
+                                value: "key",
+                                leftIcon: mdiKey,
+                                placeholder: this.props.t("registerKey"),
+                                type: "text",
+                              },
+                            ]}
+                            onSubmit={async (v, close, clear) => {
+                              if (v["password"] !== v["confirmPassword"]) {
+                                clear(["password", "confirmPassword"]);
+                                return alert("Passwords not same.");
+                              }
+
+                              const result = await User.create(
+                                v["email"],
+                                v["password"],
+                                v["key"]
+                              );
+
+                              if (result) {
+                                clear(["email", "password", "confirmPassword"]);
+                                alert("Success");
+                              } else {
+                                alert("Fail");
+                              }
+                            }}
+                          />
+                        )
+                      }
                     >
                       {this.props.t("openInterface")}
                     </Button>
@@ -333,10 +395,37 @@ class Settings extends React.Component<Props> {
                       warning={syncManager.isOverridden}
                       onClick={() => {
                         if (syncManager.isOverridden) {
-                          if (window.confirm("removeOverrideConfirmation"))
+                          if (
+                            window.confirm(
+                              this.props.t("removeOverrideConfirmation")
+                            )
+                          )
                             syncManager.removeOverride();
                         } else {
-                          window.stack.push(<OverrideSyncServer />);
+                          window.stack.push(
+                            <InputPopup
+                              title={this.props.t("overrideSyncServer")}
+                              values={[
+                                {
+                                  value: "address",
+                                  placeholder: this.props.t("serverAddress"),
+                                  leftIcon: mdiServer,
+                                },
+                              ]}
+                              onSubmit={(v) => {
+                                if (
+                                  !window.confirm(
+                                    this.props.t(
+                                      "overrideSyncServerConfirmation"
+                                    )
+                                  )
+                                )
+                                  return;
+
+                                syncManager.overrideServer(v["address"]);
+                              }}
+                            />
+                          );
                         }
                       }}
                     >

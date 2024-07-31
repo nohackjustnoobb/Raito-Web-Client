@@ -1,4 +1,4 @@
-.addServerConfig {
+.inputPopup {
   background-color: var(--color-background);
   padding: 1rem;
   position: relative;
@@ -12,6 +12,10 @@
   margin: 1rem;
   max-width: 400px;
   gap: 1rem;
+
+  h3 {
+    margin: 0;
+  }
 
   span {
     gap: 1rem;

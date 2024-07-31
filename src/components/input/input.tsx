@@ -58,3 +58,5 @@ const Input: FunctionComponent<InputProps> = ({
 };
 
 export default Input;
+
+export type { InputProps };

@@ -171,5 +171,7 @@
     "overrideSyncServer": "覆寫同步伺服器",
     "overrideSyncServerConfirmation": "確定要覆寫同步伺服器？",
     "removeOverride": "移除覆寫",
-    "removeOverrideConfirmation": "確定要移除覆寫？"
+    "removeOverrideConfirmation": "確定要移除覆寫？",
+    "addServer": "新增伺服器",
+    "addTheme": "新增主題"
 }

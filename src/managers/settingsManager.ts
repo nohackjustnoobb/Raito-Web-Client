@@ -1,9 +1,13 @@
-import { dispatchEvent, RaitoEvents } from "../models/events";
-import Theme from "../models/theme";
-import user from "../models/user";
-import driversManager from "./driversManager";
-import serversManager from "./serversManager";
-import syncManager from "./syncManager";
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from '../models/events';
+import Theme from '../models/theme';
+import user from '../models/user';
+import { updateTheme } from '../utils/utils';
+import driversManager from './driversManager';
+import serversManager from './serversManager';
+import syncManager from './syncManager';
 
 enum DisplayMode {
   Auto,
@@ -109,6 +113,8 @@ class SettingsManager {
       if (theme) theme.inject();
       else this.currentTheme = null;
     } else Theme.reset();
+
+    updateTheme();
 
     dispatchEvent(RaitoEvents.settingsChanged);
   }

@@ -16,10 +16,11 @@ import {
   RaitoEvents,
   RaitoSubscription,
 } from "../../models/events";
+import Theme from "../../models/theme";
+import InputPopup from "../inputPopup/inputPopup";
 import makeSwipeable, {
   InjectedSwipeableProps,
 } from "../swipeableScreen/swipeableScreen";
-import AddThemeConfig from "./addThemeConfig";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -46,7 +47,35 @@ class ManageThemes extends Component<Props> {
           rightComponent={
             <div
               className="add"
-              onClick={() => window.stack.push(<AddThemeConfig />)}
+              onClick={() =>
+                window.stack.push(
+                  <InputPopup
+                    title={this.props.t("addTheme")}
+                    values={[
+                      { value: "name", placeholder: this.props.t("themeName") },
+                      { value: "style", placeholder: "CSS", rows: 5 },
+                    ]}
+                    onSubmit={(v, close) => {
+                      if (!v["name"] || !v["style"])
+                        return alert(this.props.t("nameAndCSSEmpty"));
+
+                      if (
+                        settingsManager.themes.find(
+                          (v1) => v1.name === v["name"]
+                        )
+                      )
+                        return alert(this.props.t("nameDuplicated"));
+
+                      settingsManager.themes.push(
+                        new Theme(v["name"], v["style"])
+                      );
+
+                      settingsManager.saveSettings();
+                      close();
+                    }}
+                  />
+                )
+              }
             >
               <Icon path={mdiPlus} size={1} />
             </div>

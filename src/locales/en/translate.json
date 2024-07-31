@@ -171,5 +171,7 @@
     "overrideSyncServer": "Override Sync Server",
     "overrideSyncServerConfirmation": "Are you sure you want to override the sync server?",
     "removeOverride": "Remove Override",
-    "removeOverrideConfirmation": "Are you sure you want to remove the override?"
+    "removeOverrideConfirmation": "Are you sure you want to remove the override?",
+    "addServer": "Add Server",
+    "addTheme": "Add Theme"
 }

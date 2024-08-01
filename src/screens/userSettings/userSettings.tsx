@@ -1,30 +1,31 @@
-import "./userSettings.scss";
+import './userSettings.scss';
 
-import { Component, ReactNode } from "react";
+import { Component } from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
-import { mdiFormTextboxPassword } from "@mdi/js";
+import { mdiFormTextboxPassword } from '@mdi/js';
 
-import Button from "../../components/button/button";
-import TopBar from "../../components/topBar/topBar";
-import syncManager from "../../managers/syncManager";
-import db from "../../models/db";
-import user from "../../models/user";
-import InputPopup from "../inputPopup/inputPopup";
+import Button from '../../components/button/button';
+import TopBar from '../../components/topBar/topBar';
+import syncManager from '../../managers/syncManager';
+import db from '../../models/db';
+import user from '../../models/user';
+import InputPopup from '../inputPopup/inputPopup';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
-interface Props extends InjectedSwipeableProps, WithTranslation {}
-
-class UserSettings extends Component<Props> {
+class UserSettings extends Component<InjectedSwipeableProps & WithTranslation> {
   async componentDidMount() {
     await user.getInfo();
     this.forceUpdate();
   }
 
-  render(): ReactNode {
+  render() {
     const options: any = {
       month: "long",
       day: "2-digit",

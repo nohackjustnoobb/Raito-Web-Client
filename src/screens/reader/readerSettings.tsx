@@ -1,17 +1,25 @@
-import "./readerSettings.scss";
+import './readerSettings.scss';
 
-import { FunctionComponent, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useState,
+} from 'react';
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
-import Button from "../../components/button/button";
-import Checkbox from "../../components/checkbox/checkbox";
-import Select from "../../components/select/select";
+import Button from '../../components/button/button';
+import Checkbox from '../../components/checkbox/checkbox';
+import Select from '../../components/select/select';
 import settingsManager, {
   TransitionMode,
-} from "../../managers/settingsManager";
-import { listenToEvents, RaitoEvents } from "../../models/events";
-import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
+} from '../../managers/settingsManager';
+import {
+  listenToEvents,
+  RaitoEvents,
+} from '../../models/events';
+import { isAndroid } from '../../utils/utils';
+import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
 
 const ReaderSettings: FunctionComponent<InjectedPopableProps> = ({ close }) => {
   const { t } = useTranslation();
@@ -59,16 +67,18 @@ const ReaderSettings: FunctionComponent<InjectedPopableProps> = ({ close }) => {
       </div>
       {settingsManager.transitionMode === TransitionMode.Continuous && (
         <>
-          <div className="options">
-            <span>{t("pullToLoadPreviousChapter")}: </span>
-            <Checkbox
-              checked={settingsManager.overscrollToLoadPreviousChapters}
-              onChange={(v) => {
-                settingsManager.overscrollToLoadPreviousChapters = v;
-                settingsManager.update();
-              }}
-            />
-          </div>
+          {!isAndroid && (
+            <div className="options">
+              <span>{t("pullToLoadPreviousChapter")}: </span>
+              <Checkbox
+                checked={settingsManager.overscrollToLoadPreviousChapters}
+                onChange={(v) => {
+                  settingsManager.overscrollToLoadPreviousChapters = v;
+                  settingsManager.update();
+                }}
+              />
+            </div>
+          )}
           <div className="options">
             <span>{t("snapToPage")}: </span>
             <Checkbox

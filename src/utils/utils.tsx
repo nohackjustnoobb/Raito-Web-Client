@@ -141,12 +141,15 @@ function updateTheme() {
   );
 }
 
+const isAndroid = /(android)/i.test(navigator.userAgent);
+
 export {
   convertRemToPixels,
   errorHandler,
   formatChapterTitle,
   getCssVariable,
   Icon as AppIcon,
+  isAndroid,
   mode,
   retryFetch,
   sleep,

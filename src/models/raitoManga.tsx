@@ -3,8 +3,9 @@ import serversManager from "../managers/serversManager";
 import settingsManager from "../managers/settingsManager";
 import syncManager from "../managers/syncManager";
 import updatesManager from "../managers/updatesManager";
-import { updateTheme } from "../utils/utils";
+import { sleep, updateTheme } from "../utils/utils";
 import { dispatchEvent, RaitoEvents } from "./events";
+import { Manga } from "./manga";
 
 /**
  * Act as a namespace.
@@ -58,6 +59,28 @@ class RaitoManga {
         await updatesManager.update();
       }
     });
+
+    // check if url path is share
+    if (
+      window.location.pathname === "/share" ||
+      window.location.pathname === "/share/"
+    ) {
+      // driver and id
+      const params = new URLSearchParams(window.location.search);
+      const driver = params.get("driver");
+      const id = params.get("id");
+
+      if (driver && id) {
+        while (!driversManager.getOrCreate(driver).initialized)
+          await sleep(250);
+
+        // show share and reset url
+        const result = await Manga.get(driver, id);
+        if (result) (result as Manga).pushDetails();
+
+        window.history.replaceState({}, "", "/");
+      }
+    }
   }
 }
 

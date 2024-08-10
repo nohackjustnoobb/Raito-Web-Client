@@ -234,17 +234,18 @@ class Manga {
    * @async
    */
   async remove() {
-    if (user.token && !syncManager.ok()) {
+    if (user.token && syncManager.ok()) {
       // sync with server
-      if (
-        !(
-          await syncManager.syncServer!.fetch("DELETE", "collections", {
-            driver: this.driver.identifier,
-            id: this.id,
-          })
-        ).ok
-      )
-        return;
+      const result = await syncManager.syncServer!.fetch(
+        "DELETE",
+        "collections",
+        {
+          driver: this.driver.identifier,
+          id: this.id,
+        }
+      );
+
+      if (!result.ok) return;
     }
 
     await db.collections.delete([this.driver.identifier, this.id]);

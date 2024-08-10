@@ -135,7 +135,7 @@ class Driver {
    * @returns A boolean that indicates whether it is successfully.
    */
   async getList(
-    genre: string = "All",
+    genre: string = "all",
     status: Status = Status.Any,
     page: number = 1
   ): Promise<boolean> {
@@ -154,7 +154,7 @@ class Driver {
     // get the list of manga
     const result = await this.server!.get("list", {
       driver: this.identifier,
-      ...(genre !== "All" && { genre: genre }),
+      ...(genre !== "all" && { genre: genre }),
       status: String(status),
       page: String(page),
       proxy: settingsManager.useProxy ? "1" : "0",

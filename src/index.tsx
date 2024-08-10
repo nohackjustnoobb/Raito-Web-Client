@@ -1,29 +1,20 @@
-import './locales/i18n';
-import './index.scss';
+import "./locales/i18n";
+import "./index.scss";
 
-import {
-  Component,
-  ReactNode,
-} from 'react';
+import { Component, ReactNode } from "react";
 
-import ReactDOM from 'react-dom/client';
-import {
-  ErrorBoundary,
-  FallbackProps,
-} from 'react-error-boundary';
+import ReactDOM from "react-dom/client";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 
-import App from './App';
-import Loader from './components/loader/loader';
+import App from "./App";
+import Loader from "./components/loader/loader";
 import Notification, {
   NotificationItem,
-} from './components/notification/notification';
-import driversManager from './managers/driversManager';
-import { Manga } from './models/manga';
-import RaitoManga from './models/raitoManga';
-import Search from './screens/search/search';
-import StackView, { Stack } from './screens/stack';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import { sleep } from './utils/utils';
+} from "./components/notification/notification";
+import RaitoManga from "./models/raitoManga";
+import Search from "./screens/search/search";
+import StackView, { Stack } from "./screens/stack";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 // declare global variables
 declare global {
@@ -37,31 +28,11 @@ declare global {
   }
 }
 
-// check if url path is share
-RaitoManga.initialize().then(async () => {
-  if (
-    window.location.pathname === "/share" ||
-    window.location.pathname === "/share/"
-  ) {
-    // driver and id
-    const params = new URLSearchParams(window.location.search);
-    const driver = params.get("driver");
-    const id = params.get("id");
-
-    if (driver && id) {
-      while (!driversManager.getOrCreate(driver).initialized) await sleep(250);
-
-      // show share and reset url
-      const result = await Manga.get(driver, id);
-      if (result) (result as Manga).pushDetails();
-
-      window.history.replaceState({}, "", "/");
-    }
-  }
-});
+// Initialize the app
+RaitoManga.initialize();
 
 // main entry point
-class Main extends Component {
+class Root extends Component {
   componentDidMount() {
     window.updateRoot = this.forceUpdate.bind(this);
     window.search = (keyword: string) =>
@@ -100,6 +71,6 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-root.render(<Main />);
+root.render(<Root />);
 
 serviceWorkerRegistration.register();

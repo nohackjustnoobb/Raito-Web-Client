@@ -1,24 +1,30 @@
-import "./reader.scss";
+import './reader.scss';
 
-import { Component, SyntheticEvent } from "react";
+import {
+  Component,
+  SyntheticEvent,
+} from 'react';
 
-import LazyImage from "../../components/lazyImage/lazyImage";
+import LazyImage from '../../components/lazyImage/lazyImage';
 import settingsManager, {
   DisplayMode,
   TransitionMode,
-} from "../../managers/settingsManager";
+} from '../../managers/settingsManager';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { Chapter, DetailsManga } from "../../models/manga";
-import { mode } from "../../utils/utils";
+} from '../../models/events';
+import {
+  Chapter,
+  DetailsManga,
+} from '../../models/manga';
+import { mode } from '../../utils/utils';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
-import Menu from "./menu";
-import Warning, { WarningType } from "./warning";
+} from '../swipeableScreen/swipeableScreen';
+import Menu from './menu';
+import Warning from './warning';
 
 const TIMEOUT = 2500;
 
@@ -77,6 +83,8 @@ class Reader extends Component<Props, State> {
   previousLoaded: number = 1;
   // the number of chapter that is after the initial chapter have been loaded plus 1
   nextLoaded: number = 1;
+  // determines the last load type
+  lastLoadTypes: LoadTypes = LoadTypes.Initial;
   // state for cool down
   lastLoad: number = Number.MIN_VALUE;
   // subscriptions for screen changed events
@@ -186,17 +194,13 @@ class Reader extends Component<Props, State> {
       (type &&
         (type === LoadTypes.Previous ? this.previousLoaded : -this.nextLoaded));
 
-    if (index < 0) {
+    if (index < 0 || index >= this.chapters.length) {
       this.lastLoad = Date.now();
-      window.stack.push(<Warning type={WarningType.NoNextOne} />);
-      return;
-    } else if (index >= this.chapters.length) {
-      this.lastLoad = Date.now();
-      window.stack.push(<Warning type={WarningType.NoPreviousOne} />);
-
+      window.stack.push(<Warning type={type - 1} />);
       return;
     }
 
+    this.lastLoadTypes = type;
     const chapter = this.chapters[index];
 
     const result = {
@@ -237,15 +241,19 @@ class Reader extends Component<Props, State> {
   imageOnLoad(event: SyntheticEvent<HTMLImageElement, Event>, key: string) {
     // check if the image horizontal
     const element = event.target as HTMLImageElement;
+    const ratio = element.naturalWidth / element.naturalHeight;
 
     this.setState(
       (state) => ({
         imagesMeta: {
           ...state.imagesMeta,
-          [key]: element.naturalWidth / element.naturalHeight,
+          [key]: ratio,
         },
       }),
       () => {
+        // Check is all the images are loaded,
+        // if yes, then check if it is scrollable,
+        // if no, load more to make it scrollable.
         const total = this.state.urls.reduce(
           (prev, urls) => (prev += urls.urls.length),
           0
@@ -269,9 +277,12 @@ class Reader extends Component<Props, State> {
       }
     );
 
-    if (this.isContinuous)
-      if (this.previousPage) this.restorePage(this.previousPage || undefined);
-      else setTimeout(this.tryUpdatePage.bind(this), 100);
+    if (!this.isContinuous) return;
+    if (!this.previousPage)
+      return setTimeout(this.tryUpdatePage.bind(this), 100);
+
+    if (this.lastLoadTypes !== LoadTypes.Next || ratio !== this.predictedRatio)
+      this.restorePage(this.previousPage);
   }
 
   onClick(
@@ -514,11 +525,7 @@ class Reader extends Component<Props, State> {
   prevDiff: number = -1;
 
   onTouchStart(ev: TouchEvent) {
-    if (
-      !settingsManager.experimentalUseZoomablePlugin ||
-      ev.touches.length !== 2
-    )
-      return;
+    if (ev.touches.length !== 2) return;
 
     this.prevDiff = diff(
       { x: ev.touches[0].clientX, y: ev.touches[0].clientY },
@@ -527,7 +534,11 @@ class Reader extends Component<Props, State> {
   }
 
   onTouchMove(ev: TouchEvent) {
-    if (ev.touches.length !== 2) return;
+    if (
+      ev.touches.length !== 2 ||
+      !settingsManager.experimentalUseZoomablePlugin
+    )
+      return;
 
     ev.preventDefault();
 

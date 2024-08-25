@@ -1,34 +1,49 @@
-import "./details.scss";
+import './details.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { liveQuery, Subscription } from "dexie";
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  liveQuery,
+  Subscription,
+} from 'dexie';
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
 import {
   mdiBookmark,
   mdiBookmarkOffOutline,
   mdiDownload,
   mdiExportVariant,
-} from "@mdi/js";
-import Icon from "@mdi/react";
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import ChaptersList from "../../components/chaptersList/chaptersList";
-import LazyImage from "../../components/lazyImage/lazyImage";
-import TopBar from "../../components/topBar/topBar";
-import settingsManager from "../../managers/settingsManager";
-import db, { Record } from "../../models/db";
+import ChaptersList from '../../components/chaptersList/chaptersList';
+import LazyImage from '../../components/lazyImage/lazyImage';
+import TopBar from '../../components/topBar/topBar';
+import settingsManager from '../../managers/settingsManager';
+import db, { Record } from '../../models/db';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { DetailsManga, Manga } from "../../models/manga";
-import { translate, wheelToScrollHorizontally } from "../../utils/utils";
-import Download from "../download/download";
+} from '../../models/events';
+import {
+  DetailsManga,
+  Manga,
+} from '../../models/manga';
+import {
+  translate,
+  wheelToScrollHorizontally,
+} from '../../utils/utils';
+import Download from '../download/download';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
 interface Props extends WithTranslation, InjectedSwipeableProps {
   manga: Manga;
@@ -271,14 +286,14 @@ class Details extends Component<Props, State> {
               <li className="vDivider" />
               <li>
                 <span className="title">{this.props.t("source")}</span>
-                <span className="content">
+                <span className="content selectable">
                   {manga && manga.driver.identifier}
                 </span>
               </li>
               <li className="vDivider" />
               <li>
                 <span className="title">ID</span>
-                <span className="content">{manga && manga.id}</span>
+                <span className="content selectable">{manga && manga.id}</span>
               </li>
             </ul>
             <div

@@ -185,6 +185,11 @@
         display: none;
       }
 
+      .selectable {
+        user-select: all;
+        cursor: text;
+      }
+
       .vDivider {
         background-color: var(--color-chapters-background);
         min-height: 5rem;
@@ -216,9 +221,7 @@
           display: flex;
           justify-content: center;
           align-items: center;
-          user-select: all;
           overflow: hidden;
-          cursor: text;
         }
       }
     }

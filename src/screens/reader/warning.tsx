@@ -1,17 +1,20 @@
-import "./warning.scss";
+import './warning.scss';
 
-import { Component } from "react";
+import { Component } from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
-import { mdiWindowClose } from "@mdi/js";
-import Icon from "@mdi/react";
+import { mdiWindowClose } from '@mdi/js';
+import Icon from '@mdi/react';
 
-import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
+import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
 
 enum WarningType {
-  NoNextOne,
   NoPreviousOne,
+  NoNextOne,
 }
 
 interface Props extends InjectedPopableProps, WithTranslation {

@@ -1,9 +1,6 @@
 import './details.scss';
 
-import {
-  Component,
-  ReactNode,
-} from 'react';
+import { Component } from 'react';
 
 import {
   liveQuery,
@@ -51,7 +48,6 @@ interface Props extends WithTranslation, InjectedSwipeableProps {
 
 interface State {
   manga: DetailsManga | null;
-  extraSelected: boolean;
   collected: boolean;
   history: Record | null;
   isVertical: boolean;
@@ -62,7 +58,6 @@ interface State {
 class Details extends Component<Props, State> {
   state: State = {
     manga: null,
-    extraSelected: false,
     collected: false,
     history: null,
     isVertical: window.innerWidth < window.innerHeight,
@@ -83,42 +78,31 @@ class Details extends Component<Props, State> {
 
     const manga = await this.props.manga.getDetails();
 
-    this.setState(
-      {
-        manga: manga,
-        extraSelected: !manga.chapters.serial.length,
-      },
-      () => {
-        // setup observers for current manga state
-        this.collectionsSubscription = liveQuery(() =>
-          db.collections.get({
-            driver: this.state.manga!.driver.identifier,
-            id: this.state.manga!.id,
-          })
-        ).subscribe((result) => this.setState({ collected: Boolean(result) }));
+    this.setState({ manga: manga }, () => {
+      // setup observers for current manga state
+      this.collectionsSubscription = liveQuery(() =>
+        db.collections.get({
+          driver: this.state.manga!.driver.identifier,
+          id: this.state.manga!.id,
+        })
+      ).subscribe((result) => this.setState({ collected: Boolean(result) }));
 
-        this.historySubscription = liveQuery(() =>
-          db.history.get({
-            driver: this.state.manga!.driver.identifier,
-            id: this.state.manga!.id,
-          })
-        ).subscribe((result) => {
-          if (result && this.state.history?.chapterId !== result.chapterId) {
-            if (
-              this.state.history === null &&
-              this.state.manga?.chapters.extra.find(
-                (v) => v.id === result.chapterId
-              )
-            )
-              this.setState({ extraSelected: true });
+      this.historySubscription = liveQuery(() =>
+        db.history.get({
+          driver: this.state.manga!.driver.identifier,
+          id: this.state.manga!.id,
+        })
+      ).subscribe((result) => {
+        if (!result || this.state.history?.chapterId === result.chapterId)
+          return;
 
-            this.setState({ history: result }, () =>
-              this.scrollToHighlighted()
-            );
-          }
+        this.setState({ history: result }, () => {
+          const elem = document.getElementsByClassName("highlighted");
+          if (elem.length && !this.state.isVertical)
+            elem[0].scrollIntoView({ block: "nearest" });
         });
-      }
-    );
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -130,13 +114,7 @@ class Details extends Component<Props, State> {
     if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
   }
 
-  scrollToHighlighted() {
-    const elem = document.getElementsByClassName("highlighted");
-    if (elem.length && !this.state.isVertical)
-      elem[0].scrollIntoView({ block: "nearest" });
-  }
-
-  render(): ReactNode {
+  render() {
     const manga = this.state.manga;
     const chaptersList = manga && (
       <ChaptersList

@@ -1,18 +1,28 @@
-import "./chaptersList.scss";
+import './chaptersList.scss';
 
-import { FunctionComponent, useState } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useState,
+} from 'react';
 
 import {
   mdiDotsGrid,
   mdiOrderNumericAscending,
   mdiOrderNumericDescending,
   mdiViewList,
-} from "@mdi/js";
-import Icon from "@mdi/react";
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import { Chapter, DetailsManga } from "../../models/manga";
-import { formatChapterTitle, translate } from "../../utils/utils";
-import SegmentedSelector from "../segmentedSelector/segmentedSelector";
+import {
+  Chapter,
+  DetailsManga,
+} from '../../models/manga';
+import {
+  formatChapterTitle,
+  translate,
+} from '../../utils/utils';
+import SegmentedSelector from '../segmentedSelector/segmentedSelector';
 
 type Props = {
   manga: DetailsManga;
@@ -22,7 +32,11 @@ type Props = {
   setExtraSelected?: (extraSelected: boolean) => void;
 };
 
-const ChaptersList: FunctionComponent<Props> = ({ manga, ...props }) => {
+const ChaptersList: FunctionComponent<Props> = ({
+  manga,
+  highlighted,
+  ...props
+}) => {
   const [extraSelected, setExtraSelected] = useState(
     !manga.chapters.serial.length
   );
@@ -36,6 +50,13 @@ const ChaptersList: FunctionComponent<Props> = ({ manga, ...props }) => {
     : [];
 
   if (!isDescending) chapters.reverse();
+
+  useEffect(() => {
+    if (highlighted.length)
+      setExtraSelected(
+        Boolean(manga.chapters.extra.find((v) => v.id === highlighted[0]))
+      );
+  }, [manga, highlighted]);
 
   return (
     <>
@@ -90,9 +111,7 @@ const ChaptersList: FunctionComponent<Props> = ({ manga, ...props }) => {
         {chapters.map((chapter: Chapter) => (
           <li
             key={chapter.id}
-            className={
-              props.highlighted.includes(chapter.id) ? "highlighted" : ""
-            }
+            className={highlighted.includes(chapter.id) ? "highlighted" : ""}
             onClick={() => props.onClick(chapter.id)}
           >
             <p>

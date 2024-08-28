@@ -406,6 +406,8 @@ class Reader extends Component<Props, State> {
               { currentPage: pageObj },
               this.updateHistory.bind(this)
             );
+
+            if (this.lastLoadTypes === LoadTypes.Next) this.previousPage = null;
           } else {
             this.restorePage();
           }

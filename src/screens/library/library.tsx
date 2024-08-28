@@ -1,31 +1,37 @@
-import "./library.scss";
+import './library.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
-import { mdiMagnify } from "@mdi/js";
-import Icon from "@mdi/react";
+import { mdiMagnify } from '@mdi/js';
+import Icon from '@mdi/react';
 
-import DriverSelector from "../../components/driverSelector/driverSelector";
-import MangasList from "../../components/mangasList/mangasList";
-import TopBar from "../../components/topBar/topBar";
-import driversManager from "../../managers/driversManager";
-import { Status } from "../../models/driver";
+import DriverSelector from '../../components/driverSelector/driverSelector';
+import MangasList from '../../components/mangasList/mangasList';
+import TopBar from '../../components/topBar/topBar';
+import driversManager from '../../managers/driversManager';
+import { Status } from '../../models/driver';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { Manga } from "../../models/manga";
+} from '../../models/events';
+import { Manga } from '../../models/manga';
 import {
   convertRemToPixels,
   wheelToScrollHorizontally,
-} from "../../utils/utils";
-import Search from "../search/search";
+} from '../../utils/utils';
+import Search from '../search/search';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -36,7 +42,7 @@ class Library extends Component<
   { genre: string; status: Status; isLoading: boolean }
 > {
   driver: string | undefined = undefined;
-  state = { genre: "All", status: Status.Any, isLoading: false };
+  state = { genre: "all", status: Status.Any, isLoading: false };
   content: HTMLDivElement | null = null;
   raitoSubscription: RaitoSubscription | null = null;
 
@@ -56,7 +62,7 @@ class Library extends Component<
       if (this.content) this.content.scrollTop = 0;
 
       if (!driversManager.selected?.supportedGenres.includes(this.state.genre))
-        this.setState({ genre: "All" });
+        this.setState({ genre: "all" });
 
       // update the cached driver
       this.driver = driversManager.selected?.identifier;

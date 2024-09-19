@@ -1,30 +1,24 @@
-import './reader.scss';
+import "./reader.scss";
 
-import {
-  Component,
-  SyntheticEvent,
-} from 'react';
+import { Component, SyntheticEvent } from "react";
 
-import LazyImage from '../../components/lazyImage/lazyImage';
+import LazyImage from "../../components/lazyImage/lazyImage";
 import settingsManager, {
   DisplayMode,
   TransitionMode,
-} from '../../managers/settingsManager';
+} from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from '../../models/events';
-import {
-  Chapter,
-  DetailsManga,
-} from '../../models/manga';
-import { mode } from '../../utils/utils';
+} from "../../models/events";
+import { Chapter, DetailsManga } from "../../models/manga";
+import { mode } from "../../utils/utils";
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from '../swipeableScreen/swipeableScreen';
-import Menu from './menu';
-import Warning from './warning';
+} from "../swipeableScreen/swipeableScreen";
+import Menu from "./menu";
+import Warning from "./warning";
 
 const TIMEOUT = 2500;
 
@@ -259,7 +253,7 @@ class Reader extends Component<Props, State> {
           0
         );
         const loaded = Object.keys(this.state.imagesMeta).length;
-        if (total === loaded && this.isNotScrollable)
+        if (total === loaded && this.isContinuous && this.isNotScrollable)
           this.load(LoadTypes.Next, true);
 
         if (this.isRestored) return;

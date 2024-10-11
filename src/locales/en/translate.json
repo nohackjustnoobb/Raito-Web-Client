@@ -172,5 +172,11 @@
     "removeOverride": "Remove Override",
     "removeOverrideConfirmation": "Are you sure you want to remove the override?",
     "addServer": "Add Server",
-    "addTheme": "Add Theme"
+    "addTheme": "Add Theme",
+    "popUpReaderTips": "Reader is opened in another window.",
+    "closePopUpReader": "Close Pop-up Reader",
+    "popUpBlocked": "Pop-up Get Blocked",
+    "nextChapter": "Next Chapter",
+    "previousChapter": "Previous Chapter",
+    "usePopup": "Use Pop-up Reader"
 }

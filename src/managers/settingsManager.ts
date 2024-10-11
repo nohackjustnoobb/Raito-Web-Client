@@ -41,6 +41,7 @@ class SettingsManager {
   numberOfRecordPreviews: number = 15;
 
   // reader settings
+  usePopup: boolean = false;
   displayMode: DisplayMode = DisplayMode.Auto;
   transitionMode: TransitionMode = TransitionMode.Continuous;
   overscrollToLoadPreviousChapters: boolean = true;
@@ -114,7 +115,7 @@ class SettingsManager {
       else this.currentTheme = null;
     } else Theme.reset();
 
-    updateTheme();
+    updateTheme(window);
 
     dispatchEvent(RaitoEvents.settingsChanged);
   }

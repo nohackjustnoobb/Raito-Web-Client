@@ -7971,6 +7971,12 @@ react-loader-spinner@^6.1.1-0:
     react-is "^18.2.0"
     styled-components "^6.1.1"
 
+"react-new-window@git+https://github.com/nohackjustnoobb/react-new-window.git":
+  version "1.0.1"
+  resolved "git+https://github.com/nohackjustnoobb/react-new-window.git#d908662ab07bf491835321b10f13562dfda01c44"
+  dependencies:
+    prop-types "^15.7.2"
+
 react-refresh@^0.11.0:
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.11.0.tgz#77198b944733f0f1f1a90e791de4541f9f074046"

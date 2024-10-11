@@ -1,12 +1,16 @@
-import "./popScreen.scss";
+import './popScreen.scss';
 
-import { Component, ReactNode } from "react";
+import {
+  Component,
+  ReactNode,
+} from 'react';
 
-import { CSSTransition } from "react-transition-group";
+import { CSSTransition } from 'react-transition-group';
 
 export interface InjectedPopableProps {
   close: () => void;
   timeout: number;
+  show: boolean;
 }
 
 interface PopScreenOptions {
@@ -70,6 +74,7 @@ const makePopable = <P extends InjectedPopableProps>(
               <WrappedComponent
                 {...(this.props as P)}
                 timeout={this.timeout}
+                show={this.state.show}
                 close={this.close.bind(this)}
               />
             </div>

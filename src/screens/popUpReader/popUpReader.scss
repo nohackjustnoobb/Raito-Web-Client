@@ -1,0 +1,50 @@
+.popUpReader {
+  background-color: var(--color-background);
+  padding: 1rem;
+  border-radius: 1rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  div {
+    display: flex;
+  }
+}
+
+body:has(#new-window-container) {
+  overflow-y: auto;
+}
+
+#new-window-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  h1 {
+    text-align: center;
+    margin: 1rem;
+  }
+
+  img {
+    width: 100%;
+  }
+
+  div {
+    width: calc(100% - 2rem);
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+
+    span {
+      border-radius: 0.5rem;
+    }
+  }
+}

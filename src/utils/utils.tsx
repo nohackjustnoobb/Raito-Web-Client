@@ -129,13 +129,13 @@ function mode<T>(arr: Array<T>) {
     .pop();
 }
 
-function updateTheme() {
+function updateTheme(target: Window) {
   const useDarkMode =
     settingsManager.themeMode === ThemeMode.Auto
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
       : settingsManager.themeMode === ThemeMode.Dark;
 
-  document.documentElement.setAttribute(
+  target.document.documentElement.setAttribute(
     "data-theme",
     useDarkMode ? "dark" : "light"
   );

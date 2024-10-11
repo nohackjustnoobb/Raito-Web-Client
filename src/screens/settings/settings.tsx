@@ -208,59 +208,79 @@ class Settings extends React.Component<Props> {
             <h3>{this.props.t("readerSettings")}</h3>
             <div className="subSettings">
               <div className="options">
-                <span>{this.props.t("mangaLayout")}: </span>
-                <Select
-                  value={settingsManager.displayMode}
+                <span>{this.props.t("usePopup")}: </span>
+                <Checkbox
+                  checked={settingsManager.usePopup}
                   onChange={(v) => {
-                    settingsManager.displayMode = v as number;
+                    settingsManager.usePopup = v;
                     settingsManager.update();
                   }}
-                  options={["auto", "singlePage", "dualPage"].map((v, i) => ({
-                    value: i,
-                    text: this.props.t(v),
-                  }))}
                 />
               </div>
-              <div className="options">
-                <span>{this.props.t("mangaTransition")}: </span>
-                <Select
-                  value={settingsManager.transitionMode}
-                  onChange={(v) => {
-                    settingsManager.transitionMode = v as number;
-                    settingsManager.update();
-                  }}
-                  options={["paginated", "continuous"].map((v, i) => ({
-                    value: i,
-                    text: this.props.t(v),
-                  }))}
-                />
-              </div>
-              {settingsManager.transitionMode === TransitionMode.Continuous && (
+              {!settingsManager.usePopup && (
                 <>
-                  {!isAndroid && (
-                    <div className="options">
-                      <span>{this.props.t("pullToLoadPreviousChapter")}: </span>
-                      <Checkbox
-                        checked={
-                          settingsManager.overscrollToLoadPreviousChapters
-                        }
-                        onChange={(v) => {
-                          settingsManager.overscrollToLoadPreviousChapters = v;
-                          settingsManager.update();
-                        }}
-                      />
-                    </div>
-                  )}
                   <div className="options">
-                    <span>{this.props.t("snapToPage")}: </span>
-                    <Checkbox
-                      checked={settingsManager.snapToPage}
+                    <span>{this.props.t("mangaLayout")}: </span>
+                    <Select
+                      value={settingsManager.displayMode}
                       onChange={(v) => {
-                        settingsManager.snapToPage = v;
+                        settingsManager.displayMode = v as number;
                         settingsManager.update();
                       }}
+                      options={["auto", "singlePage", "dualPage"].map(
+                        (v, i) => ({
+                          value: i,
+                          text: this.props.t(v),
+                        })
+                      )}
                     />
                   </div>
+                  <div className="options">
+                    <span>{this.props.t("mangaTransition")}: </span>
+                    <Select
+                      value={settingsManager.transitionMode}
+                      onChange={(v) => {
+                        settingsManager.transitionMode = v as number;
+                        settingsManager.update();
+                      }}
+                      options={["paginated", "continuous"].map((v, i) => ({
+                        value: i,
+                        text: this.props.t(v),
+                      }))}
+                    />
+                  </div>
+                  {settingsManager.transitionMode ===
+                    TransitionMode.Continuous && (
+                    <>
+                      {!isAndroid && (
+                        <div className="options">
+                          <span>
+                            {this.props.t("pullToLoadPreviousChapter")}:{" "}
+                          </span>
+                          <Checkbox
+                            checked={
+                              settingsManager.overscrollToLoadPreviousChapters
+                            }
+                            onChange={(v) => {
+                              settingsManager.overscrollToLoadPreviousChapters =
+                                v;
+                              settingsManager.update();
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="options">
+                        <span>{this.props.t("snapToPage")}: </span>
+                        <Checkbox
+                          checked={settingsManager.snapToPage}
+                          onChange={(v) => {
+                            settingsManager.snapToPage = v;
+                            settingsManager.update();
+                          }}
+                        />
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>

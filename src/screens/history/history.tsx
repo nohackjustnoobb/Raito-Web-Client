@@ -1,30 +1,42 @@
-import "./history.scss";
+import './history.scss';
 
-import React from "react";
+import React from 'react';
 
-import { liveQuery, Subscription } from "dexie";
-import { withTranslation, WithTranslation } from "react-i18next";
+import {
+  liveQuery,
+  Subscription,
+} from 'dexie';
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
 
-import { mdiBookArrowRight, mdiCloudSync, mdiPlaylistEdit } from "@mdi/js";
-import Icon from "@mdi/react";
+import {
+  mdiBookArrowRight,
+  mdiCloudSync,
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import LazyImage from "../../components/lazyImage/lazyImage";
-import TopBar from "../../components/topBar/topBar";
-import driversManager from "../../managers/driversManager";
-import settingsManager from "../../managers/settingsManager";
-import syncManager from "../../managers/syncManager";
-import db, { Record } from "../../models/db";
+import LazyImage from '../../components/lazyImage/lazyImage';
+import TopBar from '../../components/topBar/topBar';
+import driversManager from '../../managers/driversManager';
+import settingsManager from '../../managers/settingsManager';
+import syncManager from '../../managers/syncManager';
+import db, { Record } from '../../models/db';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { DetailsManga } from "../../models/manga";
-import user from "../../models/user";
-import { convertRemToPixels, translate } from "../../utils/utils";
+} from '../../models/events';
+import { DetailsManga } from '../../models/manga';
+import user from '../../models/user';
+import {
+  convertRemToPixels,
+  translate,
+} from '../../utils/utils';
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from "../swipeableScreen/swipeableScreen";
+} from '../swipeableScreen/swipeableScreen';
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -99,14 +111,14 @@ class History extends React.Component<
               >
                 <Icon path={mdiCloudSync} size={1} />
               </div>
-              <div
+              {/* <div
                 onClick={() => {
                   // TODO
                   alert("developing");
                 }}
               >
                 <Icon path={mdiPlaylistEdit} size={1.25} />
-              </div>
+              </div> */}
             </div>
           }
         />

@@ -172,5 +172,11 @@
     "removeOverride": "移除覆寫",
     "removeOverrideConfirmation": "確定要移除覆寫？",
     "addServer": "新增伺服器",
-    "addTheme": "新增主題"
+    "addTheme": "新增主題",
+    "popUpReaderTips": "閱讀器在另一個視窗中",
+    "closePopUpReader": "關閉彈出閱讀器",
+    "popUpBlocked": "彈出視窗被封鎖",
+    "nextChapter": "下一話",
+    "previousChapter": "上一話",
+    "usePopup": "使用彈出閱讀器"
 }

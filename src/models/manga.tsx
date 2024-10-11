@@ -1,13 +1,17 @@
-import i18next from "i18next";
+import i18next from 'i18next';
 
-import driversManager from "../managers/driversManager";
-import settingsManager from "../managers/settingsManager";
-import syncManager from "../managers/syncManager";
-import Details from "../screens/details/details";
-import Reader from "../screens/reader/reader";
-import db, { Collection, Record } from "./db";
-import Driver from "./driver";
-import user from "./user";
+import driversManager from '../managers/driversManager';
+import settingsManager from '../managers/settingsManager';
+import syncManager from '../managers/syncManager';
+import Details from '../screens/details/details';
+import PopUpReader from '../screens/popUpReader/popUpReader';
+import Reader from '../screens/reader/reader';
+import db, {
+  Collection,
+  Record,
+} from './db';
+import Driver from './driver';
+import user from './user';
 
 /**
  * The base class for manga.
@@ -366,8 +370,18 @@ class DetailsManga extends Manga {
     if (this.driver.isDown)
       return alert(`${this.driver.identifier}${i18next.t("isDown")}`);
 
+    const props = {
+      manga: this,
+      chapterId: chapterId,
+      page: page,
+    };
+
     window.stack.push(
-      <Reader manga={this} chapterId={chapterId} page={page} />
+      settingsManager.usePopup ? (
+        <PopUpReader {...props} />
+      ) : (
+        <Reader {...props} />
+      )
     );
   }
 

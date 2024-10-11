@@ -1,11 +1,17 @@
-import driversManager from "../managers/driversManager";
-import serversManager from "../managers/serversManager";
-import settingsManager from "../managers/settingsManager";
-import syncManager from "../managers/syncManager";
-import updatesManager from "../managers/updatesManager";
-import { sleep, updateTheme } from "../utils/utils";
-import { dispatchEvent, RaitoEvents } from "./events";
-import { Manga } from "./manga";
+import driversManager from '../managers/driversManager';
+import serversManager from '../managers/serversManager';
+import settingsManager from '../managers/settingsManager';
+import syncManager from '../managers/syncManager';
+import updatesManager from '../managers/updatesManager';
+import {
+  sleep,
+  updateTheme,
+} from '../utils/utils';
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from './events';
+import { Manga } from './manga';
 
 /**
  * Act as a namespace.
@@ -20,7 +26,7 @@ class RaitoManga {
    * @async
    */
   static async initialize() {
-    updateTheme();
+    updateTheme(window);
 
     driversManager.initialize();
 
@@ -43,7 +49,7 @@ class RaitoManga {
     // listen for theme changes
     window
       .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", updateTheme);
+      .addEventListener("change", () => updateTheme(window));
 
     // reset the update and sync state when site is minimized
     document.addEventListener("visibilitychange", async () => {

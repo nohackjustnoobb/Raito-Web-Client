@@ -1,11 +1,8 @@
-import './settings.scss';
+import "./settings.scss";
 
-import React from 'react';
+import React from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
+import { withTranslation, WithTranslation } from "react-i18next";
 
 import {
   mdiCogSync,
@@ -14,35 +11,35 @@ import {
   mdiKey,
   mdiServer,
   mdiShield,
-} from '@mdi/js';
-import Icon from '@mdi/react';
+} from "@mdi/js";
+import Icon from "@mdi/react";
 
-import Button from '../../components/button/button';
-import Checkbox from '../../components/checkbox/checkbox';
-import Select from '../../components/select/select';
-import TopBar from '../../components/topBar/topBar';
-import { lngName } from '../../locales/i18n';
-import driversManager from '../../managers/driversManager';
+import Button from "../../components/button/button";
+import Checkbox from "../../components/checkbox/checkbox";
+import Select from "../../components/select/select";
+import TopBar from "../../components/topBar/topBar";
+import { lngName } from "../../locales/i18n";
+import driversManager from "../../managers/driversManager";
 import settingsManager, {
   TransitionMode,
-} from '../../managers/settingsManager';
-import syncManager from '../../managers/syncManager';
+} from "../../managers/settingsManager";
+import syncManager from "../../managers/syncManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from '../../models/events';
-import user, { User } from '../../models/user';
-import { isAndroid } from '../../utils/utils';
-import ExperimentalSettings from '../experimentalSettings/experimentalSettings';
-import InputPopup from '../inputPopup/inputPopup';
-import ManageServers from '../manageServers/manageServers';
-import ManageThemes from '../manageThemes/manageThemes';
-import OnlineStatus from '../onlineStatus/onlineStatus';
+} from "../../models/events";
+import user, { User } from "../../models/user";
+import { isAndroid } from "../../utils/utils";
+import ExperimentalSettings from "../experimentalSettings/experimentalSettings";
+import InputPopup from "../inputPopup/inputPopup";
+import ManageServers from "../manageServers/manageServers";
+import ManageThemes from "../manageThemes/manageThemes";
+import OnlineStatus from "../onlineStatus/onlineStatus";
 import makeSwipeable, {
   InjectedSwipeableProps,
-} from '../swipeableScreen/swipeableScreen';
-import UserSettings from '../userSettings/userSettings';
+} from "../swipeableScreen/swipeableScreen";
+import UserSettings from "../userSettings/userSettings";
 
 interface Props extends InjectedSwipeableProps, WithTranslation {}
 
@@ -217,6 +214,20 @@ class Settings extends React.Component<Props> {
                   }}
                 />
               </div>
+              <div className="options">
+                <span>{this.props.t("mangaTransition")}: </span>
+                <Select
+                  value={settingsManager.transitionMode}
+                  onChange={(v) => {
+                    settingsManager.transitionMode = v as number;
+                    settingsManager.update();
+                  }}
+                  options={["paginated", "continuous"].map((v, i) => ({
+                    value: i,
+                    text: this.props.t(v),
+                  }))}
+                />
+              </div>
               {!settingsManager.usePopup && (
                 <>
                   <div className="options">
@@ -235,27 +246,13 @@ class Settings extends React.Component<Props> {
                       )}
                     />
                   </div>
-                  <div className="options">
-                    <span>{this.props.t("mangaTransition")}: </span>
-                    <Select
-                      value={settingsManager.transitionMode}
-                      onChange={(v) => {
-                        settingsManager.transitionMode = v as number;
-                        settingsManager.update();
-                      }}
-                      options={["paginated", "continuous"].map((v, i) => ({
-                        value: i,
-                        text: this.props.t(v),
-                      }))}
-                    />
-                  </div>
                   {settingsManager.transitionMode ===
                     TransitionMode.Continuous && (
                     <>
                       {!isAndroid && (
                         <div className="options">
                           <span>
-                            {this.props.t("pullToLoadPreviousChapter")}:{" "}
+                            {this.props.t("pullToLoadPreviousChapter")}:
                           </span>
                           <Checkbox
                             checked={

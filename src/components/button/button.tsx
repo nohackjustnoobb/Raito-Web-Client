@@ -6,6 +6,7 @@ interface ButtonProps {
   children: ReactNode;
   onClick: () => void;
   outlined?: boolean;
+  filled?: boolean;
   warning?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
@@ -17,6 +18,7 @@ interface ButtonProps {
 const Button: FunctionComponent<ButtonProps> = ({
   children,
   onClick,
+  filled,
   outlined,
   warning,
   disabled,
@@ -30,6 +32,7 @@ const Button: FunctionComponent<ButtonProps> = ({
   if (warning) classList.push("warning");
   if (disabled) classList.push("disabled");
   if (fullWidth) classList.push("fullWidth");
+  if (filled !== undefined && !filled) classList.push("clear");
 
   return (
     <span

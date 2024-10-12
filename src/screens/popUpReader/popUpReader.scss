@@ -28,13 +28,31 @@ body:has(#new-window-container) {
   align-items: center;
   flex-direction: column;
 
-  h1 {
+  h2 {
     text-align: center;
     margin: 1rem;
+    margin-bottom: 0;
+  }
+
+  p {
+    padding: 0;
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    line-height: 0;
   }
 
   img {
     width: 100%;
+
+    &.hidden {
+      display: none;
+    }
   }
 
   div {
@@ -42,9 +60,19 @@ body:has(#new-window-container) {
     padding: 1rem;
     display: flex;
     gap: 1rem;
+    justify-content: center;
+    align-items: center;
 
     span {
       border-radius: 0.5rem;
+    }
+
+    b {
+      display: flex;
+    }
+
+    &.pageController {
+      padding-bottom: 0;
     }
   }
 }

@@ -1,29 +1,32 @@
-import './popUpReader.scss';
+import "./popUpReader.scss";
 
-import { Component } from 'react';
+import { Component } from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
-import NewWindow from 'react-new-window';
+import { withTranslation, WithTranslation } from "react-i18next";
+import NewWindow from "react-new-window";
 
 import {
+  mdiArrowLeftDropCircleOutline,
+  mdiArrowRightDropCircleOutline,
   mdiCancel,
   mdiDockWindow,
-} from '@mdi/js';
-import Icon from '@mdi/react';
+  mdiPageLayoutBody,
+  mdiScriptTextOutline,
+} from "@mdi/js";
+import Icon from "@mdi/react";
 
-import Button from '../../components/button/button';
+import Button from "../../components/button/button";
+import settingsManager, {
+  TransitionMode,
+} from "../../managers/settingsManager";
 import {
-  Chapter,
-  DetailsManga,
-} from '../../models/manga';
-import {
-  translate,
-  updateTheme,
-} from '../../utils/utils';
-import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
+  listenToEvents,
+  RaitoEvents,
+  RaitoSubscription,
+} from "../../models/events";
+import { Chapter, DetailsManga } from "../../models/manga";
+import { translate, updateTheme } from "../../utils/utils";
+import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
 interface Props extends WithTranslation, InjectedPopableProps {
   manga: DetailsManga;
@@ -34,6 +37,7 @@ interface Props extends WithTranslation, InjectedPopableProps {
 interface State {
   urls: { [id: string]: Array<string> };
   currIndex: number;
+  page: number;
 }
 
 class PopUpReader extends Component<Props, State> {
@@ -43,6 +47,10 @@ class PopUpReader extends Component<Props, State> {
   initIndex!: number;
   // the sub window
   window!: Window;
+  // event subscription
+  subscription!: RaitoSubscription;
+  // derived settings
+  isContinuous = settingsManager.transitionMode === TransitionMode.Continuous;
 
   constructor(props: Props) {
     super(props);
@@ -61,6 +69,7 @@ class PopUpReader extends Component<Props, State> {
     this.state = {
       urls: {},
       currIndex: this.initIndex,
+      page: props.page || 0,
     };
   }
 
@@ -80,6 +89,16 @@ class PopUpReader extends Component<Props, State> {
     meta.setAttribute("name", "viewport");
     meta.setAttribute("content", "width=device-width, initial-scale=1.0");
     this.window.document.head.appendChild(meta);
+
+    this.subscription = listenToEvents([RaitoEvents.settingsChanged], () => {
+      this.isContinuous =
+        settingsManager.transitionMode === TransitionMode.Continuous;
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
   }
 
   async load(id: string) {
@@ -93,11 +112,17 @@ class PopUpReader extends Component<Props, State> {
     });
   }
 
-  setCurrentIndex(index: number) {
-    this.setState({ currIndex: index });
+  setCurrentIndex(index: number, page?: number) {
+    this.setState({ currIndex: index, page: page ?? 0 });
     this.load(this.chapters[index].id);
 
-    this.props.manga.save(this.chapters[index], 0);
+    this.props.manga.save(this.chapters[index], page ?? 0);
+  }
+
+  setPage(page: number) {
+    this.setState({ page: page });
+
+    this.props.manga.save(this.chapters[this.state.currIndex], page);
   }
 
   render() {
@@ -120,6 +145,10 @@ class PopUpReader extends Component<Props, State> {
         <NewWindow
           title={title}
           name={title}
+          features={{
+            height: window.innerHeight,
+            width: Math.min(window.innerWidth, 500),
+          }}
           onUnload={() => this.props.show && this.props.close()}
           onOpen={(window) => {
             this.window = window;
@@ -134,11 +163,85 @@ class PopUpReader extends Component<Props, State> {
             })
           }
         >
-          <h1>{title}</h1>
-          {this.state.urls[this.chapters[this.state.currIndex].id]?.map(
-            (url) => (
-              <img src={url} alt="" />
-            )
+          <h2>{translate(this.props.manga.title)}</h2>
+          <p>{translate(this.chapters[this.state.currIndex].title)}</p>
+          <ul
+            onClick={(e) => {
+              if (this.isContinuous) return;
+
+              const subWidth = this.window.innerWidth / 2;
+              const isLeft = e.clientX <= subWidth;
+              const newPage = this.state.page + (isLeft ? -1 : 1);
+
+              if (newPage < 0) {
+                const id = this.chapters[this.state.currIndex + 1]?.id;
+                if (id && this.state.urls[id]) {
+                  this.setCurrentIndex(
+                    this.state.currIndex + 1,
+                    this.state.urls[id].length - 1
+                  );
+                }
+                return;
+              }
+
+              if (
+                newPage >=
+                this.state.urls[this.chapters[this.state.currIndex].id]?.length
+              ) {
+                if (this.state.currIndex - 1 >= 0)
+                  this.setCurrentIndex(this.state.currIndex - 1);
+
+                return;
+              }
+
+              this.setState({ page: newPage });
+            }}
+          >
+            {this.state.urls[this.chapters[this.state.currIndex].id]?.map(
+              (url, idx) => (
+                <li key={idx}>
+                  <img
+                    src={url}
+                    alt=""
+                    className={
+                      !this.isContinuous && this.state.page !== idx
+                        ? "hidden"
+                        : ""
+                    }
+                  />
+                </li>
+              )
+            )}
+          </ul>
+          {!this.isContinuous && (
+            <div className="pageController">
+              <Button
+                filled={false}
+                disabled={this.state.page === 0}
+                onClick={() => this.setPage(this.state.page - 1)}
+              >
+                <Icon path={mdiArrowLeftDropCircleOutline} size={1} />
+              </Button>
+              <b>
+                {this.state.page + 1}
+                {" / "}
+                {
+                  this.state.urls[this.chapters[this.state.currIndex].id]
+                    ?.length
+                }
+              </b>
+              <Button
+                filled={false}
+                disabled={
+                  this.state.page + 1 ===
+                  this.state.urls[this.chapters[this.state.currIndex].id]
+                    ?.length
+                }
+                onClick={() => this.setPage(this.state.page + 1)}
+              >
+                <Icon path={mdiArrowRightDropCircleOutline} size={1} />
+              </Button>
+            </div>
           )}
           <div>
             <Button
@@ -148,6 +251,22 @@ class PopUpReader extends Component<Props, State> {
               onClick={() => this.setCurrentIndex(this.state.currIndex + 1)}
             >
               {this.props.t("previousChapter")}
+            </Button>
+            <Button
+              filled={false}
+              onClick={() => {
+                settingsManager.transitionMode = this.isContinuous
+                  ? TransitionMode.Paginated
+                  : TransitionMode.Continuous;
+                settingsManager.update();
+              }}
+            >
+              <Icon
+                path={
+                  this.isContinuous ? mdiScriptTextOutline : mdiPageLayoutBody
+                }
+                size={1}
+              />
             </Button>
             <Button
               fullWidth

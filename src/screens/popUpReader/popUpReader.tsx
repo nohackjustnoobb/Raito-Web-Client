@@ -1,9 +1,12 @@
-import "./popUpReader.scss";
+import './popUpReader.scss';
 
-import { Component } from "react";
+import { Component } from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
-import NewWindow from "react-new-window";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
+import NewWindow from 'react-new-window';
 
 import {
   mdiArrowLeftDropCircleOutline,
@@ -12,21 +15,27 @@ import {
   mdiDockWindow,
   mdiPageLayoutBody,
   mdiScriptTextOutline,
-} from "@mdi/js";
-import Icon from "@mdi/react";
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import Button from "../../components/button/button";
+import Button from '../../components/button/button';
 import settingsManager, {
   TransitionMode,
-} from "../../managers/settingsManager";
+} from '../../managers/settingsManager';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { Chapter, DetailsManga } from "../../models/manga";
-import { translate, updateTheme } from "../../utils/utils";
-import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
+} from '../../models/events';
+import {
+  Chapter,
+  DetailsManga,
+} from '../../models/manga';
+import {
+  translate,
+  updateTheme,
+} from '../../utils/utils';
+import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
 
 interface Props extends WithTranslation, InjectedPopableProps {
   manga: DetailsManga;
@@ -48,7 +57,7 @@ class PopUpReader extends Component<Props, State> {
   // the sub window
   window!: Window;
   // event subscription
-  subscription!: RaitoSubscription;
+  subscription: RaitoSubscription | null = null;
   // derived settings
   isContinuous = settingsManager.transitionMode === TransitionMode.Continuous;
 
@@ -98,7 +107,7 @@ class PopUpReader extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.subscription.unsubscribe();
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   async load(id: string) {
@@ -113,10 +122,10 @@ class PopUpReader extends Component<Props, State> {
   }
 
   setCurrentIndex(index: number, page?: number) {
-    this.setState({ currIndex: index, page: page ?? 0 });
+    this.setState({ currIndex: index, page: page || 0 });
     this.load(this.chapters[index].id);
 
-    this.props.manga.save(this.chapters[index], page ?? 0);
+    this.props.manga.save(this.chapters[index], page || 0);
   }
 
   setPage(page: number) {

@@ -190,6 +190,10 @@ class PopUpReader extends Component<Props, State> {
                     this.state.urls[id].length - 1
                   );
                 }
+
+                if (this.state.currIndex + 1 >= this.chapters.length)
+                  this.window.alert(this.props.t("noPreviousOne"));
+
                 return;
               }
 
@@ -199,11 +203,12 @@ class PopUpReader extends Component<Props, State> {
               ) {
                 if (this.state.currIndex - 1 >= 0)
                   this.setCurrentIndex(this.state.currIndex - 1);
+                else this.window.alert(this.props.t("noNextOne"));
 
                 return;
               }
 
-              this.setState({ page: newPage });
+              this.setPage(newPage);
             }}
           >
             {this.state.urls[this.chapters[this.state.currIndex].id]?.map(

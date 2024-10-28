@@ -16,6 +16,7 @@ import {
 import Icon from "@mdi/react";
 
 import Button from "../../components/button/button";
+import LazyImage from "../../components/lazyImage/lazyImage";
 import settingsManager, {
   TransitionMode,
 } from "../../managers/settingsManager";
@@ -102,9 +103,11 @@ class PopUpReader extends Component<Props, State> {
   }
 
   async load(id: string, jumpToLastPage: boolean = false) {
-    if (this.state.urls[id] !== undefined) return;
-
-    const urls = await this.props.manga.getChapterUrls(id);
+    const urls =
+      this.state.urls[id] === undefined
+        ? await this.props.manga.getChapterUrls(id)
+        : this.state.urls[id];
+    const page = jumpToLastPage ? urls.length - 1 : 0;
 
     this.setState(
       {
@@ -112,21 +115,15 @@ class PopUpReader extends Component<Props, State> {
           ...this.state.urls,
           [id]: urls,
         },
-        page: jumpToLastPage ? urls.length - 1 : this.state.page,
+        page: page,
       },
-      () =>
-        this.props.manga.save(
-          this.chapters[this.state.currIndex],
-          this.state.page
-        )
+      () => this.props.manga.save(this.chapters[this.state.currIndex], page)
     );
   }
 
   setCurrentIndex(index: number, jumpToLastPage: boolean = false) {
-    this.setState({ currIndex: index, page: 0 });
+    this.setState({ currIndex: index });
     this.load(this.chapters[index].id, jumpToLastPage);
-
-    this.props.manga.save(this.chapters[index], 0);
   }
 
   setPage(page: number) {
@@ -207,22 +204,21 @@ class PopUpReader extends Component<Props, State> {
           >
             {this.state.urls[this.chapters[this.state.currIndex].id]?.map(
               (url, idx) => (
-                <li key={idx}>
-                  <img
-                    src={url}
-                    alt=""
-                    className={
-                      !this.isContinuous && this.state.page !== idx
-                        ? "hidden"
-                        : ""
-                    }
-                  />
+                <li
+                  key={idx}
+                  className={
+                    !this.isContinuous && this.state.page !== idx
+                      ? "hidden"
+                      : ""
+                  }
+                >
+                  <LazyImage src={url} lazy={false} />
                 </li>
               )
             )}
           </ul>
           {!this.isContinuous && (
-            <div className="pageController">
+            <div className="controller pageController">
               <Button
                 filled={false}
                 disabled={this.state.page === 0}
@@ -251,7 +247,7 @@ class PopUpReader extends Component<Props, State> {
               </Button>
             </div>
           )}
-          <div>
+          <div className="controller">
             <Button
               fullWidth
               outlined

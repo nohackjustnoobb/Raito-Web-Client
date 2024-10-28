@@ -47,15 +47,15 @@ body:has(#new-window-container) {
     line-height: 0;
   }
 
-  img {
-    width: 100%;
-
-    &.hidden {
-      display: none;
-    }
+  li.hidden {
+    display: none;
   }
 
-  div {
+  img {
+    width: 100%;
+  }
+
+  .controller {
     width: calc(100% - 2rem);
     padding: 1rem;
     display: flex;

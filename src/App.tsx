@@ -101,12 +101,13 @@ class Status extends Component<WithTranslation, { mode: StatusMode }> {
   }
 }
 
-const filters = ["all", "tagUpdated", "tagEnded", "download"];
+const filters = ["all", "tagUpdated", "tagEnded", "download", "notRead"];
 enum Filters {
   All,
   Update,
   End,
   Download,
+  NotRead,
 }
 
 class App extends Component<
@@ -140,14 +141,21 @@ class App extends Component<
 
   render() {
     const filteredCollection = this.state.collections.filter((v) => {
+      let record;
       switch (this.state.filter) {
+        case Filters.End:
+          return v.isEnded;
         case Filters.Update:
-          const record = this.state.history.find(
+          record = this.state.history.find(
             (h) => h.id === v.id && h.driver === v.driver
           );
           return record?.isUpdated;
-        case Filters.End:
-          return v.isEnded;
+        case Filters.NotRead:
+          record = this.state.history.find(
+            (h) => h.id === v.id && h.driver === v.driver
+          );
+
+          return !record?.chapterId;
         default:
           return true;
       }

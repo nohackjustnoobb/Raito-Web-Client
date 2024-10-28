@@ -1,12 +1,9 @@
-import './popUpReader.scss';
+import "./popUpReader.scss";
 
-import { Component } from 'react';
+import { Component } from "react";
 
-import {
-  withTranslation,
-  WithTranslation,
-} from 'react-i18next';
-import NewWindow from 'react-new-window';
+import { withTranslation, WithTranslation } from "react-i18next";
+import NewWindow from "react-new-window";
 
 import {
   mdiArrowLeftDropCircleOutline,
@@ -15,27 +12,21 @@ import {
   mdiDockWindow,
   mdiPageLayoutBody,
   mdiScriptTextOutline,
-} from '@mdi/js';
-import Icon from '@mdi/react';
+} from "@mdi/js";
+import Icon from "@mdi/react";
 
-import Button from '../../components/button/button';
+import Button from "../../components/button/button";
 import settingsManager, {
   TransitionMode,
-} from '../../managers/settingsManager';
+} from "../../managers/settingsManager";
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from '../../models/events';
-import {
-  Chapter,
-  DetailsManga,
-} from '../../models/manga';
-import {
-  translate,
-  updateTheme,
-} from '../../utils/utils';
-import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
+} from "../../models/events";
+import { Chapter, DetailsManga } from "../../models/manga";
+import { translate, updateTheme } from "../../utils/utils";
+import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
 
 interface Props extends WithTranslation, InjectedPopableProps {
   manga: DetailsManga;
@@ -110,22 +101,32 @@ class PopUpReader extends Component<Props, State> {
     if (this.subscription) this.subscription.unsubscribe();
   }
 
-  async load(id: string) {
+  async load(id: string, jumpToLastPage: boolean = false) {
     if (this.state.urls[id] !== undefined) return;
 
-    this.setState({
-      urls: {
-        ...this.state.urls,
-        [id]: await this.props.manga.getChapterUrls(id),
+    const urls = await this.props.manga.getChapterUrls(id);
+
+    this.setState(
+      {
+        urls: {
+          ...this.state.urls,
+          [id]: urls,
+        },
+        page: jumpToLastPage ? urls.length - 1 : this.state.page,
       },
-    });
+      () =>
+        this.props.manga.save(
+          this.chapters[this.state.currIndex],
+          this.state.page
+        )
+    );
   }
 
-  setCurrentIndex(index: number, page?: number) {
-    this.setState({ currIndex: index, page: page || 0 });
-    this.load(this.chapters[index].id);
+  setCurrentIndex(index: number, jumpToLastPage: boolean = false) {
+    this.setState({ currIndex: index, page: 0 });
+    this.load(this.chapters[index].id, jumpToLastPage);
 
-    this.props.manga.save(this.chapters[index], page || 0);
+    this.props.manga.save(this.chapters[index], 0);
   }
 
   setPage(page: number) {
@@ -183,16 +184,9 @@ class PopUpReader extends Component<Props, State> {
               const newPage = this.state.page + (isLeft ? -1 : 1);
 
               if (newPage < 0) {
-                const id = this.chapters[this.state.currIndex + 1]?.id;
-                if (id && this.state.urls[id]) {
-                  this.setCurrentIndex(
-                    this.state.currIndex + 1,
-                    this.state.urls[id].length - 1
-                  );
-                }
-
-                if (this.state.currIndex + 1 >= this.chapters.length)
-                  this.window.alert(this.props.t("noPreviousOne"));
+                if (this.state.currIndex + 1 < this.chapters.length)
+                  this.setCurrentIndex(this.state.currIndex + 1, true);
+                else this.window.alert(this.props.t("noPreviousOne"));
 
                 return;
               }

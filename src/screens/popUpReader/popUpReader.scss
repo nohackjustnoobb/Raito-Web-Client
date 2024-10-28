@@ -47,12 +47,14 @@ body:has(#new-window-container) {
     line-height: 0;
   }
 
-  li.hidden {
-    display: none;
-  }
+  li {
+    .imgWrapper {
+      display: flex;
+    }
 
-  img {
-    width: 100%;
+    &.hidden {
+      display: none;
+    }
   }
 
   .controller {

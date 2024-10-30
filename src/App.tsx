@@ -155,7 +155,7 @@ class App extends Component<
             (h) => h.id === v.id && h.driver === v.driver
           );
 
-          return !record?.chapterId;
+          return record?.chapterId === null;
         default:
           return true;
       }

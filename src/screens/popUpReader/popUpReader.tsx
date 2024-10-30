@@ -1,9 +1,12 @@
-import "./popUpReader.scss";
+import './popUpReader.scss';
 
-import { Component } from "react";
+import { Component } from 'react';
 
-import { withTranslation, WithTranslation } from "react-i18next";
-import NewWindow from "react-new-window";
+import {
+  withTranslation,
+  WithTranslation,
+} from 'react-i18next';
+import NewWindow from 'react-new-window';
 
 import {
   mdiArrowLeftDropCircleOutline,
@@ -12,22 +15,28 @@ import {
   mdiDockWindow,
   mdiPageLayoutBody,
   mdiScriptTextOutline,
-} from "@mdi/js";
-import Icon from "@mdi/react";
+} from '@mdi/js';
+import Icon from '@mdi/react';
 
-import Button from "../../components/button/button";
-import LazyImage from "../../components/lazyImage/lazyImage";
+import Button from '../../components/button/button';
+import LazyImage from '../../components/lazyImage/lazyImage';
 import settingsManager, {
   TransitionMode,
-} from "../../managers/settingsManager";
+} from '../../managers/settingsManager';
 import {
   listenToEvents,
   RaitoEvents,
   RaitoSubscription,
-} from "../../models/events";
-import { Chapter, DetailsManga } from "../../models/manga";
-import { translate, updateTheme } from "../../utils/utils";
-import makePopable, { InjectedPopableProps } from "../popScreen/popScreen";
+} from '../../models/events';
+import {
+  Chapter,
+  DetailsManga,
+} from '../../models/manga';
+import {
+  translate,
+  updateTheme,
+} from '../../utils/utils';
+import makePopable, { InjectedPopableProps } from '../popScreen/popScreen';
 
 interface Props extends WithTranslation, InjectedPopableProps {
   manga: DetailsManga;
@@ -75,7 +84,7 @@ class PopUpReader extends Component<Props, State> {
   }
 
   componentDidMount() {
-    this.load(this.chapters[this.initIndex].id);
+    this.load(this.chapters[this.initIndex].id, false, false);
   }
 
   windowInitialize() {
@@ -102,12 +111,20 @@ class PopUpReader extends Component<Props, State> {
     if (this.subscription) this.subscription.unsubscribe();
   }
 
-  async load(id: string, jumpToLastPage: boolean = false) {
+  async load(
+    id: string,
+    jumpToLastPage: boolean = false,
+    jumpToFirstPage: boolean = true
+  ) {
     const urls =
       this.state.urls[id] === undefined
         ? await this.props.manga.getChapterUrls(id)
         : this.state.urls[id];
-    const page = jumpToLastPage ? urls.length - 1 : 0;
+    const page = jumpToLastPage
+      ? urls.length - 1
+      : jumpToFirstPage
+      ? 0
+      : this.state.page;
 
     this.setState(
       {

@@ -139,8 +139,9 @@ class PopUpReader extends Component<Props, State> {
   }
 
   setCurrentIndex(index: number, jumpToLastPage: boolean = false) {
-    this.setState({ currIndex: index });
-    this.load(this.chapters[index].id, jumpToLastPage);
+    this.setState({ currIndex: index }, () =>
+      this.load(this.chapters[index].id, jumpToLastPage)
+    );
   }
 
   setPage(page: number) {
@@ -222,7 +223,7 @@ class PopUpReader extends Component<Props, State> {
             {this.state.urls[this.chapters[this.state.currIndex].id]?.map(
               (url, idx) => (
                 <li
-                  key={idx}
+                  key={`${this.state.currIndex}_${idx}`}
                   className={
                     !this.isContinuous && this.state.page !== idx
                       ? "hidden"

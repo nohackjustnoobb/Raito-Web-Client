@@ -1,12 +1,22 @@
-import saveAs from "file-saver";
-import i18next from "i18next";
-import jsPDF from "jspdf";
-import JSZip from "jszip";
+import saveAs from 'file-saver';
+import i18next from 'i18next';
+import jsPDF from 'jspdf';
+import JSZip from 'jszip';
 
-import DownloadProgress from "../screens/downloadProgess/downloadProgress";
-import { retryFetch, sleep, translate } from "../utils/utils";
-import { dispatchEvent, RaitoEvents } from "./events";
-import { Chapter, DetailsManga } from "./manga";
+import DownloadProgress from '../screens/downloadProgess/downloadProgress';
+import {
+  retryFetch,
+  sleep,
+  translate,
+} from '../utils/utils';
+import {
+  dispatchEvent,
+  RaitoEvents,
+} from './events';
+import {
+  Chapter,
+  DetailsManga,
+} from './manga';
 
 /**
  * A list of available download types.
@@ -274,6 +284,10 @@ class DownloadTask {
     } catch {}
   }
 
+  replaceSlash(title: string) {
+    return title.replace("/", " ");
+  }
+
   /**
    * Download the chapters as compressed file type.
    *
@@ -292,7 +306,9 @@ class DownloadTask {
 
     try {
       const zip = new JSZip();
-      const rootFolder = zip.folder(translate(this.manga.title));
+      const rootFolder = zip.folder(
+        this.replaceSlash(translate(this.manga.title))
+      );
 
       if (rootFolder) {
         const promises = [];
@@ -357,7 +373,7 @@ class DownloadTask {
             const result = await this.manga.getChapterUrls(chapter.id, true);
 
             if (result.length !== 0 && folder) {
-              const chapterFolder = folder.folder(title);
+              const chapterFolder = folder.folder(this.replaceSlash(title));
 
               if (chapterFolder) {
                 this.progress[chapter.id] = {
@@ -455,7 +471,7 @@ class DownloadTask {
                 await Promise.all(promises);
 
                 folder.file(
-                  `${title}.cbz`,
+                  `${this.replaceSlash(title)}.cbz`,
                   await chapterZip.generateAsync({ type: "blob" })
                 );
               }

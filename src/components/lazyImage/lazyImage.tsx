@@ -28,6 +28,7 @@ class LazyImage extends Component<
   prevDebugMode: boolean = false;
   ref: HTMLElement | null = null;
   raitoSubscription: RaitoSubscription | null = null;
+  controller: AbortController = new AbortController();
   observer = new IntersectionObserver(
     () => {
       if (this.ref && this.isScrolledIntoView(this.ref))
@@ -72,6 +73,7 @@ class LazyImage extends Component<
 
   componentWillUnmount() {
     if (this.raitoSubscription) this.raitoSubscription.unsubscribe();
+    this.controller.abort();
   }
 
   async componentDidUpdate() {
@@ -93,6 +95,7 @@ class LazyImage extends Component<
                 ? `max-age=${settingsManager.imageCacheMaxAge}`
                 : "no-cache",
             },
+            signal: this.controller.signal,
           }
         );
 

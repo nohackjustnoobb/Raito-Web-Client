@@ -33,6 +33,7 @@ import {
   DetailsManga,
 } from '../../models/manga';
 import {
+  mode,
   translate,
   updateTheme,
 } from '../../utils/utils';
@@ -48,6 +49,7 @@ interface State {
   urls: { [id: string]: Array<string> };
   currIndex: number;
   page: number;
+  imgSize: { [id: string]: number };
 }
 
 class PopUpReader extends Component<Props, State> {
@@ -80,6 +82,7 @@ class PopUpReader extends Component<Props, State> {
       urls: {},
       currIndex: this.initIndex,
       page: props.page || 0,
+      imgSize: {},
     };
   }
 
@@ -154,6 +157,8 @@ class PopUpReader extends Component<Props, State> {
     const title = translate(
       `${this.props.manga.title} ${this.chapters[this.state.currIndex].title}`
     );
+    const predictedRatio = mode(Object.values(this.state.imgSize));
+    const currentUrl = this.state.urls[this.chapters[this.state.currIndex].id];
 
     if (this.window) this.window.document.title = title;
 
@@ -220,19 +225,50 @@ class PopUpReader extends Component<Props, State> {
               this.setPage(newPage);
             }}
           >
-            {this.state.urls[this.chapters[this.state.currIndex].id]?.map(
-              (url, idx) => (
-                <li
-                  key={`${this.state.currIndex}_${idx}`}
-                  className={
-                    !this.isContinuous && this.state.page !== idx
-                      ? "hidden"
-                      : ""
-                  }
-                >
-                  <LazyImage src={url} lazy={false} />
-                </li>
-              )
+            {currentUrl ? (
+              currentUrl.map((url, idx) => {
+                const key = `${this.state.currIndex}_${idx}`;
+
+                return (
+                  <li
+                    key={key}
+                    className={
+                      !this.isContinuous && this.state.page !== idx
+                        ? "hidden placeholder"
+                        : "placeholder"
+                    }
+                    style={
+                      this.state.imgSize[key]
+                        ? {}
+                        : { aspectRatio: predictedRatio }
+                    }
+                  >
+                    <LazyImage
+                      src={url}
+                      lazy={false}
+                      onLoad={(e) =>
+                        this.setState(({ imgSize }) => {
+                          const element = e.target as HTMLImageElement;
+                          const ratio =
+                            element.naturalWidth / element.naturalHeight;
+
+                          return {
+                            imgSize: {
+                              ...imgSize,
+                              [key]: ratio,
+                            },
+                          };
+                        })
+                      }
+                    />
+                  </li>
+                );
+              })
+            ) : (
+              <div
+                className="placeholder"
+                style={{ aspectRatio: predictedRatio }}
+              />
             )}
           </ul>
           {!this.isContinuous && (

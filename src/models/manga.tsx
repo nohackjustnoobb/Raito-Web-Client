@@ -1,17 +1,14 @@
-import i18next from 'i18next';
+import i18next from "i18next";
 
-import driversManager from '../managers/driversManager';
-import settingsManager from '../managers/settingsManager';
-import syncManager from '../managers/syncManager';
-import Details from '../screens/details/details';
-import PopUpReader from '../screens/popUpReader/popUpReader';
-import Reader from '../screens/reader/reader';
-import db, {
-  Collection,
-  Record,
-} from './db';
-import Driver from './driver';
-import user from './user';
+import driversManager from "../managers/driversManager";
+import settingsManager from "../managers/settingsManager";
+import syncManager from "../managers/syncManager";
+import Details from "../screens/details/details";
+import PopUpReader from "../screens/popUpReader/popUpReader";
+import Reader from "../screens/reader/reader";
+import db, { Collection, Record } from "./db";
+import Driver from "./driver";
+import user from "./user";
 
 /**
  * The base class for manga.
@@ -207,12 +204,11 @@ class Manga {
     syncManager.isHistoryChanged = true;
     const history = await db.history.get([this.driver.identifier, this.id]);
     if (history) {
-      // update only when latest is changed
       await db.history.update([this.driver.identifier, this.id], {
         thumbnail: this.thumbnail,
         title: this.title,
         latest: this.latest,
-        updateDateTime: Date.now(),
+        updateDatetime: Date.now(),
         isUpdated: false,
       });
     } else {

@@ -94,7 +94,7 @@ class ManageThemes extends Component<Props> {
                   <Checkbox
                     checked={settingsManager.currentTheme === v.name}
                     onChange={(checked) => {
-                      settingsManager.currentTheme = checked ? v.name : null;
+                      settingsManager.currentTheme = checked ? v.name : "";
 
                       settingsManager.update();
                     }}
@@ -116,7 +116,7 @@ class ManageThemes extends Component<Props> {
                         return;
 
                       if (settingsManager.currentTheme === v.name)
-                        settingsManager.currentTheme = null;
+                        settingsManager.currentTheme = "";
                       settingsManager.themes = settingsManager.themes.filter(
                         (theme) => theme.name !== v.name
                       );

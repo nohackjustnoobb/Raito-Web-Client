@@ -1,13 +1,10 @@
-import {
-  dispatchEvent,
-  RaitoEvents,
-} from '../models/events';
-import Theme from '../models/theme';
-import user from '../models/user';
-import { updateTheme } from '../utils/utils';
-import driversManager from './driversManager';
-import serversManager from './serversManager';
-import syncManager from './syncManager';
+import { dispatchEvent, RaitoEvents } from "../models/events";
+import Theme from "../models/theme";
+import user from "../models/user";
+import { updateTheme } from "../utils/utils";
+import driversManager from "./driversManager";
+import serversManager from "./serversManager";
+import syncManager from "./syncManager";
 
 enum DisplayMode {
   Auto,
@@ -28,7 +25,7 @@ enum ThemeMode {
 
 class SettingsManager {
   // general settings
-  defaultDriver: string | null = null;
+  defaultDriver: string = "";
   forceTranslate: boolean = true;
   showDeveloperSettings: boolean = false;
   imageCacheMaxAge: number = 7200;
@@ -37,7 +34,7 @@ class SettingsManager {
   themeMode: ThemeMode = ThemeMode.Auto;
   themes: Theme[] = [];
   formatChapterTitle: boolean = true;
-  currentTheme: string | null = null;
+  currentTheme: string = "";
   numberOfRecordPreviews: number = 15;
 
   // reader settings
@@ -112,7 +109,7 @@ class SettingsManager {
     const theme = this.themes.find((v) => v.name === this.currentTheme);
     if (this.currentTheme) {
       if (theme) theme.inject();
-      else this.currentTheme = null;
+      else this.currentTheme = "";
     } else Theme.reset();
 
     updateTheme(window);

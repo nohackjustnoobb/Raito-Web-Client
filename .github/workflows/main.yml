@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies
         working-directory: ./main
         run: |
-          yarn install
+          yarn install --frozen-lockfile
       - name: Build React App
         working-directory: ./main
         env:

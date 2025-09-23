@@ -4,12 +4,12 @@
  * @enum
  */
 enum RaitoEvents {
-  settingsChanged = "settingsChanged",
-  driverChanged = "driverChanged",
-  syncStateChanged = "syncStateChanged",
-  updateCollectionsStateChanged = "updateCollectionsStateChanged",
-  screenChanged = "screenChanged",
-  downloadChanged = "downloadChanged",
+    settingsChanged = 'settingsChanged',
+    driverChanged = 'driverChanged',
+    syncStateChanged = 'syncStateChanged',
+    updateCollectionsStateChanged = 'updateCollectionsStateChanged',
+    screenChanged = 'screenChanged',
+    downloadChanged = 'downloadChanged'
 }
 
 /**
@@ -18,8 +18,8 @@ enum RaitoEvents {
  * @param eventId
  */
 const dispatchEvent = (eventId: RaitoEvents) => {
-  const event = new Event(eventId);
-  window.dispatchEvent(event);
+    const event = new Event(eventId);
+    window.dispatchEvent(event);
 };
 
 /**
@@ -28,32 +28,35 @@ const dispatchEvent = (eventId: RaitoEvents) => {
  * @class
  */
 class RaitoSubscription {
-  /**
-   * Creates an instance of RaitoSubscription.
-   *
-   * @constructor
-   * @param eventIds
-   * @param action
-   */
-  constructor(public eventIds: Array<RaitoEvents>, public action: () => void) {}
+    /**
+     * Creates an instance of RaitoSubscription.
+     *
+     * @constructor
+     * @param eventIds
+     * @param action
+     */
+    constructor(
+        public eventIds: Array<RaitoEvents>,
+        public action: () => void
+    ) {}
 
-  /**
-   * Listen to all the events.
-   */
-  subscribe() {
-    this.eventIds.forEach((event) =>
-      window.addEventListener(event, () => this.action(), false)
-    );
-  }
+    /**
+     * Listen to all the events.
+     */
+    subscribe() {
+        this.eventIds.forEach((event) =>
+            window.addEventListener(event, () => this.action(), false)
+        );
+    }
 
-  /**
-   * Remove the listener for all the events.
-   */
-  unsubscribe() {
-    this.eventIds.forEach((event) =>
-      window.removeEventListener(event, () => this.action(), false)
-    );
-  }
+    /**
+     * Remove the listener for all the events.
+     */
+    unsubscribe() {
+        this.eventIds.forEach((event) =>
+            window.removeEventListener(event, () => this.action(), false)
+        );
+    }
 }
 
 /**
@@ -64,9 +67,9 @@ class RaitoSubscription {
  * @returns A RaitoSubscription instance that can be used to unsubscribe the events
  */
 const listenToEvents = (eventIds: Array<RaitoEvents>, action: () => void) => {
-  const subscription = new RaitoSubscription(eventIds, action);
-  subscription.subscribe();
-  return subscription;
+    const subscription = new RaitoSubscription(eventIds, action);
+    subscription.subscribe();
+    return subscription;
 };
 
 export { dispatchEvent, listenToEvents, RaitoEvents, RaitoSubscription };
